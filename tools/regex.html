@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Regex tekshiruvchi | Toshov Ozodbek</title>
+  <meta name="description" content="Muntazam ifodani matn ustida sinab ko'ring.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="regex">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="grid2">
+        <div class="field"><label for="pat">Ifoda</label><input id="pat" type="text" spellcheck="false" value="\b\w+@\w+\.\w+\b"></div>
+        <div class="field"><label for="flags">Bayroqlar (g, i, m, s, u)</label><input id="flags" type="text" value="gi" maxlength="6" spellcheck="false"></div>
+      </div>
+      <div class="field"><label for="txt">Tekshiriladigan matn</label><textarea id="txt" style="font-family:var(--font-body)">Bog‘lanish: ozod@example.com yoki info@site.uz</textarea></div>
+      <p id="msg" role="status"></p>
+      <h3>Topilganlar</h3>
+      <div class="out" id="hl" style="font-family:var(--font-body)"></div>
+      <div id="list" style="margin-top:12px"></div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function run() {
+      var pat = $('pat').value, fl = $('flags').value, txt = $('txt').value;
+      $('list').innerHTML = ''; $('hl').textContent = txt;
+      if (!pat) { $('msg').className = 'muted'; $('msg').textContent = 'Ifodani kiriting.'; return; }
+      var re;
+      try { re = new RegExp(pat, fl.indexOf('g') === -1 ? fl + 'g' : fl); }
+      catch (e) { $('msg').className = 'msg-err'; $('msg').textContent = 'Ifoda xato: ' + e.message; return; }
+      var html = '', last = 0, n = 0, items = [], m;
+      while ((m = re.exec(txt)) !== null && n < 500) {
+        if (m[0] === '') { re.lastIndex++; continue; }
+        html += TO.esc(txt.slice(last, m.index)) + '<mark>' + TO.esc(m[0]) + '</mark>';
+        last = m.index + m[0].length; n++;
+        items.push('<li><code>' + TO.esc(m[0]) + '</code> <span class="muted">(' + m.index + '-o‘rin' + (m.length > 1 ? ', guruhlar: ' + TO.esc(m.slice(1).map(function (g) { return g === undefined ? '-' : g; }).join(' | ')) : '') + ')</span></li>');
+      }
+      html += TO.esc(txt.slice(last));
+      $('hl').innerHTML = html.replace(/\n/g, '<br>');
+      $('msg').className = n ? 'msg-ok' : 'muted';
+      $('msg').textContent = n ? n + ' ta moslik topildi.' : 'Hech narsa topilmadi.';
+      $('list').innerHTML = items.length ? '<ul style="padding-left:20px;margin:0">' + items.join('') + '</ul>' : '';
+    }
+    ['pat', 'flags', 'txt'].forEach(function (id) { $(id).addEventListener('input', run); });
+    run();
+  })();
+  </script>
+</body>
+</html>

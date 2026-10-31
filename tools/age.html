@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yosh hisoblagich | Toshov Ozodbek</title>
+  <meta name="description" content="Tug'ilgan sanangizdan yoshingizni va keyingi tug'ilgan kungacha qolgan vaqtni hisoblang.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="age">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:720px">
+      <div class="field"><label for="dob">Tug‘ilgan sana</label><input id="dob" type="date"></div>
+      <p id="err" class="msg-err" role="alert"></p>
+      <div class="grid3" id="stats" hidden>
+        <div class="stat"><b id="y">0</b><span>yil</span></div>
+        <div class="stat"><b id="m">0</b><span>oy</span></div>
+        <div class="stat"><b id="d">0</b><span>kun</span></div>
+        <div class="stat"><b id="days">0</b><span>jami yashagan kun</span></div>
+        <div class="stat"><b id="weeks">0</b><span>jami hafta</span></div>
+        <div class="stat"><b id="next">0</b><span>keyingi tug‘ilgan kungacha (kun)</span></div>
+      </div>
+      <p id="wd" class="muted" style="margin-top:14px"></p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var DAYS = ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba'];
+    function calc() {
+      var v = $('dob').value; $('err').textContent = '';
+      if (!v) { $('stats').hidden = true; $('wd').textContent = ''; return; }
+      var p = v.split('-').map(Number), b = new Date(p[0], p[1] - 1, p[2]);
+      var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      if (b > today) { $('stats').hidden = true; $('err').textContent = 'Tug‘ilgan sana kelajakda bo‘lishi mumkin emas.'; return; }
+      var y = today.getFullYear() - b.getFullYear(), m = today.getMonth() - b.getMonth(), d = today.getDate() - b.getDate();
+      if (d < 0) { m--; d += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
+      if (m < 0) { y--; m += 12; }
+      var ms = today - b, days = Math.round(ms / 86400000);
+      var nb = new Date(today.getFullYear(), b.getMonth(), b.getDate());
+      if (nb < today) nb = new Date(today.getFullYear() + 1, b.getMonth(), b.getDate());
+      var left = Math.round((nb - today) / 86400000);
+      $('y').textContent = y; $('m').textContent = m; $('d').textContent = d;
+      $('days').textContent = days.toLocaleString('uz-UZ'); $('weeks').textContent = Math.floor(days / 7).toLocaleString('uz-UZ');
+      $('next').textContent = left === 0 ? 'Bugun!' : left;
+      $('wd').textContent = 'Siz ' + DAYS[b.getDay()] + ' kuni tug‘ilgansiz.';
+      $('stats').hidden = false;
+    }
+    $('dob').max = new Date().toISOString().slice(0, 10);
+    $('dob').addEventListener('input', calc);
+  })();
+  </script>
+</body>
+</html>

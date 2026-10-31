@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sanoq tizimlari | Toshov Ozodbek</title>
+  <meta name="description" content="Ikkilik, sakkizlik, o'nlik va o'n oltilik sanoq tizimlari orasida o'zgartiring.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="number-base">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:720px">
+      <div class="field"><label for="bin">Ikkilik (2)</label><input id="bin" type="text" spellcheck="false" autocomplete="off"></div>
+      <div class="field"><label for="oct">Sakkizlik (8)</label><input id="oct" type="text" spellcheck="false" autocomplete="off"></div>
+      <div class="field"><label for="dec">O‘nlik (10)</label><input id="dec" type="text" spellcheck="false" autocomplete="off" value="255" inputmode="numeric"></div>
+      <div class="field"><label for="hex">O‘n oltilik (16)</label><input id="hex" type="text" spellcheck="false" autocomplete="off"></div>
+      <div class="grid2">
+        <div class="field"><label for="cb">Boshqa asos (2 dan 36 gacha)</label><input id="cb" type="number" min="2" max="36" value="36"></div>
+        <div class="field"><label for="cv">Shu asosdagi qiymat</label><input id="cv" type="text" spellcheck="false" autocomplete="off"></div>
+      </div>
+      <p id="err" class="msg-err" role="alert"></p>
+      <p class="muted">Katta sonlar ham aniq hisoblanadi (BigInt). Manfiy sonlar uchun boshiga minus qo‘ying.</p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var DIG = '0123456789abcdefghijklmnopqrstuvwxyz';
+    function parse(s, base) {
+      s = s.trim().toLowerCase().replace(/[\s_]/g, '');
+      var neg = false; if (s[0] === '-') { neg = true; s = s.slice(1); }
+      if (base === 16) s = s.replace(/^0x/, ''); if (base === 2) s = s.replace(/^0b/, ''); if (base === 8) s = s.replace(/^0o/, '');
+      if (!s) return null;
+      var v = 0n, b = BigInt(base);
+      for (var i = 0; i < s.length; i++) { var d = DIG.indexOf(s[i]); if (d < 0 || d >= base) throw new Error('"' + s[i] + '" belgisi ' + base + ' asosli sanoq tizimida bo‘lmaydi.'); v = v * b + BigInt(d); }
+      return neg ? -v : v;
+    }
+    function fmt(v, base) { return v.toString(base); }
+    var fields = { bin: 2, oct: 8, dec: 10, hex: 16 };
+    function fill(v, skip) {
+      Object.keys(fields).forEach(function (k) { if (k !== skip) $(k).value = v === null ? '' : fmt(v, fields[k]).toUpperCase(); });
+      var cb = parseInt($('cb').value, 10);
+      if (skip !== 'cv') $('cv').value = v === null || !(cb >= 2 && cb <= 36) ? '' : fmt(v, cb).toUpperCase();
+    }
+    function on(id, getBase) {
+      $(id).addEventListener('input', function () {
+        $('err').textContent = '';
+        try { fill(parse(this.value, getBase()), id); } catch (e) { $('err').textContent = e.message; }
+      });
+    }
+    Object.keys(fields).forEach(function (k) { on(k, function () { return fields[k]; }); });
+    on('cv', function () { return parseInt($('cb').value, 10) || 36; });
+    $('cb').addEventListener('input', function () { var v = parse($('dec').value, 10); fill(v); });
+    fill(parse('255', 10));
+  })();
+  </script>
+</body>
+</html>

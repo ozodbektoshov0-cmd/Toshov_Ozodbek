@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terminal simulyator | Toshov Ozodbek</title>
+  <meta name="description" content="Brauzerdagi terminal simulyator. help buyrug'ini yozib boshlang.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="terminal" data-root="">
+  <main id="main" class="container">
+    <div class="tool-head">
+      <h1>Terminal simulyator</h1>
+      <p>Bu o‘yinchoq terminal: haqiqiy buyruqlar bajarilmaydi, lekin sayt va men haqimda ma’lumot olish mumkin. <b>help</b> deb yozing.</p>
+    </div>
+
+    <div class="term" id="term">
+      <div class="term-bar"><i></i><i></i><i></i><span style="margin-left:8px">ozodbek@sayt: ~</span></div>
+      <div class="term-body" id="out" role="log" aria-live="polite"></div>
+      <label class="sr" for="cmd">Buyruq kiriting</label>
+      <div class="term-in"><span class="p" id="prompt">ozodbek@sayt:~$</span><input id="cmd" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    </div>
+    <p class="kbd-hint">Yuqoriga va pastga o‘qlar oldingi buyruqlarni qaytaradi, Tab tugmasi buyruqni to‘ldiradi.</p>
+  </main>
+  <script src="assets/app.js"></script>
+  <script>
+  (function () {
+    var out = document.getElementById('out');
+    var inp = document.getElementById('cmd');
+    var promptEl = document.getElementById('prompt');
+    var cwd = '~';
+    var hist = [], hi = 0;
+
+    var FILES = {
+      'about.txt': "Men Toshov Ozodbek. Veb sahifalar va foydali kichik dasturlar yarataman.\nLoyihalarim GitHub'da: github.com/ozodbektoshov0-cmd",
+      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      Modlar portali (HTML)\n3D-Studiya             3D tajriba (JavaScript)",
+      'secret.txt': "Topdingiz! Endi 'quiz' yozib, IT testini yeching."
+    };
+
+    var TOOLS = window.TO ? window.TO.TOOLS : [];
+    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'tools', 'open', 'theme', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
+
+    function print(text, cls) {
+      var d = document.createElement('div');
+      d.className = 'term-line' + (cls ? ' ' + cls : '');
+      d.textContent = text;
+      out.appendChild(d);
+      out.scrollTop = out.scrollHeight;
+    }
+    function echoCmd(c) {
+      var d = document.createElement('div');
+      d.className = 'term-line';
+      var p = document.createElement('span'); p.className = 'p'; p.textContent = 'ozodbek@sayt:' + cwd + '$ ';
+      var s = document.createElement('span'); s.className = 'c'; s.textContent = c;
+      d.appendChild(p); d.appendChild(s); out.appendChild(d);
+    }
+
+    var HELP = [
+      'Mavjud buyruqlar:',
+      '  help        shu ro‘yxatni ko‘rsatadi',
+      '  about       men haqimda qisqacha',
+      '  projects    loyihalarim ro‘yxati',
+      '  tools       barcha asboblar',
+      '  open <nom>  asbobni ochadi (masalan: open qr)',
+      '  quiz        IT testiga o‘tadi',
+      '  typing      yozish tezligi testiga o‘tadi',
+      '  github      GitHub sahifamni ochadi',
+      '  ls, cat <fayl>, pwd, cd, echo, date, whoami',
+      '  theme       yorug‘ va qorong‘i mavzuni almashtiradi',
+      '  neofetch    tizim ma’lumoti',
+      '  history     oldingi buyruqlar',
+      '  clear       ekranni tozalaydi'
+    ].join('\n');
+
+    var run = {
+      help: function () { print(HELP); },
+      hello: function () { print('Salom! Yaxshi kun tilayman.'); },
+      about: function () { print(FILES['about.txt']); },
+      whoami: function () { print('ozodbek'); },
+      pwd: function () { print(cwd === '~' ? '/home/ozodbek' : '/home/ozodbek/' + cwd.replace('~/', '')); },
+      ls: function () { print(Object.keys(FILES).filter(function (f) { return f !== 'secret.txt'; }).join('   ') + '   .secret'); },
+      cat: function (a) {
+        var f = a[0];
+        if (!f) return print('Foydalanish: cat <fayl>', 'term-err');
+        if (f === '.secret') return print(FILES['secret.txt']);
+        if (FILES[f] && f !== 'secret.txt') return print(FILES[f]);
+        print('cat: ' + f + ': bunday fayl yo‘q', 'term-err');
+      },
+      cd: function (a) { if (a[0] && a[0] !== '~' && a[0] !== '.') print('cd: ' + a[0] + ': bunday papka yo‘q', 'term-err'); },
+      date: function () { print(new Date().toLocaleString('uz-UZ', { dateStyle: 'full', timeStyle: 'medium' })); },
+      echo: function (a) { print(a.join(' ')); },
+      projects: function () { print(FILES['projects.txt']); },
+      github: function () { print('GitHub sahifasi ochilmoqda...'); window.open('https://github.com/ozodbektoshov0-cmd', '_blank', 'noopener'); },
+      tools: function () {
+        if (!TOOLS.length) return print('Asboblar ro‘yxati yuklanmadi.', 'term-err');
+        print(TOOLS.map(function (t) { return '  ' + t.id.padEnd(16) + t.t; }).join('\n'));
+        print('Ochish uchun: open <nom>', 'term-dim');
+      },
+      open: function (a) {
+        var id = (a[0] || '').toLowerCase();
+        if (!id) return print('Foydalanish: open <asbob>. Ro‘yxat uchun: tools', 'term-err');
+        var t = TOOLS.filter(function (x) { return x.id === id; })[0];
+        if (!t) return print('open: "' + id + '" topilmadi. "tools" buyrug‘ini sinang.', 'term-err');
+        print(t.t + ' ochilmoqda...');
+        setTimeout(function () { location.href = 'tools/' + t.id + '.html'; }, 400);
+      },
+      quiz: function () { print('IT testi ochilmoqda...'); setTimeout(function () { location.href = 'quiz.html'; }, 400); },
+      typing: function () { print('Yozish testi ochilmoqda...'); setTimeout(function () { location.href = 'typing.html'; }, 400); },
+      theme: function () {
+        var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', cur);
+        window.TO && window.TO.store.set('theme', cur);
+        print('Mavzu: ' + (cur === 'light' ? 'yorug‘' : 'qorong‘i'));
+      },
+      neofetch: function () {
+        print([
+          'ozodbek@sayt',
+          '-------------',
+          'Sayt     : Toshov Ozodbek',
+          'Brauzer  : ' + navigator.userAgent.split(') ').pop().slice(0, 40),
+          'Til      : ' + navigator.language,
+          'Ekran    : ' + screen.width + 'x' + screen.height,
+          'Asboblar : ' + TOOLS.length + ' ta'
+        ].join('\n'));
+      },
+      history: function () { print(hist.length ? hist.map(function (h, i) { return (i + 1) + '  ' + h; }).join('\n') : 'Tarix bo‘sh.'); },
+      clear: function () { out.innerHTML = ''; },
+      banner: function () {
+        print([
+          '+--------------------------+',
+          '|     TOSHOV OZODBEK       |',
+          '|  asboblar, test, terminal|',
+          '+--------------------------+'
+        ].join('\n'), 'term-dim');
+      }
+    };
+
+    function exec(line) {
+      var raw = line.trim();
+      echoCmd(line);
+      if (!raw) return;
+      hist.push(raw); hi = hist.length;
+      var parts = raw.split(/\s+/);
+      var cmd = parts[0].toLowerCase();
+      var args = parts.slice(1);
+      if (cmd === 'sudo') return print('Kechirasiz, bu yerda sudo ishlamaydi. Bu o‘yinchoq terminal.', 'term-err');
+      if (cmd === 'rm') return print('Bu yerda hech narsa o‘chirilmaydi. Xotirjam bo‘ling.', 'term-err');
+      if (run[cmd]) return run[cmd](args);
+      print('"' + cmd + '": buyruq topilmadi. Yordam uchun help yozing.', 'term-err');
+    }
+
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { var v = inp.value; inp.value = ''; exec(v); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (hi > 0) { hi--; inp.value = hist[hi]; } }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (hi < hist.length - 1) { hi++; inp.value = hist[hi]; } else { hi = hist.length; inp.value = ''; } }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        var v = inp.value.trim();
+        if (!v || v.indexOf(' ') !== -1) return;
+        var m = COMMANDS.filter(function (c) { return c.indexOf(v) === 0; });
+        if (m.length === 1) inp.value = m[0] + ' ';
+        else if (m.length > 1) print(m.join('   '), 'term-dim');
+      }
+      else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); run.clear(); }
+    });
+    document.getElementById('term').addEventListener('click', function () { inp.focus(); });
+
+    print('Terminal simulyatoriga xush kelibsiz.\nYordam uchun "help" deb yozing.', 'term-dim');
+    inp.focus();
+  })();
+  </script>
+</body>
+</html>

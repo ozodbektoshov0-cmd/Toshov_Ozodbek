@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IP va brauzer ma'lumoti | Toshov Ozodbek</title>
+  <meta name="description" content="Sizning IP manzilingiz, joylashuvingiz va qurilmangiz haqida ma'lumot.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="ip-info">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h2>Tarmoq</h2>
+        <div class="stat" style="margin-bottom:12px"><b id="ip">...</b><span>Sizning IP manzilingiz</span></div>
+        <div id="net" class="muted">Ma’lumot yuklanmoqda</div>
+        <p class="msg-err" id="err" role="alert"></p>
+        <div class="row" style="margin-top:12px"><button class="btn ghost" id="copy" type="button">IP ni nusxalash</button></div>
+      </div>
+      <div class="panel">
+        <h2>Qurilma va brauzer</h2>
+        <div id="dev"></div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:14px">Bu asbob faqat sizning o‘zingizning ulanishingiz haqida ma’lumot ko‘rsatadi. Joylashuv taxminiy va provayderga qarab farq qiladi.</p>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function row(k, v) { return '<p style="margin:0 0 8px"><b>' + TO.esc(k) + ':</b> ' + TO.esc(v == null || v === '' ? 'noma’lum' : v) + '</p>'; }
+    var conn = navigator.connection || {};
+    $('dev').innerHTML =
+      row('Til', navigator.language) + row('Ekran', screen.width + ' x ' + screen.height) + row('Oyna', window.innerWidth + ' x ' + window.innerHeight) +
+      row('Vaqt mintaqasi', Intl.DateTimeFormat().resolvedOptions().timeZone) + row('Protsessor yadrolari', navigator.hardwareConcurrency) +
+      row('Tarmoq turi', conn.effectiveType) + row('Cookie', navigator.cookieEnabled ? 'yoqilgan' : 'o‘chirilgan') + row('Brauzer (User-Agent)', navigator.userAgent);
+    var ipText = '';
+    fetch('https://ipwho.is/').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.success === false) throw 0;
+      ipText = d.ip; $('ip').textContent = d.ip;
+      $('net').innerHTML = row('Mamlakat', d.country) + row('Viloyat', d.region) + row('Shahar', d.city) + row('Provayder', d.connection && d.connection.isp) + row('Tashkilot', d.connection && d.connection.org) + row('Mintaqa vaqti', d.timezone && d.timezone.id);
+    }).catch(function () {
+      $('ip').textContent = '-'; $('net').textContent = '';
+      $('err').textContent = 'IP ma’lumotini olib bo‘lmadi. Reklama bloklagich yoki internet aloqasini tekshiring.';
+    });
+    $('copy').addEventListener('click', function () { if (ipText) TO.copyText(ipText); else TO.toast('IP hali yuklanmadi'); });
+  })();
+  </script>
+</body>
+</html>

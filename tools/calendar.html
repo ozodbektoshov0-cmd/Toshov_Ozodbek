@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalendar | Toshov Ozodbek</title>
+  <meta name="description" content="Oylik kalendar va O'zbekistondagi belgilangan sanali bayramlar.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="calendar">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <button class="btn ghost" id="prev" type="button" aria-label="Oldingi oy">Oldingi</button>
+        <h2 id="title" style="margin:0;text-align:center" aria-live="polite"></h2>
+        <button class="btn ghost" id="next" type="button" aria-label="Keyingi oy">Keyingi</button>
+      </div>
+      <table class="cal" id="cal"></table>
+      <div class="row" style="margin-top:12px"><button class="btn" id="today" type="button">Bugungi oyga qaytish</button></div>
+      <p class="muted" style="margin-top:14px">Faqat sanasi har yili bir xil bo‘lgan bayramlar ko‘rsatilgan. Hayit kunlari kabi har yili o‘zgaradigan sanalar kiritilmagan.</p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var MONTHS = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+    var WD = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+    var HOL = { '1-1': 'Yangi yil', '3-8': 'Xotin-qizlar kuni', '3-21': 'Navro‘z', '5-9': 'Xotira va qadrlash kuni', '9-1': 'Mustaqillik kuni', '10-1': 'O‘qituvchi va murabbiylar kuni', '12-8': 'Konstitutsiya kuni' };
+    var now = new Date(), Y = now.getFullYear(), M = now.getMonth();
+    function draw() {
+      $('title').textContent = MONTHS[M] + ' ' + Y;
+      var first = new Date(Y, M, 1), start = (first.getDay() + 6) % 7;
+      var dim = new Date(Y, M + 1, 0).getDate(), prevDim = new Date(Y, M, 0).getDate();
+      var html = '<thead><tr>' + WD.map(function (w) { return '<th scope="col">' + w + '</th>'; }).join('') + '</tr></thead><tbody>';
+      var n = 1, next = 1;
+      for (var r = 0; r < 6; r++) {
+        if (r > 0 && n > dim) break;
+        html += '<tr>';
+        for (var c = 0; c < 7; c++) {
+          var idx = r * 7 + c;
+          if (idx < start) { html += '<td class="out-m">' + (prevDim - start + idx + 1) + '</td>'; }
+          else if (n > dim) { html += '<td class="out-m">' + (next++) + '</td>'; }
+          else {
+            var h = HOL[(M + 1) + '-' + n];
+            var cls = (h ? 'hol ' : '') + (n === now.getDate() && M === now.getMonth() && Y === now.getFullYear() ? 'today' : '');
+            html += '<td class="' + cls + '">' + n + (h ? '<small>' + h + '</small>' : '') + '</td>';
+            n++;
+          }
+        }
+        html += '</tr>';
+      }
+      $('cal').innerHTML = html + '</tbody>';
+    }
+    $('prev').addEventListener('click', function () { M--; if (M < 0) { M = 11; Y--; } draw(); });
+    $('next').addEventListener('click', function () { M++; if (M > 11) { M = 0; Y++; } draw(); });
+    $('today').addEventListener('click', function () { Y = now.getFullYear(); M = now.getMonth(); draw(); });
+    draw();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dunyo vaqti | Toshov Ozodbek</title>
+  <meta name="description" content="Dunyoning turli shaharlarida hozir soat nechchi.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="world-clock">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="row">
+        <div style="flex:1;min-width:220px"><label for="zone">Shahar yoki vaqt mintaqasi qo‘shish</label><select id="zone"></select></div>
+        <button class="btn" id="add" type="button" style="align-self:flex-end">Qo‘shish</button>
+      </div>
+    </div>
+    <div class="clock-grid" id="grid"></div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var DEFAULT = [['Asia/Tashkent', 'Toshkent'], ['Europe/Moscow', 'Moskva'], ['Europe/London', 'London'], ['America/New_York', 'Nyu-York'], ['Asia/Dubai', 'Dubay'], ['Europe/Istanbul', 'Istanbul'], ['Asia/Tokyo', 'Tokio'], ['Asia/Seoul', 'Seul'], ['Asia/Shanghai', 'Pekin'], ['Australia/Sydney', 'Sidney']];
+    var list = TO.store.get('clocks', DEFAULT);
+    var zones = [];
+    try { zones = Intl.supportedValuesOf('timeZone'); } catch (e) { zones = DEFAULT.map(function (d) { return d[0]; }); }
+    $('zone').innerHTML = zones.map(function (z) { return '<option value="' + z + '">' + z.replace(/_/g, ' ') + '</option>'; }).join('');
+
+    function label(z) { return z.split('/').pop().replace(/_/g, ' '); }
+    function draw() {
+      $('grid').innerHTML = list.map(function (c, i) {
+        return '<div class="clock-card"><small>' + TO.esc(c[1]) + '</small><b data-z="' + c[0] + '" data-t="t">--:--:--</b><small data-z="' + c[0] + '" data-t="d"></small>' +
+          '<div><button class="chip" type="button" data-rm="' + i + '" aria-label="' + TO.esc(c[1]) + ' ni olib tashlash" style="margin-top:8px">Olib tashlash</button></div></div>';
+      }).join('');
+      tick();
+    }
+    function tick() {
+      var now = new Date();
+      Array.prototype.forEach.call(document.querySelectorAll('[data-z]'), function (el) {
+        var z = el.getAttribute('data-z');
+        try {
+          if (el.getAttribute('data-t') === 't') el.textContent = now.toLocaleTimeString('uz-UZ', { timeZone: z, hour12: false });
+          else el.textContent = now.toLocaleDateString('uz-UZ', { timeZone: z, weekday: 'long', day: 'numeric', month: 'long' });
+        } catch (e) { el.textContent = 'xato'; }
+      });
+    }
+    $('add').addEventListener('click', function () {
+      var z = $('zone').value;
+      if (list.some(function (c) { return c[0] === z; })) { TO.toast('Bu shahar ro‘yxatda bor'); return; }
+      list.push([z, label(z)]); TO.store.set('clocks', list); draw();
+    });
+    $('grid').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-rm]'); if (!b) return;
+      list.splice(parseInt(b.getAttribute('data-rm'), 10), 1); TO.store.set('clocks', list); draw();
+    });
+    draw(); setInterval(tick, 1000);
+  })();
+  </script>
+</body>
+</html>

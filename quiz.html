@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IT bilim testi | Toshov Ozodbek</title>
+  <meta name="description" content="IT bo'yicha bilimingizni sinang: dasturlash, tarmoq, xavfsizlik va kompyuter asoslari.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="quiz" data-root="">
+  <main id="main" class="container">
+    <div class="tool-head">
+      <h1>IT bilim testi</h1>
+      <p>Dasturlash, tarmoq, xavfsizlik va kompyuter asoslaridan savollar. Har safar savollar tasodifiy tanlanadi.</p>
+    </div>
+
+    <section class="panel" id="start">
+      <div class="field" style="max-width:320px">
+        <label for="count">Savollar soni</label>
+        <select id="count"><option value="10">10 ta</option><option value="20" selected>20 ta</option><option value="40">40 ta</option><option value="all">Hammasi</option></select>
+      </div>
+      <div class="grid3" style="margin-bottom:18px">
+        <div class="stat"><b id="st-played">0</b><span>Topshirilgan testlar</span></div>
+        <div class="stat"><b id="st-best">0%</b><span>Eng yuqori natija</span></div>
+        <div class="stat"><b id="st-last">0%</b><span>Oxirgi natija</span></div>
+      </div>
+      <button class="btn" id="go" type="button">Testni boshlash</button>
+    </section>
+
+    <section class="panel" id="play" hidden>
+      <div class="quiz-top"><span id="qn">Savol 1</span><span id="score">To‘g‘ri: 0</span></div>
+      <div class="bar-track" aria-hidden="true"><div class="bar-fill" id="bar"></div></div>
+      <div class="q-text" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div class="row" style="margin-top:18px"><button class="btn" id="next" type="button" disabled>Keyingi savol</button></div>
+    </section>
+
+    <section class="panel" id="result" hidden>
+      <h2 id="r-title">Natija</h2>
+      <p class="big-num" id="r-score">0%</p>
+      <p id="r-text" class="muted"></p>
+      <div class="row"><button class="btn" id="again" type="button">Qayta topshirish</button><button class="btn ghost" id="toggle-review" type="button">Xatolarni ko‘rish</button></div>
+      <div id="review" hidden style="margin-top:18px"></div>
+    </section>
+  </main>
+  <script src="assets/app.js"></script>
+  <script src="assets/questions.js"></script>
+  <script>
+  (function () {
+    var T = window.TO, Q = window.QUESTIONS;
+    function $(id) { return document.getElementById(id); }
+    function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+    var stats = T.store.get('quiz', { played: 0, best: 0, last: 0 });
+    function showStats() { $('st-played').textContent = stats.played; $('st-best').textContent = stats.best + '%'; $('st-last').textContent = stats.last + '%'; }
+    showStats();
+
+    var list, idx, correct, wrongs, answered;
+
+    function start() {
+      var v = $('count').value;
+      var n = v === 'all' ? Q.length : Math.min(parseInt(v, 10), Q.length);
+      list = shuffle(Q).slice(0, n).map(function (q) {
+        return { q: q[0], a: q[1], opts: shuffle(q.slice(1)) };
+      });
+      idx = 0; correct = 0; wrongs = [];
+      $('start').hidden = true; $('result').hidden = true; $('play').hidden = false;
+      show();
+    }
+
+    function show() {
+      var cur = list[idx];
+      answered = false;
+      $('qn').textContent = 'Savol ' + (idx + 1) + ' / ' + list.length;
+      $('score').textContent = 'To‘g‘ri: ' + correct;
+      $('bar').style.width = (idx / list.length * 100) + '%';
+      $('qtext').textContent = cur.q;
+      var box = $('opts'); box.innerHTML = '';
+      cur.opts.forEach(function (o) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'opt'; b.textContent = o;
+        b.addEventListener('click', function () { choose(b, o); });
+        box.appendChild(b);
+      });
+      $('next').disabled = true;
+      $('next').textContent = idx === list.length - 1 ? 'Natijani ko‘rish' : 'Keyingi savol';
+    }
+
+    function choose(btn, val) {
+      if (answered) return;
+      answered = true;
+      var cur = list[idx];
+      Array.prototype.forEach.call($('opts').children, function (b) {
+        b.disabled = true;
+        if (b.textContent === cur.a) b.classList.add('right');
+      });
+      if (val === cur.a) { correct++; }
+      else { btn.classList.add('wrong'); wrongs.push({ q: cur.q, you: val, right: cur.a }); }
+      $('score').textContent = 'To‘g‘ri: ' + correct;
+      $('next').disabled = false;
+      $('next').focus();
+    }
+
+    function finish() {
+      var pct = Math.round(correct / list.length * 100);
+      stats.played++; stats.last = pct; if (pct > stats.best) stats.best = pct;
+      T.store.set('quiz', stats); showStats();
+      $('play').hidden = true; $('result').hidden = false;
+      $('r-score').textContent = pct + '%';
+      $('r-title').textContent = pct >= 85 ? 'Ajoyib natija' : pct >= 60 ? 'Yaxshi natija' : 'Yana urinib ko‘ring';
+      $('r-text').textContent = list.length + ' ta savoldan ' + correct + ' tasiga to‘g‘ri javob berdingiz.';
+      var rv = $('review'); rv.innerHTML = ''; rv.hidden = true;
+      $('toggle-review').hidden = wrongs.length === 0;
+      wrongs.forEach(function (w) {
+        var d = document.createElement('div'); d.className = 'review-item';
+        var h = document.createElement('b'); h.textContent = w.q;
+        var a = document.createElement('div'); a.className = 'msg-err'; a.textContent = 'Sizning javobingiz: ' + w.you;
+        var r = document.createElement('div'); r.className = 'msg-ok'; r.textContent = 'To‘g‘ri javob: ' + w.right;
+        d.appendChild(h); d.appendChild(a); d.appendChild(r); rv.appendChild(d);
+      });
+    }
+
+    $('go').addEventListener('click', start);
+    $('next').addEventListener('click', function () { if (idx < list.length - 1) { idx++; show(); } else { finish(); } });
+    $('again').addEventListener('click', function () { $('result').hidden = true; $('start').hidden = false; });
+    $('toggle-review').addEventListener('click', function () { var rv = $('review'); rv.hidden = !rv.hidden; });
+    document.addEventListener('keydown', function (e) {
+      if ($('play').hidden || answered === undefined) return;
+      var n = parseInt(e.key, 10);
+      if (n >= 1 && n <= 4 && !answered) { var b = $('opts').children[n - 1]; if (b) b.click(); }
+      else if (e.key === 'Enter' && answered && !$('next').disabled && document.activeElement !== $('next')) { $('next').click(); }
+    });
+  })();
+  </script>
+</body>
+</html>

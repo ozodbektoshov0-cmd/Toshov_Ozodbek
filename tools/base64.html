@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Base64 va URL kodlash | Toshov Ozodbek</title>
+  <meta name="description" content="Matnni Base64 yoki URL formatiga o'tkazing va qaytaring.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="base64">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="grid2">
+        <div class="field"><label for="in">Kirish</label><textarea id="in" placeholder="Matn kiriting"></textarea></div>
+        <div class="field"><label for="out">Natija</label><textarea id="out" readonly></textarea></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="b-enc" type="button">Base64 ga</button>
+        <button class="btn" id="b-dec" type="button">Base64 dan</button>
+        <button class="btn ghost" id="u-enc" type="button">URL kodlash</button>
+        <button class="btn ghost" id="u-dec" type="button">URL dekodlash</button>
+        <button class="btn gold" id="copy" type="button">Natijani nusxalash</button>
+      </div>
+      <p id="err" class="msg-err" role="alert"></p>
+      <p class="muted">O‘zbekcha harflar (oʻ, gʻ, sh) va emojilar UTF-8 orqali to‘g‘ri o‘tkaziladi.</p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function run(fn, msg) { $('err').textContent = ''; try { $('out').value = fn($('in').value); } catch (e) { $('out').value = ''; $('err').textContent = msg; } }
+    function b64enc(s) { var b = new TextEncoder().encode(s), bin = ''; for (var i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]); return btoa(bin); }
+    function b64dec(s) { var bin = atob(s.replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/')), b = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return new TextDecoder('utf-8', { fatal: true }).decode(b); }
+    $('b-enc').addEventListener('click', function () { run(b64enc, 'Kodlab bo‘lmadi.'); });
+    $('b-dec').addEventListener('click', function () { run(b64dec, 'Bu to‘g‘ri Base64 matn emas.'); });
+    $('u-enc').addEventListener('click', function () { run(encodeURIComponent, 'Kodlab bo‘lmadi.'); });
+    $('u-dec').addEventListener('click', function () { run(decodeURIComponent, 'URL matni noto‘g‘ri kodlangan.'); });
+    $('copy').addEventListener('click', function () { if ($('out').value) TO.copyText($('out').value); else TO.toast('Nusxalash uchun natija yo‘q'); });
+  })();
+  </script>
+</body>
+</html>

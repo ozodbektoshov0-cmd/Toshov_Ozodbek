@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalkulyator | Toshov Ozodbek</title>
+  <meta name="description" content="Oddiy va ilmiy onlayn kalkulyator.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="calculator">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="grid2">
+      <div class="calc panel" style="width:100%">
+        <div class="calc-screen"><div class="expr" id="expr" aria-hidden="true"></div><div class="res" id="res" aria-live="polite">0</div></div>
+        <label class="sr" for="input">Ifoda</label>
+        <input id="input" type="text" inputmode="decimal" autocomplete="off" placeholder="Masalan: 2*(3+4)^2" style="margin-bottom:12px">
+        <div class="keys" id="keys"></div>
+      </div>
+      <div>
+        <h2>Tarix</h2>
+        <ul class="hist" id="hist"></ul>
+        <p class="muted">Qo‘llab-quvvatlanadi: + - * / ^ % qavslar, sin, cos, tan (gradusda), sqrt, log (10 asosli), ln, abs, pi, e. Enter bosib hisoblang.</p>
+      </div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var rows = [['C', 'op'], ['(', ''], [')', ''], ['/', 'op'], ['7'], ['8'], ['9'], ['*', 'op'], ['4'], ['5'], ['6'], ['-', 'op'], ['1'], ['2'], ['3'], ['+', 'op'], ['0'], ['.'], ['⌫', 'op'], ['=', 'eq'], ['sin('], ['cos('], ['sqrt('], ['^', 'op'], ['log('], ['ln('], ['pi'], ['%', 'op']];
+    var keys = $('keys');
+    rows.forEach(function (r) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = r[0].replace('sqrt(', '√(');
+      if (r[1]) b.className = r[1];
+      b.addEventListener('click', function () { press(r[0]); });
+      keys.appendChild(b);
+    });
+
+    function press(k) {
+      var inp = $('input');
+      if (k === 'C') { inp.value = ''; $('res').textContent = '0'; $('expr').textContent = ''; }
+      else if (k === '⌫') inp.value = inp.value.slice(0, -1);
+      else if (k === '=') calc();
+      else inp.value += k;
+      inp.focus();
+    }
+
+    /* xavfsiz hisoblagich: tokenizer + shunting-yard */
+    function tokenize(s) {
+      var t = [], i = 0;
+      s = s.replace(/,/g, '.').replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'pi').replace(/√/g, 'sqrt');
+      while (i < s.length) {
+        var c = s[i];
+        if (/\s/.test(c)) { i++; continue; }
+        if (/[0-9.]/.test(c)) { var j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; var n = s.slice(i, j); if ((n.match(/\./g) || []).length > 1) throw 0; t.push({ n: parseFloat(n) }); i = j; continue; }
+        if (/[a-z]/i.test(c)) { var k = i; while (k < s.length && /[a-z]/i.test(s[k])) k++; t.push({ f: s.slice(i, k).toLowerCase() }); i = k; continue; }
+        if ('+-*/^%()'.indexOf(c) !== -1) { t.push({ o: c }); i++; continue; }
+        throw 0;
+      }
+      return t;
+    }
+    var FN = {
+      sin: function (x) { return Math.sin(x * Math.PI / 180); }, cos: function (x) { return Math.cos(x * Math.PI / 180); }, tan: function (x) { return Math.tan(x * Math.PI / 180); },
+      sqrt: Math.sqrt, log: Math.log10, ln: Math.log, abs: Math.abs
+    };
+    var CONST = { pi: Math.PI, e: Math.E };
+    var PREC = { '+': 1, '-': 1, '*': 2, '/': 2, '%': 2, '^': 4, 'u': 3 };
+    function evaluate(str) {
+      var tk = tokenize(str), out = [], ops = [], prev = null;
+      tk.forEach(function (x) {
+        if (x.n !== undefined) { out.push(x.n); prev = 'n'; }
+        else if (x.f) {
+          if (CONST[x.f] !== undefined) { out.push(CONST[x.f]); prev = 'n'; }
+          else if (FN[x.f]) { ops.push({ fn: x.f }); prev = 'f'; }
+          else throw 0;
+        }
+        else if (x.o === '(') { ops.push('('); prev = '('; }
+        else if (x.o === ')') {
+          while (ops.length && ops[ops.length - 1] !== '(') out.push(ops.pop());
+          if (!ops.length) throw 0; ops.pop();
+          if (ops.length && ops[ops.length - 1].fn) out.push(ops.pop());
+          prev = 'n';
+        } else {
+          var o = x.o;
+          if ((o === '-' || o === '+') && (prev === null || prev === '(' || prev === 'o')) { o = o === '-' ? 'u' : null; if (!o) return; }
+          while (ops.length) {
+            var top = ops[ops.length - 1];
+            if (top === '(' || top.fn) break;
+            var right = o === '^' || o === 'u';
+            if (PREC[top] > PREC[o] || (PREC[top] === PREC[o] && !right)) out.push(ops.pop()); else break;
+          }
+          ops.push(o); prev = 'o';
+        }
+      });
+      while (ops.length) { var p = ops.pop(); if (p === '(') throw 0; out.push(p); }
+      var st = [];
+      out.forEach(function (x) {
+        if (typeof x === 'number') st.push(x);
+        else if (x.fn) { if (!st.length) throw 0; st.push(FN[x.fn](st.pop())); }
+        else if (x === 'u') { if (!st.length) throw 0; st.push(-st.pop()); }
+        else { if (st.length < 2) throw 0; var b = st.pop(), a = st.pop(); st.push(x === '+' ? a + b : x === '-' ? a - b : x === '*' ? a * b : x === '/' ? a / b : x === '%' ? a % b : Math.pow(a, b)); }
+      });
+      if (st.length !== 1) throw 0;
+      return st[0];
+    }
+    var hist = TO.store.get('calc-hist', []);
+    function drawHist() { $('hist').innerHTML = hist.map(function (h) { return '<li>' + TO.esc(h) + '</li>'; }).join(''); }
+    drawHist();
+    function fmt(v) { if (!isFinite(v)) return 'Xato: noaniq natija'; return String(parseFloat(v.toPrecision(12))); }
+    function calc() {
+      var s = $('input').value.trim(); if (!s) return;
+      try {
+        var v = evaluate(s), f = fmt(v);
+        $('res').textContent = f; $('expr').textContent = s;
+        if (isFinite(v)) { hist.unshift(s + ' = ' + f); hist = hist.slice(0, 8); TO.store.set('calc-hist', hist); drawHist(); }
+      } catch (e) { $('res').textContent = 'Ifoda noto‘g‘ri'; $('expr').textContent = s; }
+    }
+    $('input').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); calc(); } });
+    $('input').focus();
+  })();
+  </script>
+</body>
+</html>

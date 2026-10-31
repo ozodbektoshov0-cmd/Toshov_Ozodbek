@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasodifiy tanlov | Toshov Ozodbek</title>
+  <meta name="description" content="Tasodifiy son, tanga, kubik, ro'yxatdan tanlash va UUID yaratish.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="random">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h2>Tasodifiy son</h2>
+        <div class="grid2">
+          <div class="field"><label for="min">Eng kichik</label><input id="min" type="number" value="1"></div>
+          <div class="field"><label for="max">Eng katta</label><input id="max" type="number" value="100"></div>
+        </div>
+        <button class="btn" id="num" type="button">Son tanlash</button>
+        <div class="stat" style="margin-top:12px"><b id="num-out">-</b><span>Natija</span></div>
+      </div>
+      <div class="panel">
+        <h2>Tanga va kubik</h2>
+        <div class="row"><button class="btn" id="coin" type="button">Tanga tashlash</button><button class="btn" id="dice" type="button">Kubik tashlash</button></div>
+        <div class="stat" style="margin-top:12px"><b id="cd-out">-</b><span id="cd-label">Natija</span></div>
+      </div>
+      <div class="panel">
+        <h2>Ro‘yxatdan tanlash</h2>
+        <div class="field"><label for="items">Har bir variant yangi qatordan</label><textarea id="items" style="font-family:var(--font-body);min-height:120px" placeholder="Ali&#10;Vali&#10;Gulnora"></textarea></div>
+        <button class="btn" id="pick" type="button">Tanlash</button>
+        <div class="stat" style="margin-top:12px"><b id="pick-out">-</b><span>Tanlangan</span></div>
+      </div>
+      <div class="panel">
+        <h2>UUID</h2>
+        <div class="out" id="uuid"></div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="uu" type="button">Yangi UUID</button><button class="btn ghost" id="uu-copy" type="button">Nusxalash</button></div>
+      </div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function rnd(n) { var a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % n; }
+    $('num').addEventListener('click', function () {
+      var a = Math.floor(+$('min').value), b = Math.floor(+$('max').value);
+      if (isNaN(a) || isNaN(b)) { $('num-out').textContent = 'Son kiriting'; return; }
+      if (a > b) { var t = a; a = b; b = t; }
+      if (b - a + 1 > 4294967295) { $('num-out').textContent = 'Oraliq juda katta'; return; }
+      $('num-out').textContent = a + rnd(b - a + 1);
+    });
+    $('coin').addEventListener('click', function () { $('cd-out').textContent = rnd(2) ? 'Gerb' : 'Raqam'; $('cd-label').textContent = 'Tanga'; });
+    $('dice').addEventListener('click', function () { $('cd-out').textContent = 1 + rnd(6); $('cd-label').textContent = 'Kubik'; });
+    $('pick').addEventListener('click', function () {
+      var items = $('items').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      $('pick-out').textContent = items.length ? items[rnd(items.length)] : 'Ro‘yxat bo‘sh';
+    });
+    function uuid() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      var b = crypto.getRandomValues(new Uint8Array(16)); b[6] = b[6] & 15 | 64; b[8] = b[8] & 63 | 128;
+      var h = Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      return [h.slice(0, 8), h.slice(8, 12), h.slice(12, 16), h.slice(16, 20), h.slice(20)].join('-');
+    }
+    function nu() { $('uuid').textContent = uuid(); }
+    $('uu').addEventListener('click', nu); $('uu-copy').addEventListener('click', function () { TO.copyText($('uuid').textContent); }); nu();
+  })();
+  </script>
+</body>
+</html>

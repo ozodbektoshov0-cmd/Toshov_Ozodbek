@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hash hisoblagich | Toshov Ozodbek</title>
+  <meta name="description" content="Matn yoki fayldan SHA-1, SHA-256, SHA-384 va SHA-512 hash olish.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="hash">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:860px">
+      <div class="field"><label for="text">Matn</label><textarea id="text" style="min-height:110px" placeholder="Hash olinadigan matn"></textarea></div>
+      <div class="field"><label for="file">Yoki fayl tanlang</label><input id="file" type="file"></div>
+      <div id="res"></div>
+      <p id="err" class="msg-err" role="alert"></p>
+      <p class="muted">Hisoblash brauzerda bajariladi, matn va fayl hech qayerga yuborilmaydi. MD5 brauzer tomonidan qo‘llab-quvvatlanmagani uchun kiritilmagan. Parollarni saqlash uchun oddiy SHA ishlatmang.</p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var ALGS = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+    function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+    function show(data) {
+      $('err').textContent = '';
+      if (!window.crypto || !crypto.subtle) { $('err').textContent = 'Brauzeringiz yoki ulanish (HTTPS emas) hash hisoblashni qo‘llab-quvvatlamaydi.'; return; }
+      Promise.all(ALGS.map(function (a) { return crypto.subtle.digest(a, data).then(hex); })).then(function (r) {
+        $('res').innerHTML = ALGS.map(function (a, i) {
+          return '<div class="field"><label>' + a + '</label><div class="out" data-h="' + r[i] + '" style="cursor:pointer" title="Nusxalash uchun bosing">' + r[i] + '</div></div>';
+        }).join('');
+      }).catch(function () { $('err').textContent = 'Hash hisoblashda xatolik yuz berdi.'; });
+    }
+    $('text').addEventListener('input', function () { $('file').value = ''; if (!this.value) { $('res').innerHTML = ''; return; } show(new TextEncoder().encode(this.value)); });
+    $('file').addEventListener('change', function () {
+      var f = this.files[0]; if (!f) return;
+      if (f.size > 500 * 1024 * 1024) { $('err').textContent = 'Fayl juda katta (500 MB gacha).'; return; }
+      $('text').value = ''; f.arrayBuffer().then(show);
+    });
+    $('res').addEventListener('click', function (e) { var d = e.target.closest('[data-h]'); if (d) TO.copyText(d.getAttribute('data-h')); });
+  })();
+  </script>
+</body>
+</html>

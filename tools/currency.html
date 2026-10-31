@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valyuta kursi | Toshov Ozodbek</title>
+  <meta name="description" content="So'm, dollar, yevro va boshqa valyutalar o'rtasida hisoblash.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="currency">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:720px">
+      <div class="field"><label for="amount">Miqdor</label><input id="amount" type="number" value="100" min="0" step="any" inputmode="decimal"></div>
+      <div class="grid2" style="align-items:end">
+        <div class="field"><label for="from">Qaysi valyutadan</label><select id="from"></select></div>
+        <div class="field"><label for="to">Qaysi valyutaga</label><select id="to"></select></div>
+      </div>
+      <div class="row" style="margin-bottom:16px"><button class="btn ghost" id="swap" type="button">Valyutalarni almashtirish</button></div>
+      <div class="stat"><b id="result">...</b><span id="rate">Kurslar yuklanmoqda</span></div>
+      <p class="muted" id="upd" style="margin-top:12px"></p>
+      <p class="msg-err" id="err" role="alert"></p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var rates = null;
+    var PREFER = ['UZS', 'USD', 'EUR', 'RUB', 'KZT', 'GBP', 'TRY', 'CNY', 'JPY', 'KRW', 'AED', 'CHF', 'CAD', 'AUD', 'INR'];
+
+    function fill(sel, def) {
+      var codes = Object.keys(rates);
+      var first = PREFER.filter(function (c) { return rates[c]; });
+      var rest = codes.filter(function (c) { return first.indexOf(c) === -1; }).sort();
+      sel.innerHTML = first.concat(rest).map(function (c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+      sel.value = def;
+    }
+    function fmt(n) { return n.toLocaleString('uz-UZ', { maximumFractionDigits: n < 1 ? 6 : 2 }); }
+    function calc() {
+      if (!rates) return;
+      var a = parseFloat($('amount').value);
+      if (isNaN(a) || a < 0) { $('result').textContent = '-'; $('rate').textContent = 'Musbat son kiriting'; return; }
+      var f = $('from').value, t = $('to').value;
+      var v = a / rates[f] * rates[t];
+      $('result').textContent = fmt(v) + ' ' + t;
+      $('rate').textContent = '1 ' + f + ' = ' + fmt(rates[t] / rates[f]) + ' ' + t;
+    }
+    $('swap').addEventListener('click', function () { var f = $('from').value; $('from').value = $('to').value; $('to').value = f; calc(); });
+    ['amount', 'from', 'to'].forEach(function (id) { $(id).addEventListener('input', calc); });
+
+    fetch('https://open.er-api.com/v6/latest/USD').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) {
+      if (!d || !d.rates) throw 0;
+      rates = d.rates;
+      fill($('from'), 'USD'); fill($('to'), 'UZS');
+      $('upd').textContent = 'Kurslar yangilangan vaqti: ' + (d.time_last_update_utc || '').replace(' +0000', ' (UTC)') + '. Kurslar ma’lumot uchun, bank kursidan farq qilishi mumkin.';
+      calc();
+    }).catch(function () {
+      $('result').textContent = '-'; $('rate').textContent = '';
+      $('err').textContent = 'Kurslarni yuklab bo‘lmadi. Internet aloqasini tekshiring va sahifani yangilang.';
+    });
+  })();
+  </script>
+</body>
+</html>

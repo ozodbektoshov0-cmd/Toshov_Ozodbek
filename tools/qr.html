@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QR kod yaratuvchi | Toshov Ozodbek</title>
+  <meta name="description" content="Matn yoki havoladan bepul QR kod yarating.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="qr">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="field"><label for="text">Matn yoki havola</label><textarea id="text" style="min-height:110px;font-family:var(--font-body)" placeholder="https://example.com">https://github.com/ozodbektoshov0-cmd</textarea></div>
+        <div class="grid2">
+          <div class="field"><label for="size">O‘lcham</label><select id="size"><option value="200">200 px</option><option value="300" selected>300 px</option><option value="400">400 px</option><option value="600">600 px</option></select></div>
+          <div class="field"><label for="lvl">Xatolarni tuzatish</label><select id="lvl"><option value="L">Past</option><option value="M" selected>O‘rta</option><option value="Q">Yuqori</option><option value="H">Eng yuqori</option></select></div>
+        </div>
+        <div class="row" style="margin-bottom:16px">
+          <div><label for="fg">Kod rangi</label><input type="color" id="fg" value="#0a1430"></div>
+          <div><label for="bg">Fon rangi</label><input type="color" id="bg" value="#ffffff"></div>
+        </div>
+        <div class="row"><button class="btn" id="gen" type="button">QR kod yaratish</button></div>
+        <p id="err" class="msg-err" role="alert"></p>
+      </div>
+      <div class="panel" style="text-align:center">
+        <div id="qr" style="display:inline-block;padding:14px;background:#fff;border-radius:12px;min-width:120px;min-height:120px"></div>
+        <div class="row" style="justify-content:center;margin-top:16px"><button class="btn gold" id="dl" type="button" disabled>PNG yuklab olish</button></div>
+        <p class="muted" style="margin:12px auto 0">Yaratilgan kod muddatsiz ishlaydi. Matn serverga yuborilmaydi.</p>
+      </div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var qr = null;
+    function gen() {
+      var text = $('text').value.trim();
+      $('err').textContent = '';
+      if (!text) { $('err').textContent = 'Avval matn yoki havola kiriting.'; return; }
+      if (typeof QRCode === 'undefined') { $('err').textContent = 'QR kutubxonasi yuklanmadi. Internet aloqasini tekshirib, sahifani yangilang.'; return; }
+      var size = parseInt($('size').value, 10);
+      $('qr').innerHTML = '';
+      try {
+        qr = new QRCode($('qr'), { text: text, width: size, height: size, colorDark: $('fg').value, colorLight: $('bg').value, correctLevel: QRCode.CorrectLevel[$('lvl').value] });
+        $('dl').disabled = false;
+      } catch (e) { $('err').textContent = 'Matn QR kod uchun juda uzun. Qisqaroq matn kiriting.'; $('dl').disabled = true; }
+    }
+    $('gen').addEventListener('click', gen);
+    ['size', 'lvl', 'fg', 'bg'].forEach(function (id) { $(id).addEventListener('change', gen); });
+    $('dl').addEventListener('click', function () {
+      var c = $('qr').querySelector('canvas');
+      if (c) TO.download('qr-kod.png', c.toDataURL('image/png'));
+      else { var im = $('qr').querySelector('img'); if (im) TO.download('qr-kod.png', im.src); }
+    });
+    window.addEventListener('load', gen);
+  })();
+  </script>
+</body>
+</html>

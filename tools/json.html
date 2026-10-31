@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON formatlovchi | Toshov Ozodbek</title>
+  <meta name="description" content="JSON ni tekshiring, chiroyli ko'rinishga keltiring yoki siqing.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="json">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="grid2">
+        <div class="field"><label for="in">JSON kiriting</label><textarea id="in" style="min-height:320px" spellcheck="false" placeholder='{"ism": "Ozodbek", "yosh": 20}'></textarea></div>
+        <div class="field"><label for="out">Natija</label><textarea id="out" style="min-height:320px" readonly spellcheck="false"></textarea></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="fmt" type="button">Chiroyli ko‘rinish</button>
+        <button class="btn ghost" id="min" type="button">Siqish</button>
+        <div style="width:120px"><label class="sr" for="ind">Bo‘sh joy</label><select id="ind"><option value="2">2 bo‘sh joy</option><option value="4">4 bo‘sh joy</option><option value="tab">Tab</option></select></div>
+        <button class="btn gold" id="copy" type="button">Nusxalash</button>
+      </div>
+      <p id="msg" role="status" style="margin-top:12px"></p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function parse() {
+      var s = $('in').value.trim();
+      if (!s) { $('msg').className = 'msg-err'; $('msg').textContent = 'Avval JSON kiriting.'; return undefined; }
+      try { var v = JSON.parse(s); $('msg').className = 'msg-ok'; $('msg').textContent = 'JSON to‘g‘ri.'; return v; }
+      catch (e) {
+        var m = /position (\d+)/.exec(e.message), extra = '';
+        if (m) { var pos = parseInt(m[1], 10), before = s.slice(0, pos).split('\n'); extra = ' (taxminan ' + before.length + '-qator, ' + (before[before.length - 1].length + 1) + '-belgi)'; }
+        $('msg').className = 'msg-err'; $('msg').textContent = 'JSON xato' + extra + ': ' + e.message; $('out').value = ''; return undefined;
+      }
+    }
+    $('fmt').addEventListener('click', function () { var v = parse(); if (v !== undefined) { var i = $('ind').value; $('out').value = JSON.stringify(v, null, i === 'tab' ? '\t' : parseInt(i, 10)); } });
+    $('min').addEventListener('click', function () { var v = parse(); if (v !== undefined) $('out').value = JSON.stringify(v); });
+    $('copy').addEventListener('click', function () { if ($('out').value) TO.copyText($('out').value); else TO.toast('Nusxalash uchun natija yo‘q'); });
+  })();
+  </script>
+</body>
+</html>

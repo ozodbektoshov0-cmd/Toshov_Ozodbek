@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ovozdan matnga | Toshov Ozodbek</title>
+  <meta name="description" content="Mikrofonga gapiring, gapingiz matnga aylanadi.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="speech-to-text">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:820px">
+      <div class="field" style="max-width:260px"><label for="lang">Til</label><select id="lang"><option value="uz-UZ">O‘zbekcha</option><option value="ru-RU">Ruscha</option><option value="en-US">Inglizcha</option><option value="tr-TR">Turkcha</option></select></div>
+      <div class="row" style="margin-bottom:14px"><button class="btn" id="rec" type="button">Yozishni boshlash</button><button class="btn ghost" id="copy" type="button">Nusxalash</button><button class="btn ghost" id="clear" type="button">Tozalash</button></div>
+      <p id="status" class="muted" role="status"></p>
+      <label for="out">Natija</label>
+      <textarea id="out" style="font-family:var(--font-body);min-height:200px" placeholder="Gapingiz shu yerda matn bo‘lib chiqadi"></textarea>
+      <p id="err" class="msg-err" role="alert"></p>
+      <p class="muted">Brauzer mikrofonga ruxsat so‘raydi. Ovoz tanish ishi brauzeringiz (odatda Google yoki Apple) serverlarida bajariladi, shuning uchun internet kerak. Eng yaxshi ishlaydigan brauzer: Chrome.</p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { $('err').textContent = 'Brauzeringiz ovozni matnga aylantirishni qo‘llab-quvvatlamaydi. Chrome yoki Edge ni sinab ko‘ring.'; $('rec').disabled = true; return; }
+    var rec = null, on = false, base = '';
+    function stop() { on = false; if (rec) rec.stop(); }
+    $('rec').addEventListener('click', function () {
+      if (on) { stop(); return; }
+      $('err').textContent = '';
+      rec = new SR(); rec.lang = $('lang').value; rec.continuous = true; rec.interimResults = true;
+      base = $('out').value ? $('out').value.replace(/\s*$/, ' ') : '';
+      rec.onresult = function (e) {
+        var fin = '', tmp = '';
+        for (var i = 0; i < e.results.length; i++) { if (e.results[i].isFinal) fin += e.results[i][0].transcript; else tmp += e.results[i][0].transcript; }
+        $('out').value = base + fin + tmp;
+      };
+      rec.onerror = function (e) {
+        var m = { 'not-allowed': 'Mikrofonga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering.', 'no-speech': 'Ovoz eshitilmadi. Mikrofonni tekshiring.', 'network': 'Internet aloqasi yo‘q.', 'language-not-supported': 'Bu til brauzeringizda qo‘llab-quvvatlanmaydi.' };
+        $('err').textContent = m[e.error] || ('Xatolik: ' + e.error); on = false; $('rec').textContent = 'Yozishni boshlash'; $('status').textContent = '';
+      };
+      rec.onend = function () { if (on) { base = $('out').value.replace(/\s*$/, ' '); try { rec.start(); } catch (x) { on = false; } } if (!on) { $('rec').textContent = 'Yozishni boshlash'; $('status').textContent = ''; } };
+      on = true; $('rec').textContent = 'To‘xtatish'; $('status').textContent = 'Tinglanmoqda... gapiring';
+      try { rec.start(); } catch (x) { on = false; $('err').textContent = 'Yozishni boshlab bo‘lmadi.'; }
+    });
+    $('copy').addEventListener('click', function () { if ($('out').value) TO.copyText($('out').value); else TO.toast('Nusxalash uchun matn yo‘q'); });
+    $('clear').addEventListener('click', function () { $('out').value = ''; });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internet tezligi | Toshov Ozodbek</title>
+  <meta name="description" content="Internet yuklab olish, yuklash tezligi va ping ni o'lchang.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="speed-test">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="grid3">
+        <div class="stat"><b id="ping">-</b><span>Ping (ms)</span></div>
+        <div class="stat"><b id="down">-</b><span>Yuklab olish (Mbit/s)</span></div>
+        <div class="stat"><b id="up">-</b><span>Yuklash (Mbit/s)</span></div>
+      </div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="go" type="button">Testni boshlash</button></div>
+      <p id="status" class="muted" role="status" style="margin-top:12px">Test taxminan 15 soniya davom etadi va bir necha megabayt trafik sarflaydi.</p>
+      <p id="err" class="msg-err" role="alert"></p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var BASE = 'https://speed.cloudflare.com';
+    function mbps(bytes, ms) { return (bytes * 8 / 1e6) / (ms / 1000); }
+    function status(t) { $('status').textContent = t; }
+
+    function ping() {
+      var times = [], i = 0;
+      return new Promise(function (resolve, reject) {
+        (function next() {
+          var t0 = performance.now();
+          fetch(BASE + '/__down?bytes=0&r=' + Math.random(), { cache: 'no-store' }).then(function (r) { return r.arrayBuffer(); }).then(function () {
+            times.push(performance.now() - t0);
+            if (++i < 6) next(); else { times.shift(); resolve(Math.round(Math.min.apply(null, times))); }
+          }).catch(reject);
+        })();
+      });
+    }
+    function download() {
+      var bytes = 12e6, t0 = performance.now();
+      return fetch(BASE + '/__down?bytes=' + bytes + '&r=' + Math.random(), { cache: 'no-store' }).then(function (r) {
+        var reader = r.body && r.body.getReader, got = 0;
+        if (!reader) return r.arrayBuffer().then(function (b) { return mbps(b.byteLength, performance.now() - t0); });
+        var rd = r.body.getReader();
+        return (function pump() { return rd.read().then(function (x) { if (x.done) return mbps(got, performance.now() - t0); got += x.value.length; return pump(); }); })();
+      });
+    }
+    function upload() {
+      var size = 4e6, blob = new Blob([new Uint8Array(size)]), t0 = performance.now();
+      return fetch(BASE + '/__up', { method: 'POST', body: blob, cache: 'no-store' }).then(function () { return mbps(size, performance.now() - t0); });
+    }
+
+    $('go').addEventListener('click', function () {
+      var btn = this; btn.disabled = true; $('err').textContent = '';
+      $('ping').textContent = $('down').textContent = $('up').textContent = '-';
+      status('Ping o‘lchanmoqda...');
+      ping().then(function (p) {
+        $('ping').textContent = p; status('Yuklab olish tezligi o‘lchanmoqda...');
+        return download();
+      }).then(function (d) {
+        $('down').textContent = d.toFixed(1); status('Yuklash tezligi o‘lchanmoqda...');
+        return upload();
+      }).then(function (u) {
+        $('up').textContent = u.toFixed(1); status('Test tugadi. Natijalar taxminiy va tarmoq bandligiga qarab o‘zgaradi.');
+      }).catch(function () {
+        status(''); $('err').textContent = 'Test bajarilmadi. Internet aloqasini tekshiring yoki reklama bloklagichni o‘chirib ko‘ring.';
+      }).then(function () { btn.disabled = false; });
+    });
+  })();
+  </script>
+</body>
+</html>

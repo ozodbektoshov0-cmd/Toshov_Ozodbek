@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harf registri | Toshov Ozodbek</title>
+  <meta name="description" content="Matnni KATTA, kichik, Sarlavha, camelCase, snake_case va boshqa ko'rinishlarga o'tkazing.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="case">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel">
+      <div class="field"><label for="txt">Matn</label><textarea id="txt" style="font-family:var(--font-body)" placeholder="Matnni shu yerga yozing"></textarea></div>
+      <div class="row" id="btns"></div>
+      <div class="field" style="margin-top:16px"><label for="out">Natija</label><textarea id="out" style="font-family:var(--font-body)" readonly></textarea></div>
+      <div class="row"><button class="btn gold" id="copy" type="button">Natijani nusxalash</button><button class="btn ghost" id="use" type="button">Natijani kirishga qo‘yish</button></div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    /* o'zbekcha tutuq belgilarini (ʻ ʼ ' ‘ ’) so'z ichida saqlab, so'zlarga ajratamiz */
+    function words(s) { return s.match(/[\p{L}\p{N}]+(?:['ʻʼ‘’][\p{L}\p{N}]+)*/gu) || []; }
+    function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }
+    var OPS = [
+      ['KATTA HARFLAR', function (s) { return s.toLocaleUpperCase('uz'); }],
+      ['kichik harflar', function (s) { return s.toLocaleLowerCase('uz'); }],
+      ['Har So‘z Bosh Harf', function (s) { return s.toLocaleLowerCase('uz').replace(/(^|[\s\-(])(\p{L})/gu, function (m, a, b) { return a + b.toLocaleUpperCase('uz'); }); }],
+      ['Gap boshi katta', function (s) { return s.toLocaleLowerCase('uz').replace(/(^\s*|[.!?]\s+)(\p{L})/gu, function (m, a, b) { return a + b.toLocaleUpperCase('uz'); }); }],
+      ['camelCase', function (s) { return words(s).map(function (w, i) { return i ? cap(w) : w.toLowerCase(); }).join(''); }],
+      ['PascalCase', function (s) { return words(s).map(cap).join(''); }],
+      ['snake_case', function (s) { return words(s).map(function (w) { return w.toLowerCase(); }).join('_'); }],
+      ['kebab-case', function (s) { return words(s).map(function (w) { return w.toLowerCase(); }).join('-'); }],
+      ['Teskari yozish', function (s) { return Array.from(s).reverse().join(''); }],
+      ['Ortiqcha bo‘sh joylarni olib tashlash', function (s) { return s.replace(/[ \t]+/g, ' ').replace(/^ +| +$/gm, '').replace(/\n{3,}/g, '\n\n').trim(); }]
+    ];
+    OPS.forEach(function (o) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.textContent = o[0];
+      b.addEventListener('click', function () { $('out').value = o[1]($('txt').value); });
+      $('btns').appendChild(b);
+    });
+    $('copy').addEventListener('click', function () { if ($('out').value) TO.copyText($('out').value); else TO.toast('Nusxalash uchun natija yo‘q'); });
+    $('use').addEventListener('click', function () { if ($('out').value) { $('txt').value = $('out').value; $('out').value = ''; } });
+  })();
+  </script>
+</body>
+</html>

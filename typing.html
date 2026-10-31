@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yozish tezligi testi | Toshov Ozodbek</title>
+  <meta name="description" content="Klaviaturada yozish tezligingizni (WPM) va aniqligingizni o'lchang.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="typing" data-root="">
+  <main id="main" class="container">
+    <div class="tool-head">
+      <h1>Yozish tezligi testi</h1>
+      <p>Matnni imkon qadar tez va xatosiz yozing. Birinchi harfni bosganingizda vaqt boshlanadi.</p>
+    </div>
+
+    <div class="type-modes">
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:600;margin-bottom:6px">Vaqt</legend>
+        <div class="chips" id="time-chips" style="margin:0">
+          <button class="chip" type="button" data-v="30" aria-pressed="false">30 soniya</button>
+          <button class="chip" type="button" data-v="60" aria-pressed="true">60 soniya</button>
+          <button class="chip" type="button" data-v="120" aria-pressed="false">120 soniya</button>
+        </div>
+      </fieldset>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:600;margin-bottom:6px">Qiyinlik</legend>
+        <div class="chips" id="mode-chips" style="margin:0">
+          <button class="chip" type="button" data-v="easy" aria-pressed="true">Oson</button>
+          <button class="chip" type="button" data-v="medium" aria-pressed="false">O‘rta</button>
+          <button class="chip" type="button" data-v="hard" aria-pressed="false">Qiyin</button>
+          <button class="chip" type="button" data-v="code" aria-pressed="false">Kod</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="type-stats">
+      <div class="stat"><b id="s-wpm">0</b><span>So‘z / daqiqa</span></div>
+      <div class="stat"><b id="s-acc">100%</b><span>Aniqlik</span></div>
+      <div class="stat"><b id="s-time">60</b><span>Soniya qoldi</span></div>
+      <div class="stat"><b id="s-best">0</b><span>Rekord (WPM)</span></div>
+    </div>
+
+    <div class="type-text" id="text" tabindex="-1" aria-label="Yoziladigan matn"></div>
+    <label class="sr" for="hidden">Matnni shu yerga yozing</label>
+    <input id="hidden" class="sr" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p class="kbd-hint" id="hint">Matn ustiga bosing va yozishni boshlang.</p>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="restart" type="button">Qayta boshlash</button>
+      <button class="btn ghost" id="copy" type="button" hidden>Natijani nusxalash</button>
+    </div>
+  </main>
+  <script src="assets/app.js"></script>
+  <script>
+  (function () {
+    var T = window.TO;
+    var BANK = {
+      easy: ['bu kun havo juda yaxshi va biz maktabga piyoda boramiz', 'men har kuni kitob o‘qiyman va yangi so‘zlarni yodlayman', 'uyimizning oldida katta bog‘ bor va u yerda bolalar o‘ynaydi', 'dasturlashni o‘rganish uchun har kuni oz-ozdan mashq qilish kerak', 'kompyuterda tez yozish ish vaqtini sezilarli tejaydi', 'yaxshi do‘st qiyin paytda ham yoningda bo‘ladi', 'bahorda daraxtlar gullaydi va tabiat jonlanadi', 'kitob bilimning eng ishonchli manbalaridan biridir'],
+      medium: ['Brauzer sahifani yuklaganda avval HTML tuzilmasini o‘qiydi, so‘ng CSS uslublarini qo‘llaydi va oxirida JavaScript kodini ishga tushiradi.', 'Ma’lumotlar bazasi jadvallardan iborat bo‘lib, har bir jadvalda satrlar va ustunlar yordamida ma’lumot saqlanadi.', 'Xavfsiz parol uzun bo‘lishi, turli belgilarni o‘z ichiga olishi va boshqa joyda ishlatilmagan bo‘lishi kerak.', 'Samarqand, Buxoro va Xiva asrlar davomida Buyuk ipak yo‘lidagi muhim savdo va madaniyat markazlari bo‘lgan.', 'Internetga ulangan har bir qurilma o‘zining noyob IP manziliga ega bo‘ladi va shu orqali ma’lumot almashadi.'],
+      hard: ['Algoritmning murakkabligi kirish ma’lumotlari hajmi oshganda bajarilish vaqti qanday o‘sishini ko‘rsatadi; masalan, O(n log n) odatda O(n^2) dan ancha tezroq.', 'Server so‘rovni qabul qilgach, uni tekshiradi, ma’lumotlar bazasidan kerakli yozuvlarni oladi va natijani JSON ko‘rinishida mijozga qaytaradi (status: 200).', '“Versiyalarni boshqarish tizimi” (masalan, Git) jamoada ishlaganda o‘zgarishlarni kuzatish, tarmoqlarga bo‘lish va xatolarni qaytarish imkonini beradi!', 'Shifrlash ma’lumotni 3 ta asosiy maqsadda himoya qiladi: maxfiylik, yaxlitlik va mavjudlik; ularni birgalikda “CIA uchligi” deb ataydilar.'],
+      code: ['const sum = (a, b) => a + b; console.log(sum(2, 3));', 'for (let i = 0; i < 10; i++) { if (i % 2 === 0) continue; console.log(i); }', 'SELECT name, age FROM users WHERE age >= 18 ORDER BY name;', 'def greet(name): return f"Salom, {name}!"', 'document.querySelector(".btn").addEventListener("click", () => alert("Bosildi"));', '<div class="card"><h2>Sarlavha</h2><p>Matn</p></div>', 'git add . && git commit -m "yangi funksiya" && git push origin main']
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var state = { time: 60, mode: 'easy', text: '', started: false, finished: false, startAt: 0, left: 60, timer: null, typed: 0, errors: 0, prevLen: 0 };
+
+    function pick(mode) { var a = BANK[mode]; return a[Math.floor(Math.random() * a.length)]; }
+    function buildText() {
+      var t = '';
+      while (t.length < 400) t += (t ? ' ' : '') + pick(state.mode);
+      return t;
+    }
+
+    function render(val) {
+      var box = $('text'), html = '', t = state.text;
+      for (var i = 0; i < t.length; i++) {
+        var ch = t[i] === '<' ? '&lt;' : t[i] === '>' ? '&gt;' : t[i] === '&' ? '&amp;' : t[i];
+        var cls = i < val.length ? (val[i] === t[i] ? 'ok' : 'bad') : (i === val.length ? 'cur' : '');
+        html += '<span' + (cls ? ' class="' + cls + '"' : '') + '>' + ch + '</span>';
+      }
+      box.innerHTML = html;
+      var cur = box.querySelector('.cur');
+      if (cur) { box.scrollTop = Math.max(0, cur.offsetTop - 70); }
+    }
+
+    function reset() {
+      clearInterval(state.timer);
+      state.text = buildText();
+      state.started = false; state.finished = false; state.typed = 0; state.errors = 0; state.prevLen = 0; state.left = state.time;
+      $('hidden').value = ''; $('hidden').disabled = false;
+      $('s-wpm').textContent = '0'; $('s-acc').textContent = '100%'; $('s-time').textContent = state.time;
+      $('s-best').textContent = T.store.get('typing-best', 0);
+      $('copy').hidden = true;
+      $('hint').textContent = 'Matn ustiga bosing va yozishni boshlang.';
+      render('');
+    }
+
+    function correctChars(val) { var c = 0; for (var i = 0; i < val.length; i++) if (val[i] === state.text[i]) c++; return c; }
+
+    function update() {
+      var val = $('hidden').value;
+      var mins = Math.max((Date.now() - state.startAt) / 60000, 1 / 600);
+      $('s-wpm').textContent = Math.round((correctChars(val) / 5) / mins);
+      $('s-acc').textContent = (state.typed ? Math.max(0, Math.round((state.typed - state.errors) / state.typed * 100)) : 100) + '%';
+    }
+
+    function finish() {
+      if (state.finished) return;
+      state.finished = true; clearInterval(state.timer);
+      $('hidden').disabled = true;
+      var val = $('hidden').value;
+      var wpm = Math.round((correctChars(val) / 5) / (state.time / 60));
+      var acc = state.typed ? Math.max(0, Math.round((state.typed - state.errors) / state.typed * 100)) : 100;
+      $('s-wpm').textContent = wpm; $('s-acc').textContent = acc + '%'; $('s-time').textContent = 0;
+      var best = T.store.get('typing-best', 0);
+      var msg = 'Vaqt tugadi. Natija: ' + wpm + ' WPM, aniqlik ' + acc + '%.';
+      if (wpm > best) { T.store.set('typing-best', wpm); $('s-best').textContent = wpm; msg += ' Bu yangi rekord!'; }
+      $('hint').textContent = msg;
+      $('copy').hidden = false;
+      $('copy').onclick = function () { T.copyText('Yozish tezligi testi: ' + wpm + ' WPM, aniqlik ' + acc + '% (' + state.time + ' soniya)'); };
+    }
+
+    function tick() {
+      state.left--;
+      $('s-time').textContent = Math.max(0, state.left);
+      update();
+      if (state.left <= 0) finish();
+    }
+
+    $('hidden').addEventListener('input', function () {
+      if (state.finished) return;
+      var val = this.value;
+      if (!state.started) { state.started = true; state.startAt = Date.now(); state.timer = setInterval(tick, 1000); $('hint').textContent = 'Yozishda davom eting.'; }
+      if (val.length > state.prevLen) {
+        for (var i = state.prevLen; i < val.length; i++) { state.typed++; if (val[i] !== state.text[i]) state.errors++; }
+      }
+      state.prevLen = val.length;
+      if (val.length >= state.text.length) { finish(); return; }
+      render(val); update();
+    });
+
+    $('text').addEventListener('click', function () { $('hidden').focus(); });
+    $('restart').addEventListener('click', function () { reset(); $('hidden').focus(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Tab' && state.started && !state.finished) { e.preventDefault(); } if (e.key === 'Escape') { reset(); } });
+
+    function bindChips(id, key, parse) {
+      $(id).addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        Array.prototype.forEach.call($(id).children, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        state[key] = parse ? parse(b.getAttribute('data-v')) : b.getAttribute('data-v');
+        reset();
+      });
+    }
+    bindChips('time-chips', 'time', function (v) { return parseInt(v, 10); });
+    bindChips('mode-chips', 'mode');
+
+    reset();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O'lchov birliklari | Toshov Ozodbek</title>
+  <meta name="description" content="Uzunlik, vazn, harorat, hajm va ma'lumot o'lchamlarini o'zgartiring.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="units">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:720px">
+      <div class="field"><label for="kind">Kattalik turi</label><select id="kind"></select></div>
+      <div class="field"><label for="val">Qiymat</label><input id="val" type="number" value="1" step="any" inputmode="decimal"></div>
+      <div class="grid2">
+        <div class="field"><label for="u1">Dan</label><select id="u1"></select></div>
+        <div class="field"><label for="u2">Ga</label><select id="u2"></select></div>
+      </div>
+      <div class="stat"><b id="out">-</b><span id="note"></span></div>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    /* har bir birlik asosiy birlikka nisbatan koeffitsiyent bilan beriladi */
+    var D = {
+      'Uzunlik': { base: 'm', u: { 'millimetr': 0.001, 'santimetr': 0.01, 'metr': 1, 'kilometr': 1000, 'dyuym': 0.0254, 'fut': 0.3048, 'yard': 0.9144, 'mil': 1609.344 } },
+      'Vazn': { base: 'kg', u: { 'gramm': 0.001, 'kilogramm': 1, 'tonna': 1000, 'funt': 0.45359237, 'unsiya': 0.028349523125 } },
+      'Hajm': { base: 'l', u: { 'millilitr': 0.001, 'litr': 1, 'kub metr': 1000, 'gallon (AQSH)': 3.785411784, 'stakan (250 ml)': 0.25 } },
+      'Maydon': { base: 'm²', u: { 'kv. metr': 1, 'kv. kilometr': 1e6, 'gektar': 1e4, 'sotix': 100, 'kv. fut': 0.09290304, 'akr': 4046.8564224 } },
+      'Tezlik': { base: 'm/s', u: { 'm/s': 1, 'km/soat': 1 / 3.6, 'mil/soat': 0.44704, 'tugun': 0.514444 } },
+      'Ma’lumot hajmi': { base: 'bayt', u: { 'bit': 0.125, 'bayt': 1, 'KB (1024)': 1024, 'MB (1024²)': 1048576, 'GB (1024³)': 1073741824, 'TB (1024⁴)': 1099511627776 } },
+      'Vaqt': { base: 'soniya', u: { 'soniya': 1, 'daqiqa': 60, 'soat': 3600, 'kun': 86400, 'hafta': 604800 } },
+      'Harorat': { temp: true, u: { 'Selsiy (°C)': 1, 'Farengeyt (°F)': 1, 'Kelvin (K)': 1 } }
+    };
+    var kinds = Object.keys(D);
+    $('kind').innerHTML = kinds.map(function (k) { return '<option>' + k + '</option>'; }).join('');
+    function fillUnits() {
+      var us = Object.keys(D[$('kind').value].u);
+      var html = us.map(function (u) { return '<option>' + u + '</option>'; }).join('');
+      $('u1').innerHTML = html; $('u2').innerHTML = html;
+      $('u1').value = us[Math.min(2, us.length - 1)] === undefined ? us[0] : us[0];
+      $('u2').selectedIndex = Math.min(1, us.length - 1);
+      calc();
+    }
+    function toC(v, u) { return u.indexOf('Farengeyt') === 0 ? (v - 32) * 5 / 9 : u.indexOf('Kelvin') === 0 ? v - 273.15 : v; }
+    function fromC(c, u) { return u.indexOf('Farengeyt') === 0 ? c * 9 / 5 + 32 : u.indexOf('Kelvin') === 0 ? c + 273.15 : c; }
+    function fmt(n) { if (!isFinite(n)) return '-'; var a = Math.abs(n); if (a !== 0 && (a < 1e-6 || a >= 1e15)) return n.toExponential(4); return String(parseFloat(n.toPrecision(10))); }
+    function calc() {
+      var d = D[$('kind').value], v = parseFloat($('val').value), a = $('u1').value, b = $('u2').value;
+      if (isNaN(v)) { $('out').textContent = '-'; $('note').textContent = 'Son kiriting'; return; }
+      var r = d.temp ? fromC(toC(v, a), b) : v * d.u[a] / d.u[b];
+      $('out').textContent = fmt(r) + ' ' + b.split(' (')[0];
+      $('note').textContent = fmt(v) + ' ' + a.split(' (')[0] + ' = ' + fmt(r) + ' ' + b.split(' (')[0];
+    }
+    $('kind').addEventListener('change', fillUnits);
+    ['val', 'u1', 'u2'].forEach(function (id) { $(id).addEventListener('input', calc); });
+    fillUnits();
+  })();
+  </script>
+</body>
+</html>

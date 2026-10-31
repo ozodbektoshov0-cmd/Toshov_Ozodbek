@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matndan ovozga | Toshov Ozodbek</title>
+  <meta name="description" content="Yozilgan matnni brauzer ovozi bilan o'qiting.">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="tools" data-root="../" data-tool="text-to-speech">
+  <main id="main" class="container">
+    <div class="tool-head" id="tool-head"></div>
+    <div class="panel" style="max-width:820px">
+      <div class="field"><label for="text">Matn</label><textarea id="text" style="font-family:var(--font-body)" placeholder="O‘qitmoqchi bo‘lgan matnni yozing">Salom! Bu matndan ovozga o‘tkazish asbobi.</textarea></div>
+      <div class="field"><label for="voice">Ovoz</label><select id="voice"></select></div>
+      <div class="grid2">
+        <div class="field"><label for="rate">Tezlik: <span id="rv">1</span></label><input id="rate" type="range" min="0.5" max="2" step="0.1" value="1"></div>
+        <div class="field"><label for="pitch">Ohang: <span id="pv">1</span></label><input id="pitch" type="range" min="0.5" max="2" step="0.1" value="1"></div>
+      </div>
+      <div class="row"><button class="btn" id="play" type="button">O‘qish</button><button class="btn ghost" id="pause" type="button">Pauza</button><button class="btn ghost" id="stop" type="button">To‘xtatish</button></div>
+      <p id="note" class="muted" style="margin-top:12px">Ovozlar qurilmangiz va brauzeringizga bog‘liq. O‘zbek tilidagi ovoz bo‘lmasa, turk yoki rus ovozi bilan o‘qib ko‘ring.</p>
+      <p id="err" class="msg-err" role="alert"></p>
+    </div>
+    <div id="related" class="related"></div>
+  </main>
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var synth = window.speechSynthesis;
+    if (!synth) { $('err').textContent = 'Brauzeringiz ovoz sintezini qo‘llab-quvvatlamaydi. Chrome, Edge yoki Safari ni sinab ko‘ring.'; $('play').disabled = true; return; }
+    var voices = [];
+    function load() {
+      voices = synth.getVoices();
+      voices.sort(function (a, b) { var au = /^uz/i.test(a.lang) ? 0 : 1, bu = /^uz/i.test(b.lang) ? 0 : 1; return au - bu || a.lang.localeCompare(b.lang); });
+      $('voice').innerHTML = voices.length ? voices.map(function (v, i) { return '<option value="' + i + '">' + TO.esc(v.name + ' (' + v.lang + ')') + '</option>'; }).join('') : '<option>Ovoz topilmadi</option>';
+    }
+    load(); synth.onvoiceschanged = load;
+    $('rate').addEventListener('input', function () { $('rv').textContent = this.value; });
+    $('pitch').addEventListener('input', function () { $('pv').textContent = this.value; });
+    $('play').addEventListener('click', function () {
+      var t = $('text').value.trim(); $('err').textContent = '';
+      if (!t) { $('err').textContent = 'Avval matn kiriting.'; return; }
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(t), v = voices[parseInt($('voice').value, 10)];
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = parseFloat($('rate').value); u.pitch = parseFloat($('pitch').value);
+      u.onerror = function () { $('err').textContent = 'O‘qishda xatolik yuz berdi. Boshqa ovoz tanlab ko‘ring.'; };
+      synth.speak(u);
+    });
+    $('pause').addEventListener('click', function () { if (synth.paused) { synth.resume(); this.textContent = 'Pauza'; } else { synth.pause(); this.textContent = 'Davom ettirish'; } });
+    $('stop').addEventListener('click', function () { synth.cancel(); $('pause').textContent = 'Pauza'; });
+    window.addEventListener('beforeunload', function () { synth.cancel(); });
+  })();
+  </script>
+</body>
+</html>
