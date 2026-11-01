@@ -36,6 +36,7 @@ Valyuta kursi (open.er-api.com), IP ma’lumoti (ipwho.is), internet tezligi (sp
 ## Loyihalar
 
 - `projects/3d-studiya/`: 3D Studiya. Ko‘k/tungi mavzu `css/hacker.css` va `js/hacker-fx.js` fayllarida (asl fayllar o‘zgarmagan, faqat `index.html` va `sw.js` ga ulangan). Mavzu va FX holati asosiy sayt bilan umumiy.
+- `projects/unity-asset-viewer/`: Unity Asset Ko‘ruvchi. Asl fayllar o‘zgarmagan; `hacker.css` va `theme.js` qo‘shilgan. Three.js va fflate CDN orqali yuklanadi (internet kerak).
 - `projects/gta-sa/`: GTA SA modlar portali (o‘zgartirilmagan)
 
 ## Mavzu va fon

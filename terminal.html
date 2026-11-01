@@ -33,12 +33,12 @@
 
     var FILES = {
       'about.txt': "Men Toshov Ozodbek. Veb sahifalar va foydali kichik dasturlar yarataman.\nLoyihalarim GitHub'da: github.com/ozodbektoshov0-cmd",
-      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      GTA SA modlar portali (open gta)\n3D-Studiya             Brauzerda 3D muharrir (open 3d)",
+      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      GTA SA modlar portali (open gta)\n3D-Studiya             Brauzerda 3D muharrir (open 3d)\nunity-asset-viewer     Unity fayl ko‘ruvchi (open unity)",
       'secret.txt': "Topdingiz! Endi 'quiz' yozib, IT testini yeching."
     };
 
     var TOOLS = window.TO ? window.TO.TOOLS : [];
-    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'tools', 'open', 'theme', 'fx', 'music', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
+    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'telegram', 'instagram', 'tools', 'open', 'theme', 'fx', 'music', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
 
     function print(text, cls) {
       var d = document.createElement('div');
@@ -64,7 +64,7 @@
       '  open <nom>  asbob yoki loyihani ochadi (open qr, open 3d, open gta)',
       '  quiz        IT testiga o‘tadi',
       '  typing      yozish tezligi testiga o‘tadi',
-      '  github      GitHub sahifamni ochadi',
+      '  github, telegram, instagram   sahifalarimni ochadi',
       '  ls, cat <fayl>, pwd, cd, echo, date, whoami',
       '  theme       ko‘k va tungi (Matrix) rejimni almashtiradi',
       '  fx          fon animatsiyasini yoqadi yoki o‘chiradi',
@@ -92,6 +92,8 @@
       date: function () { print(new Date().toLocaleString('uz-UZ', { dateStyle: 'full', timeStyle: 'medium' })); },
       echo: function (a) { print(a.join(' ')); },
       projects: function () { print(FILES['projects.txt']); },
+      telegram: function () { print('Telegram ochilmoqda...'); window.open(window.TO.SITE.telegram, '_blank', 'noopener'); },
+      instagram: function () { print('Instagram ochilmoqda...'); window.open(window.TO.SITE.instagram, '_blank', 'noopener'); },
       github: function () { print('GitHub sahifasi ochilmoqda...'); window.open('https://github.com/ozodbektoshov0-cmd', '_blank', 'noopener'); },
       tools: function () {
         if (!TOOLS.length) return print('Asboblar ro‘yxati yuklanmadi.', 'term-err');
@@ -101,12 +103,12 @@
       open: function (a) {
         var id = (a[0] || '').toLowerCase();
         if (!id) return print('Foydalanish: open <asbob>. Ro‘yxat uchun: tools', 'term-err');
-        var PRJ = { '3d': 'projects/3d-studiya/', '3d-studiya': 'projects/3d-studiya/', 'gta': 'projects/gta-sa/', 'gta-sa': 'projects/gta-sa/' };
+        var PRJ = { '3d': 'projects/3d-studiya/', '3d-studiya': 'projects/3d-studiya/', 'gta': 'projects/gta-sa/', 'gta-sa': 'projects/gta-sa/', 'unity': 'projects/unity-asset-viewer/' };
         if (PRJ[id]) { print('Loyiha ochilmoqda...'); setTimeout(function () { location.href = PRJ[id]; }, 400); return; }
         var t = TOOLS.filter(function (x) { return x.id === id; })[0];
         if (!t) return print('open: "' + id + '" topilmadi. "tools" buyrug‘ini sinang.', 'term-err');
         print(t.t + ' ochilmoqda...');
-        setTimeout(function () { location.href = 'tools/' + t.id + '.html'; }, 400);
+        setTimeout(function () { location.href = t.h || ('tools/' + t.id + '.html'); }, 400);
       },
       quiz: function () { print('IT testi ochilmoqda...'); setTimeout(function () { location.href = 'quiz.html'; }, 400); },
       typing: function () { print('Yozish testi ochilmoqda...'); setTimeout(function () { location.href = 'typing.html'; }, 400); },

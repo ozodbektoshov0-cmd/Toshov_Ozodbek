@@ -5,6 +5,8 @@
   var SITE = {
     name: 'Toshov Ozodbek',
     github: 'https://github.com/ozodbektoshov0-cmd',
+    telegram: 'https://t.me/Ozodbek_Toshov',
+    instagram: 'https://www.instagram.com/toshov_ozodbek_/',
     year: new Date().getFullYear()
   };
 
@@ -14,7 +16,8 @@
     media: 'Rasm va ovoz',
     tarmoq: 'Tarmoq',
     dev: 'Dasturchi uchun',
-    vaqt: 'Vaqt'
+    vaqt: 'Vaqt',
+    loyiha: 'Loyiha'
   };
 
   var TOOLS = [
@@ -42,6 +45,13 @@
     { id: 'words', t: 'So‘z va belgi sanagich', d: "Matndagi so'z, belgi, gap va o'qish vaqtini hisoblang.", i: 'Aa', c: 'matn' },
     { id: 'case', t: 'Harf registri', d: "KATTA, kichik, Sarlavha, camelCase, snake_case va boshqa ko'rinishlarga o'tkazish.", i: 'aA', c: 'matn' }
   ];
+  /* Saytga ichiga o'rnatilgan loyihalar ham asboblar ro'yxatida chiqadi (h = sahifa yo'li) */
+  TOOLS.push(
+    { h: 'projects/3d-studiya/', id: '3d-studiya', t: '3D Studiya', d: 'Brauzerda 3D modellarni ko‘rish, tahrirlash va konvertatsiya qilish.', i: '◐', c: 'loyiha' },
+    { h: 'projects/gta-sa/', id: 'gta-sa', t: 'GTA SA modlar portali', d: 'GTA San Andreas uchun o‘zbekcha modlar, Cheat Menu va grafik paketlar.', i: '▣', c: 'loyiha' },
+    { h: 'projects/unity-asset-viewer/', id: 'unity-asset-viewer', t: 'Unity Asset Ko‘ruvchi', d: 'Unity bundle va .assets fayllarini ochish, tekstura va mesh yuklab olish.', i: '◆', c: 'loyiha' }
+  );
+
 
   var FEATURES = [
     { id: 'terminal', href: 'terminal.html', t: 'Terminal simulyator', d: "Buyruqlar yozib saytni va men haqimda ma'lumotni kashf eting.", peek: '$ help' },
@@ -192,12 +202,15 @@
     f.className = 'site-footer';
     f.innerHTML =
       '<div class="container bar"><span>© ' + SITE.year + ' ' + SITE.name + '</span>' +
-      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'projects.html">Loyihalar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a></span></div>';
+      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'projects.html">Loyihalar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a> &nbsp; <a href="' + SITE.telegram + '" target="_blank" rel="noopener">Telegram</a> &nbsp; <a href="' + SITE.instagram + '" target="_blank" rel="noopener">Instagram</a></span></div>';
     document.body.appendChild(f);
   }
 
   /* ---- asboblar ro'yxati ---- */
-  function toolHref(id) { return root + 'tools/' + id + '.html'; }
+  function toolHref(id) {
+    var t = TOOLS.filter(function (x) { return x.id === id; })[0];
+    return root + (t && t.h ? t.h : 'tools/' + id + '.html');
+  }
 
   function toolRow(t) {
     return '<a class="tool-row" href="' + toolHref(t.id) + '">' +
