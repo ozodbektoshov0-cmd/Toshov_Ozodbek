@@ -96,8 +96,8 @@
   var bar = document.createElement('div');
   bar.id = 'hx';
   var back = document.createElement('a');
-  back.href = '../../index.html';
-  back.textContent = '← Sayt';
+  back.href = '../../tools.html';
+  back.textContent = '← Asboblar';
   back.title = 'Asosiy saytga qaytish';
   var fx = document.createElement('button');
   fx.type = 'button'; fx.textContent = 'FX'; fx.title = 'Fon animatsiyasini yoqish yoki o‘chirish';

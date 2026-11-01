@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unity Asset Koʻruvchi</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="hacker.css"></head><body>
+<div class="app">
+<aside class="side">
+ <h1>Unity Asset Koʻruvchi</h1>
+ <div class="sub">Fayllar qurilmangizdan chiqmaydi. Hammasi brauzerda ishlaydi.</div>
+ <div class="drop" id="drop">Fayl yoki papkani shu yerga tashlang<br><small>.unity3d, .bundle, .assets, .resS</small>
+  <div class="row"><button id="bf">Fayl tanlash</button><button id="bd">Papka tanlash</button></div></div>
+ <div id="st">Fayl kutilmoqda</div>
+ <div class="row" style="margin-bottom:10px"><input type="search" id="fq" placeholder="Qidirish"><select id="fc"><option value="">Hammasi</option></select></div>
+ <div id="list"></div>
+</aside>
+<main class="main">
+ <div class="bar"><b id="nm">Hech narsa tanlanmagan</b><span id="inf"></span><button id="dl" disabled>PNG yuklash</button><button id="ob" disabled hidden>OBJ yuklash</button><button id="gl" disabled hidden>GLB yuklash</button><button id="dx" disabled hidden>Yuklab olish</button><button id="za" class="pri" disabled>Hammasini ZIP qilish</button></div>
+ <div class="stg" id="stg"><div class="msg">Chapdan Unity faylini oching, keyin roʻyxatdan teksturani tanlang.</div></div>
+</main>
+</div>
+<input type="file" id="fi" multiple hidden><input type="file" id="fd" webkitdirectory hidden>
+<script src="app.js"></script><script src="theme.js"></script></body></html>
