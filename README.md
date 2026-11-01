@@ -1,6 +1,6 @@
 # Toshov Ozodbek sayti
 
-Statik sayt: 23 ta onlayn asbob, IT bilim testi, yozish tezligi testi va terminal simulyator. Build jarayoni yo‘q, oddiy HTML, CSS va JavaScript.
+Statik sayt: 23 ta onlayn asbob, ko‘k neon uslub, tungi (Matrix) rejim, IT bilim testi, yozish tezligi testi va terminal simulyator. Build jarayoni yo‘q, oddiy HTML, CSS va JavaScript.
 
 ## Vercel'ga joylash
 
@@ -32,3 +32,16 @@ Yoki terminalda: `npx vercel --prod`
 ## Tashqi xizmatlar
 
 Valyuta kursi (open.er-api.com), IP ma’lumoti (ipwho.is), internet tezligi (speed.cloudflare.com) va QR kutubxonasi (cdnjs) internet orqali yuklanadi. Qolgan hamma narsa brauzerda ishlaydi.
+
+## Loyihalar
+
+- `projects/3d-studiya/`: 3D Studiya. Ko‘k/tungi mavzu `css/hacker.css` va `js/hacker-fx.js` fayllarida (asl fayllar o‘zgarmagan, faqat `index.html` va `sw.js` ga ulangan). Mavzu va FX holati asosiy sayt bilan umumiy.
+- `projects/gta-sa/`: GTA SA modlar portali (o‘zgartirilmagan)
+
+## Mavzu va fon
+
+Sayt standart ko‘k neon mavzuda, orqada sekin siljiydigan kod matni. Sarlavhadagi **NIGHT MODE** tugmasi yashil Matrix yomg‘iri mavzusiga o‘tkazadi (`data-theme="night"`, `localStorage` kaliti `to:theme`). 3D Studiya ham shu mavzuni ishlatadi. `FX` tugmasi fon animatsiyasini o‘chiradi. Kod `assets/bg.js` da. Tizimda “animatsiyani kamaytirish” yoqilgan bo‘lsa, fon o‘zi o‘chiq boshlanadi.
+
+## Musiqa
+
+`assets/music.js` brauzerning o‘zida (WebAudio) original qorong‘i sintezator trekini chaladi, audio fayl yo‘q. Brauzer qoidasiga ko‘ra ovoz foydalanuvchi bosganidan keyin boshlanadi, shuning uchun bosh sahifada **START** kirish ekrani bor. ♪ tugmasi yoki terminaldagi `music` buyrug‘i musiqani yoqadi va o‘chiradi. Kirish ekranini o‘chirish uchun `music.js` ichidagi `intro();` qatorini olib tashlang.

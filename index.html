@@ -10,13 +10,27 @@
 <body data-page="home" data-root="" data-limit="8">
   <main id="main">
     <section class="hero">
-      <div class="container">
-        <h1><span class="name">Toshov Ozodbek</span>Kundalik ishlar uchun tez va bepul asboblar</h1>
-        <p class="lead">QR kod yaratish, valyuta hisoblash, rasm formatini o‘zgartirish va boshqa ishlar uchun ro‘yxatdan o‘tish shart emas. Kerakli asbobni qidiring.</p>
-        <div class="search-box">
-          <label class="sr" for="tool-search">Asbob qidirish</label>
-          <input id="tool-search" type="search" placeholder="Masalan: qr, valyuta, parol" autocomplete="off">
+      <div class="container hero-grid">
+        <div>
+          <div class="prompt-line">tizim: tayyor</div>
+          <h1><span class="w">TOSHOV</span><span class="c scramble" data-text="OZODBEK">OZODBEK</span></h1>
+          <p class="lead">QR kod, valyuta, rasm konvertori va yana 20 dan ortiq bepul asbob. IT test, yozish tezligi, terminal simulyator hamda 3D Studiya va GTA SA portali.</p>
+          <div class="social-row">
+            <a href="https://github.com/ozodbektoshov0-cmd" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2-6-2m12 4v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+            <a href="projects.html" aria-label="Loyihalar"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></a>
+            <a href="terminal.html" aria-label="Terminal"><svg viewBox="0 0 24 24"><path d="M4 17l6-5-6-5M12 19h8"/></svg></a>
+            <a href="tools.html" aria-label="Asboblar"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/></svg></a>
+          </div>
         </div>
+        <div class="emblem" aria-hidden="true"><div class="ring"></div><div class="core"><span>TO</span></div></div>
+      </div>
+    </section>
+
+    <section class="container section">
+      <h2 class="sec-title">Asboblar</h2>
+      <div class="search-box">
+        <label class="sr" for="tool-search">Asbob qidirish</label>
+        <input id="tool-search" type="search" placeholder="Masalan: qr, valyuta, parol" autocomplete="off">
       </div>
     </section>
 
@@ -27,13 +41,27 @@
     </section>
 
     <section class="container section">
-      <h2>O‘ynab o‘rganing</h2>
+      <h2 class="sec-title">Loyihalar</h2>
+      <div class="proj-grid">
+        <a class="proj" href="projects/3d-studiya/">
+          <div class="cover"><img src="projects/3d-studiya/og.png" alt="3D Studiya oynasi" loading="lazy"></div>
+          <div class="body"><div class="tags">3D muharrir</div><h3>3D Studiya</h3><p>Brauzerda 3D modellarni ko‘rish, tahrirlash va konvertatsiya qilish.</p></div>
+        </a>
+        <a class="proj" href="projects/gta-sa/">
+          <div class="cover" aria-hidden="true">GTA SA</div>
+          <div class="body"><div class="tags">Modlar portali</div><h3>GTA San Andreas modlari</h3><p>O‘zbekcha modlar, Cheat Menu va grafik paketlar.</p></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="container section">
+      <h2 class="sec-title">O‘ynab o‘rganing</h2>
       <p class="muted">Asboblardan tashqari, bilimingizni sinash va tezligingizni o‘lchash uchun sahifalar ham bor.</p>
       <div id="feature-grid" class="feature-grid"></div>
     </section>
 
     <section class="container section">
-      <h2>Sayt haqida</h2>
+      <h2 class="sec-title">Sayt haqida</h2>
       <p>Barcha asboblar brauzeringizning o‘zida ishlaydi. Rasmlaringiz, matnlaringiz va parollaringiz serverga yuborilmaydi. Faqat valyuta kursi, IP ma’lumoti va internet tezligi uchun tashqi xizmatga so‘rov ketadi.</p>
       <p><a href="about.html">Muallif haqida o‘qing</a></p>
     </section>

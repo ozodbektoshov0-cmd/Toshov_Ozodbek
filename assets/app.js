@@ -50,12 +50,11 @@
   ];
 
   var NAV = [
-    { k: 'home', href: 'index.html', t: 'Bosh sahifa' },
-    { k: 'tools', href: 'tools.html', t: 'Asboblar' },
     { k: 'terminal', href: 'terminal.html', t: 'Terminal' },
     { k: 'quiz', href: 'quiz.html', t: 'IT test' },
-    { k: 'typing', href: 'typing.html', t: 'Yozish testi' },
-    { k: 'about', href: 'about.html', t: 'Men haqimda' }
+    { k: 'typing', href: 'typing.html', t: 'Yozish' },
+    { k: 'projects', href: 'projects.html', t: 'Loyihalar' },
+    { k: 'about', href: 'about.html', t: 'Bio' }
   ];
 
   /* ---- yordamchilar ---- */
@@ -101,45 +100,90 @@
     if (isBlob) setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
   }
 
-  /* ---- mavzu ---- */
-  function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
-  var theme = store.get('theme', null);
-  if (!theme) theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-  applyTheme(theme);
+  /* ---- mavzu: ko'k (standart) yoki night (yashil Matrix) ---- */
+  function getTheme() { return document.documentElement.getAttribute('data-theme') === 'night' ? 'night' : 'blue'; }
+  function setTheme(t) {
+    if (t === 'night') document.documentElement.setAttribute('data-theme', 'night');
+    else document.documentElement.removeAttribute('data-theme');
+    store.set('theme', t === 'night' ? 'night' : 'blue');
+    var nb = document.getElementById('night-btn');
+    if (nb) nb.setAttribute('aria-pressed', t === 'night' ? 'true' : 'false');
+  }
+  if (store.get('theme', 'blue') === 'night') document.documentElement.setAttribute('data-theme', 'night');
 
   /* ---- sarlavha va pastki qism ---- */
   var root = document.body.getAttribute('data-root') || '';
   var page = document.body.getAttribute('data-page') || '';
   var toolId = document.body.getAttribute('data-tool') || '';
 
-  var LOGO = '<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#f5b82e"/><g fill="none" stroke="#0a1430" stroke-width="2.4"><rect x="11" y="11" width="18" height="18"/><rect x="11" y="11" width="18" height="18" transform="rotate(45 20 20)"/></g></svg>';
+  var WD = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+  var MO = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+  function clockText() {
+    var d = new Date();
+    return WD[d.getDay()] + ', ' + d.getDate() + ' ' + MO[d.getMonth()] + ' ' + d.getFullYear() + ' | ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
+  }
 
   function buildHeader() {
     var links = NAV.map(function (n) {
-      var cur = (n.k === page || (n.k === 'tools' && toolId)) ? ' aria-current="page"' : '';
+      var cur = (n.k === page) ? ' aria-current="page"' : '';
       return '<a href="' + root + n.href + '"' + cur + '>' + n.t + '</a>';
     }).join('');
-    var h = document.createElement('header');
-    h.className = 'site-header';
-    h.innerHTML =
-      '<div class="container bar">' +
-      '<a class="brand" href="' + root + 'index.html">' + LOGO + '<span>' + SITE.name + '</span></a>' +
-      '<nav class="nav" id="nav" aria-label="Asosiy menyu">' + links +
-      '<button class="icon-btn" id="theme-btn" type="button" aria-label="Mavzuni almashtirish"></button></nav>' +
-      '<button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Menyu" aria-expanded="false">☰</button>' +
-      '</div>';
-    document.body.insertBefore(h, document.body.firstChild);
-    var tb = $('#theme-btn');
-    function icon() { tb.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☾' : '☀'; }
-    icon();
-    tb.addEventListener('click', function () {
-      var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      applyTheme(next); store.set('theme', next); icon();
+    var toolLinks = '<a role="menuitem" class="dd-all" href="' + root + 'tools.html">Barcha asboblar</a>' +
+      TOOLS.map(function (t) { return '<a role="menuitem" href="' + toolHref(t.id) + '">' + esc(t.t) + '</a>'; }).join('');
+    var inTools = (page === 'tools' || toolId) ? ' aria-current="page"' : '';
+    var night = getTheme() === 'night' ? 'true' : 'false';
+
+    var w = document.createElement('div');
+    w.className = 'top-wrap';
+    w.innerHTML =
+      '<div class="topbar" id="topbar" role="timer" aria-label="Hozirgi vaqt">' + clockText() + '</div>' +
+      '<header class="site-header"><div class="bar">' +
+      '<a class="brand" href="' + root + 'index.html">' + esc(SITE.name) + '</a>' +
+      '<nav class="nav" id="nav" aria-label="Asosiy menyu">' +
+      '<div class="dd" id="dd"><button class="dd-btn" id="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="dd-menu"' + inTools + '>Tools <span aria-hidden="true">▾</span></button>' +
+      '<div class="dd-menu" id="dd-menu" role="menu" hidden>' + toolLinks + '</div></div>' +
+      links +
+      '<button class="icon-btn" id="fx-btn" type="button" aria-label="Fon animatsiyasini yoqish yoki o‘chirish" aria-pressed="true">FX</button>' +
+      '<button class="pill" id="night-btn" type="button" aria-pressed="' + night + '">Night mode</button></nav>' +
+      '<button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Menyu" aria-expanded="false" aria-controls="nav">☰</button>' +
+      '</div></header>';
+    document.body.insertBefore(w, document.body.firstChild);
+
+    var tb = $('#topbar');
+    setInterval(function () { tb.textContent = clockText(); }, 1000);
+
+    $('#night-btn').addEventListener('click', function () {
+      var next = getTheme() === 'night' ? 'blue' : 'night';
+      setTheme(next);
+      toast(next === 'night' ? 'Night mode yoqildi' : 'Night mode o‘chirildi');
     });
+    $('#fx-btn').addEventListener('click', function () { if (window.TOFX) window.TOFX.set(!window.TOFX.get()); });
+
     var mb = $('#menu-btn'), nav = $('#nav');
     mb.addEventListener('click', function () {
       var open = nav.classList.toggle('open');
       mb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    var dd = $('#dd'), ddb = $('#dd-btn'), ddm = $('#dd-menu');
+    function closeDd(focus) { ddm.hidden = true; ddb.setAttribute('aria-expanded', 'false'); if (focus) ddb.focus(); }
+    ddb.addEventListener('click', function () {
+      var open = ddm.hidden;
+      ddm.hidden = !open;
+      ddb.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) { var cur = ddm.querySelector('[aria-current]'); if (cur) cur.scrollIntoView({ block: 'nearest' }); }
+    });
+    document.addEventListener('click', function (e) { if (!dd.contains(e.target)) closeDd(false); });
+    dd.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !ddm.hidden) { e.preventDefault(); closeDd(true); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        var items = $$('a', ddm); if (ddm.hidden || !items.length) return;
+        e.preventDefault();
+        var i = items.indexOf(document.activeElement);
+        i = e.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
+        items[i].focus();
+      }
     });
   }
 
@@ -148,7 +192,7 @@
     f.className = 'site-footer';
     f.innerHTML =
       '<div class="container bar"><span>© ' + SITE.year + ' ' + SITE.name + '</span>' +
-      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a></span></div>';
+      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'projects.html">Loyihalar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a></span></div>';
     document.body.appendChild(f);
   }
 
@@ -225,9 +269,10 @@
 
   buildHeader();
   buildFooter();
+  (function () { ['bg.js', 'music.js'].forEach(function (n) { var s = document.createElement('script'); s.src = root + 'assets/' + n; s.defer = true; document.body.appendChild(s); }); })();
   mountToolHead();
   mountFeatures();
   mountToolBrowser({ limit: document.body.getAttribute('data-limit') ? parseInt(document.body.getAttribute('data-limit'), 10) : 0 });
 
-  window.TO = { $: $, $$: $$, esc: esc, store: store, toast: toast, copyText: copyText, download: download, TOOLS: TOOLS, CATS: CATS, SITE: SITE };
+  window.TO = { setTheme: setTheme, getTheme: getTheme, $: $, $$: $$, esc: esc, store: store, toast: toast, copyText: copyText, download: download, TOOLS: TOOLS, CATS: CATS, SITE: SITE };
 })();

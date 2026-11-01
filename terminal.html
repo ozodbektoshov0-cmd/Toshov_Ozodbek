@@ -33,12 +33,12 @@
 
     var FILES = {
       'about.txt': "Men Toshov Ozodbek. Veb sahifalar va foydali kichik dasturlar yarataman.\nLoyihalarim GitHub'da: github.com/ozodbektoshov0-cmd",
-      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      Modlar portali (HTML)\n3D-Studiya             3D tajriba (JavaScript)",
+      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      GTA SA modlar portali (open gta)\n3D-Studiya             Brauzerda 3D muharrir (open 3d)",
       'secret.txt': "Topdingiz! Endi 'quiz' yozib, IT testini yeching."
     };
 
     var TOOLS = window.TO ? window.TO.TOOLS : [];
-    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'tools', 'open', 'theme', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
+    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'tools', 'open', 'theme', 'fx', 'music', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
 
     function print(text, cls) {
       var d = document.createElement('div');
@@ -61,12 +61,14 @@
       '  about       men haqimda qisqacha',
       '  projects    loyihalarim ro‘yxati',
       '  tools       barcha asboblar',
-      '  open <nom>  asbobni ochadi (masalan: open qr)',
+      '  open <nom>  asbob yoki loyihani ochadi (open qr, open 3d, open gta)',
       '  quiz        IT testiga o‘tadi',
       '  typing      yozish tezligi testiga o‘tadi',
       '  github      GitHub sahifamni ochadi',
       '  ls, cat <fayl>, pwd, cd, echo, date, whoami',
-      '  theme       yorug‘ va qorong‘i mavzuni almashtiradi',
+      '  theme       ko‘k va tungi (Matrix) rejimni almashtiradi',
+      '  fx          fon animatsiyasini yoqadi yoki o‘chiradi',
+      '  music       hacker musiqani yoqadi yoki o‘chiradi',
       '  neofetch    tizim ma’lumoti',
       '  history     oldingi buyruqlar',
       '  clear       ekranni tozalaydi'
@@ -99,6 +101,8 @@
       open: function (a) {
         var id = (a[0] || '').toLowerCase();
         if (!id) return print('Foydalanish: open <asbob>. Ro‘yxat uchun: tools', 'term-err');
+        var PRJ = { '3d': 'projects/3d-studiya/', '3d-studiya': 'projects/3d-studiya/', 'gta': 'projects/gta-sa/', 'gta-sa': 'projects/gta-sa/' };
+        if (PRJ[id]) { print('Loyiha ochilmoqda...'); setTimeout(function () { location.href = PRJ[id]; }, 400); return; }
         var t = TOOLS.filter(function (x) { return x.id === id; })[0];
         if (!t) return print('open: "' + id + '" topilmadi. "tools" buyrug‘ini sinang.', 'term-err');
         print(t.t + ' ochilmoqda...');
@@ -107,10 +111,20 @@
       quiz: function () { print('IT testi ochilmoqda...'); setTimeout(function () { location.href = 'quiz.html'; }, 400); },
       typing: function () { print('Yozish testi ochilmoqda...'); setTimeout(function () { location.href = 'typing.html'; }, 400); },
       theme: function () {
-        var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', cur);
-        window.TO && window.TO.store.set('theme', cur);
-        print('Mavzu: ' + (cur === 'light' ? 'yorug‘' : 'qorong‘i'));
+        if (!window.TO) return;
+        var n = window.TO.getTheme() === 'night' ? 'blue' : 'night';
+        window.TO.setTheme(n);
+        print('Mavzu: ' + (n === 'night' ? 'tungi (Matrix)' : 'ko‘k'), 'term-ok');
+      },
+      music: function () {
+        if (!window.TOMUSIC) return print('Musiqa hali yuklanmadi.', 'term-err');
+        window.TOMUSIC.toggle();
+        setTimeout(function () { print('Musiqa: ' + (window.TOMUSIC.isOn() ? 'yoqildi' : 'o‘chirildi')); }, 300);
+      },
+      fx: function () {
+        if (!window.TOFX) return print('Fon animatsiyasi hali yuklanmadi.', 'term-err');
+        window.TOFX.set(!window.TOFX.get());
+        print('Fon animatsiyasi: ' + (window.TOFX.get() ? 'yoqildi' : 'o‘chirildi'));
       },
       neofetch: function () {
         print([
@@ -165,7 +179,8 @@
     });
     document.getElementById('term').addEventListener('click', function () { inp.focus(); });
 
-    print('Terminal simulyatoriga xush kelibsiz.\nYordam uchun "help" deb yozing.', 'term-dim');
+    print('Terminal simulyatoriga xush kelibsiz.', 'term-ok');
+    print('Yordam uchun "help" deb yozing.', 'term-warn');
     inp.focus();
   })();
   </script>
