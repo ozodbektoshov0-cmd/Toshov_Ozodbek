@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="uz" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  
+  <!-- SEO Meta Tags -->
+  <title>GTA SA UZBEK V2 Master | Ozodbek Modz - Eng so'nggi modlar</title>
+  <meta name="description" content="GTA San Andreas Uzbek V2 Master Edition - Ozodbek Modz dan eng so'nggi modlar to'plami: Cheat Menu, SA_DOX Grafik, GTA V Map, GTA V Style, PUBG Style, Superhero. Android 11-16 uchun premium modlar." />
+  <meta name="keywords" content="GTA SA Uzbek, GTA San Andreas, Ozodbek Modz, Cheat Menu, SA_DOX, GTA V Map, PUBG Style, Superhero, Android modlar, GTA o'zbek tilida" />
+  <meta name="author" content="Ozodbek Modz" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="GTA SA UZBEK V2 Master | Ozodbek Modz" />
+  <meta property="og:description" content="GTA San Andreas Uzbek V2 - eng yangi modlar to'plami: Superhero endi qo'shildi!" />
+  <meta property="og:image" content="https://i.postimg.cc/2jB188dN/IMG-20260114-210442.png" />
+  <meta property="og:url" content="https://ozodbekmodz.uz" />
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#f59e0b',
+          }
+        }
+      }
+    };
+  </script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Rajdhani:wght@300;400;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #0a0a0a;
+      color: #f1f1f1;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* PREMIUM RESPONSIVE LOADING SCREEN */
+    #loading-screen {      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 30% 30%, #2a2a2a 0%, #000000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .loading-container {
+      position: relative;
+      width: min(90%, 600px);
+      padding: clamp(1rem, 5vw, 3rem);
+      text-align: center;
+    }
+    
+    /* Animated Logo */
+    .loading-logo {
+      width: min(40vw, 180px);
+      height: min(40vw, 180px);
+      margin: 0 auto clamp(1rem, 4vw, 2.5rem);
+      position: relative;
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    .loading-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      animation: glow 2s ease-in-out infinite alternate;
+      border-radius: min(5vw, 30px);
+    }
+    
+    .loading-logo::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      background: conic-gradient(from 0deg, #f59e0b, transparent, #f59e0b, transparent, #f59e0b);
+      border-radius: min(6vw, 40px);
+      animation: spin-slow 4s linear infinite;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
+    }
+        @keyframes glow {
+      from { filter: drop-shadow(0 0 5px #f59e0b); }
+      to { filter: drop-shadow(0 0 20px #f59e0b) drop-shadow(0 0 40px #f59e0b); }
+    }
+    
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Real Progress Bar */
+    .loading-progress {
+      width: 100%;
+      height: clamp(4px, 1.5vw, 8px);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: clamp(5px, 2vw, 10px);
+      margin: clamp(1rem, 4vw, 2rem) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .loading-progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      transition: width 0.3s ease;
+      border-radius: clamp(5px, 2vw, 10px);
+      box-shadow: 0 0 20px #f59e0b;
+    }
+    
+    /* Resource Status */
+    .resource-status {
+      font-size: clamp(0.6rem, 2vw, 0.8rem);
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 0.5rem;
+    }
+    
+    /* Loading Text */
+    .loading-text {
+      font-size: clamp(0.7rem, 3vw, 1.2rem);
+      font-weight: 600;
+      letter-spacing: clamp(0.2em, 2vw, 0.5em);
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      margin: clamp(1rem, 4vw, 2rem) 0;
+      min-height: clamp(2rem, 6vw, 3rem);
+    }    
+    /* Loading Dots */
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      gap: clamp(5px, 2vw, 12px);
+      margin: clamp(1rem, 4vw, 2rem) 0;
+    }
+    
+    .loading-dot {
+      width: clamp(6px, 2vw, 12px);
+      height: clamp(6px, 2vw, 12px);
+      background: #f59e0b;
+      border-radius: 50%;
+      animation: dotWave 1.2s ease-in-out infinite;
+    }
+    
+    .loading-dot:nth-child(2) { animation-delay: 0.1s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(4) { animation-delay: 0.3s; }
+    .loading-dot:nth-child(5) { animation-delay: 0.4s; }
+    
+    @keyframes dotWave {
+      0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.5; }
+      50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+    }
+    
+    /* Particles */
+    .loading-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    
+    .loading-particle {
+      position: absolute;
+      width: clamp(1px, 0.5vw, 3px);
+      height: clamp(1px, 0.5vw, 3px);
+      background: #f59e0b;
+      border-radius: 50%;
+      animation: particleFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes particleFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0; }
+      50% { transform: translateY(-50px) scale(1.5); opacity: 0.8; }
+    }
+    
+    /* Glass Card */
+    .glass-card {      background: rgba(30, 30, 30, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: clamp(1rem, 4vw, 1.5rem);
+      transition: all 0.3s;
+    }
+    
+    /* Accordion */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-out;
+      opacity: 0;
+    }
+    
+    .accordion-content.open {
+      max-height: 2000px;
+      opacity: 1;
+    }
+    
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: max(15px, 3vh);
+      left: 50%;
+      transform: translate(-50%, 150%);
+      background: #10b981;
+      color: white;
+      padding: clamp(10px, 3vw, 16px) clamp(20px, 6vw, 32px);
+      border-radius: 50px;
+      font-weight: 700;
+      z-index: 1000;
+      transition: transform 0.3s;
+      font-size: clamp(0.7rem, 3vw, 1rem);
+    }
+    
+    #toast.show { transform: translate(-50%, 0); }
+    
+    /* Marquee */
+    .marquee {
+      white-space: nowrap;
+      overflow: hidden;
+      animation: marquee 20s linear infinite;
+    }
+    
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    /* Mod Badge - Responsive */
+    .mod-badge {
+      position: absolute;
+      top: max(-5px, -1vw);
+      right: max(-5px, -1vw);
+      background: #f59e0b;
+      color: black;
+      padding: clamp(2px, 1vw, 4px) clamp(6px, 2vw, 12px);
+      border-radius: 20px;
+      font-size: clamp(8px, 2vw, 10px);
+      font-weight: 900;
+      text-transform: uppercase;
+      transform: rotate(5deg);
+      z-index: 10;
+      white-space: nowrap;
+    }
+    
+    /* Responsive Video Container */
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      border-radius: clamp(0.5rem, 2vw, 0.75rem);
+    }
+    
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    
+    /* Download Grid */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+      gap: clamp(0.5rem, 2vw, 1rem);
+    }
+    
+    /* Touch-friendly buttons */
+    .download-btn {
+      padding: clamp(0.5rem, 3vw, 1rem);
+      font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+      min-height: 44px;
+      display: flex;      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body class="dark">
+
+  <!-- PREMIUM LOADING SCREEN -->
+  <div id="loading-screen">
+    <!-- Particles -->
+    <div class="loading-particles" id="particles"></div>
+    
+    <div class="loading-container">
+      <!-- Logo -->
+      <div class="loading-logo">
+        <img src="https://i.postimg.cc/2jB188dN/IMG-20260114-210442.png" alt="Logo" />
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="loading-progress">
+        <div class="loading-progress-fill" id="progressFill"></div>
+      </div>
+      
+      <!-- Resource Status -->
+      <div class="resource-status" id="resourceStatus">
+        Yuklanmoqda: 0/8 resurs
+      </div>
+      
+      <!-- Loading Text -->
+      <div class="loading-text" id="loadingText">
+        <span id="typewriterText"></span>
+      </div>
+      
+      <!-- Loading Dots -->
+      <div class="loading-dots" id="loadingDots">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+    <!-- Header -->
+    <div class="flex flex-col items-center gap-3 sm:gap-4 lg:gap-6">
+      <img src="https://i.postimg.cc/2jB188dN/IMG-20260114-210442.png" alt="Logo"            class="w-16 sm:w-20 lg:w-24 xl:w-28 h-auto rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-primary/50" 
+           loading="lazy" />
+      
+      <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-center uppercase" 
+          style="font-family: 'Orbitron'">
+        <span class="text-primary">GTA SA</span> UZBEK
+      </h1>
+      
+      <div class="flex flex-wrap justify-center gap-2">
+        <span class="px-3 sm:px-4 lg:px-6 py-1 sm:py-1.5 lg:py-2 bg-primary/20 text-primary text-[10px] sm:text-xs lg:text-sm font-black rounded-full border border-primary/30">
+          V2 MASTER
+        </span>
+        <span class="px-3 sm:px-4 lg:px-6 py-1 sm:py-1.5 lg:py-2 bg-white/10 text-white text-[10px] sm:text-xs lg:text-sm font-black rounded-full">
+          OZODBEK MODZ
+        </span>
+      </div>
+
+      <!-- Stats -->
+      <div class="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-8 mt-1 sm:mt-2 lg:mt-4">
+        <div class="text-center">
+          <div class="text-xl sm:text-2xl lg:text-3xl font-black text-primary">15K+</div>
+          <div class="text-[8px] sm:text-[9px] lg:text-[10px] uppercase opacity-50">Yuklamalar</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xl sm:text-2xl lg:text-3xl font-black text-primary">4.8</div>
+          <div class="text-[8px] sm:text-[9px] lg:text-[10px] uppercase opacity-50">★★★★★</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xl sm:text-2xl lg:text-3xl font-black text-primary">2026</div>
+          <div class="text-[8px] sm:text-[9px] lg:text-[10px] uppercase opacity-50">Yangilangan</div>
+        </div>
+      </div>
+
+      <!-- Marquee -->
+      <div class="w-full bg-white/5 py-1.5 sm:py-2 lg:py-3 rounded-full overflow-hidden mt-2 sm:mt-3 lg:mt-4">
+        <div class="marquee text-[10px] sm:text-xs lg:text-sm font-bold uppercase">
+          <span class="mx-2 sm:mx-3 lg:mx-4">🔥 Cheat Menu</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">🎨 SA_DOX Grafik</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">🗺️ GTA V Map</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">💎 GTA V Style</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">🎯 PUBG Style</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">🦸 Superhero</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">📱 Android 11-16</span>
+          <span class="mx-2 sm:mx-3 lg:mx-4">🇺 O'zbek Tili</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto mt-6 sm:mt-8 lg:mt-10 pb-12 sm:pb-16 lg:pb-20">
+      
+      <!-- Android Section -->      <div class="glass-card overflow-hidden mb-4 sm:mb-6 lg:mb-8">
+        <button onclick="toggleMainSection()" 
+                class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-6 bg-gradient-to-r from-primary/10 to-transparent"
+                aria-expanded="false"
+                id="mainAccordionBtn">
+          <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+            <i class="fa-brands fa-android text-2xl sm:text-3xl lg:text-4xl text-green-500"></i>
+            <div class="text-left">
+              <h2 class="text-sm sm:text-base lg:text-xl font-black uppercase">Android 11 - 16</h2>
+              <p class="text-[8px] sm:text-[9px] lg:text-xs opacity-60">6 xil premium modlar</p>
+            </div>
+          </div>
+          <i id="main-chevron" class="fa-solid fa-chevron-down text-base sm:text-lg lg:text-2xl text-primary transition-transform duration-300"></i>
+        </button>
+
+        <div id="main-accordion" class="accordion-content">
+          <div class="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
+
+            <!-- Swiper Slider -->
+            <div class="swiper mySwiper rounded-xl overflow-hidden border border-white/10 mb-2 sm:mb-3 lg:mb-4">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide bg-gradient-to-r from-primary/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  🔥 Cheat Menu Pro
+                </div>
+                <div class="swiper-slide bg-gradient-to-r from-green-500/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  🎨 SA_DOX Grafik
+                </div>
+                <div class="swiper-slide bg-gradient-to-r from-blue-500/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  🗺️ GTA V Map
+                </div>
+                <div class="swiper-slide bg-gradient-to-r from-purple-500/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  💎 GTA V Style
+                </div>
+                <div class="swiper-slide bg-gradient-to-r from-orange-500/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  🎯 PUBG Style
+                </div>
+                <div class="swiper-slide bg-gradient-to-r from-red-500/20 to-transparent p-3 sm:p-4 lg:p-6 text-center font-black text-xs sm:text-sm lg:text-base">
+                  🦸 Superhero
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+
+            <!-- CHEAT MENU -->
+            <div class="glass-card overflow-hidden relative" id="cheat-card">
+              <div class="mod-badge">POPULAR</div>
+              <button onclick="toggleSection('cheat-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-bolt text-primary"></i> Cheat Menu li O'zbekcha GTA SA
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="cheat-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/cam2dxin1f3oky4/GTA+SA+By+OZODBEK.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/81izse4xh5zau5y/GTA+SA+By+OZODBEK.zip/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-file-zipper text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-2 sm:p-3">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-center mb-2 text-primary">O'rnatish videosi</p>
+                    <div class="video-container">
+                      <iframe src="https://www.youtube.com/embed/BhlsA9fELKM" loading="lazy" allowfullscreen></iframe>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SA_DOX -->
+            <div class="glass-card overflow-hidden">
+              <button onclick="toggleSection('sadox-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-image text-primary"></i> SA_DOX grafikali O'zbekcha GTA SA
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="sadox-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/3zhjnxztpjw5s8q/Gta+sa+uzbek+(OZODBEK+MODZ).apk/file"                        target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/807iuc13iy26j84/SA_DOX_grafikali_O%2527zbekcha_Gta_Sa_%2528OZODBEK+MODZ%2529.7z/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-2 sm:p-3">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-center mb-2 text-primary">O'rnatish videosi</p>
+                    <div class="video-container">
+                      <iframe src="https://www.youtube.com/embed/bnbtdvvkY0A" loading="lazy" allowfullscreen></iframe>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GTA V MAP -->
+            <div class="glass-card overflow-hidden">
+              <button onclick="toggleSection('gtav-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-map-location-dot text-primary"></i> GTA V xaritali GTA SA Uzbek
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="gtav-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/3zhjnxztpjw5s8q/Gta_sa_uzbek_%2528OZODBEK_MODZ%2529.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/s5zu2wzei01xhzi/GTA_V_xaritali_Gta_sa_Uzbek.zip/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-4 sm:p-5 lg:p-6 text-center border border-dashed border-white/20">
+                    <i class="fa-solid fa-video-slash text-xl sm:text-2xl lg:text-3xl opacity-30 mb-2"></i>
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold opacity-50 uppercase">Video tez kunda</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GTA V STYLE -->
+            <div class="glass-card overflow-hidden relative">
+              <div class="mod-badge" style="background: #8b5cf6;">NEW</div>
+              <button onclick="toggleSection('style-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-gem text-primary"></i> GTA V Style - Premium Grafik
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="style-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/3zhjnxztpjw5s8q/Gta+sa+uzbek+(OZODBEK+MODZ).apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>                    <a href="https://www.mediafire.com/file/ccvqd5brodvbh84/GTA_V_style.7z/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-2 sm:p-3">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-center mb-2 text-primary">O'rnatish videosi</p>
+                    <div class="video-container">
+                      <iframe src="https://www.youtube.com/embed/fpwMhVmPKQQ" loading="lazy" allowfullscreen></iframe>
+                    </div>
+                  </div>
+                  <div class="bg-gradient-to-r from-purple-500/10 to-transparent p-2 sm:p-3 rounded-xl">
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-center">
+                      <span class="text-primary">GTA V Style</span> - GTA V grafikasi, effektlar va atmosfera
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PUBG STYLE -->
+            <div class="glass-card overflow-hidden relative">
+              <div class="mod-badge" style="background: #f97316;">YANGI</div>
+              <button onclick="toggleSection('pubg-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-crosshairs text-primary"></i> PUBG Style - Battle Royale
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="pubg-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/zpittg98sal7cup/PUBG+style+APK.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/c6xhncvpmc70zzu/PUBG_Style.zip/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-4 sm:p-5 lg:p-6 text-center border border-dashed border-white/20">
+                    <i class="fa-solid fa-hourglass-half text-xl sm:text-2xl lg:text-3xl text-primary opacity-50 mb-2"></i>
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-primary uppercase mb-1">Tez kunda</p>
+                    <p class="text-[8px] sm:text-[9px] lg:text-[10px] opacity-50">O'rnatish videosi tayyorlanmoqda</p>
+                  </div>
+                  <div class="bg-gradient-to-r from-orange-500/10 to-transparent p-2 sm:p-3 rounded-xl">
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-center">
+                      <span class="text-primary">PUBG Style</span> - PUBG dagi kabi atmosfera, effektlar va Battle Royale tajribasi
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUPERHERO - NEW SECTION -->
+            <div class="glass-card overflow-hidden relative">
+              <div class="mod-badge" style="background: #ef4444;">YANGI</div>
+              <button onclick="toggleSection('superhero-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-mask text-primary"></i> Superhero - Qahramonlar modi
+                </span>
+                <i class="fa-solid fa-plus text-primary text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="superhero-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/yxm3rrojevp4m0r/GTA+SA+(SUPERHERO).apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/pqyhrpqkd7h4e62/Superhero.zip/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-primary transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  <div class="bg-black/60 rounded-xl p-4 sm:p-5 lg:p-6 text-center border border-dashed border-white/20">
+                    <i class="fa-solid fa-hourglass-half text-xl sm:text-2xl lg:text-3xl text-primary opacity-50 mb-2"></i>
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-primary uppercase mb-1">Tez kunda</p>
+                    <p class="text-[8px] sm:text-[9px] lg:text-[10px] opacity-50">O'rnatish videosi tayyorlanmoqda</p>
+                  </div>
+                  <div class="bg-gradient-to-r from-red-500/10 to-transparent p-2 sm:p-3 rounded-xl">
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-center">
+                      <span class="text-primary">Superhero</span> - Superqahramonlar modi: Iron Man, Spider-Man, Batman va boshqalar!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END SUPERHERO -->
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin NEMATILLO gtalari SECTION (NEW) -->
+      <div class="glass-card overflow-hidden mb-4 sm:mb-6 lg:mb-8">
+        <button onclick="toggleSection('admin-main-section', this)" 
+                class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-6 bg-gradient-to-r from-purple-500/10 to-transparent"
+                aria-expanded="false">
+          <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+            <i class="fa-solid fa-user-tie text-2xl sm:text-3xl lg:text-4xl text-purple-400"></i>
+            <div class="text-left">
+              <h2 class="text-sm sm:text-base lg:text-xl font-black uppercase">Admin NEMATILLO gtalari</h2>
+              <p class="text-[8px] sm:text-[9px] lg:text-xs opacity-60">Maxsus admin to'plami</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-plus text-base sm:text-lg lg:text-2xl text-purple-400 section-chevron"></i>
+        </button>
+
+        <div id="admin-main-section" class="accordion-content">
+          <div class="p-3 sm:p-4 lg:p-6">
+            
+            <!-- Adminning 1-gtasi (sub-section) -->
+            <div class="glass-card overflow-hidden relative">
+              <button onclick="toggleSection('admin-sub-section', this)" 
+                      class="w-full flex items-center justify-between p-3 sm:p-4 lg:p-5 bg-white/5"
+                      aria-expanded="false">
+                <span class="font-bold uppercase flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
+                  <i class="fa-solid fa-star text-purple-400"></i> Adminning 1-gtasi
+                </span>
+                <i class="fa-solid fa-plus text-purple-400 text-xs sm:text-sm lg:text-base section-chevron"></i>
+              </button>
+              <div id="admin-sub-section" class="accordion-content">
+                <div class="p-3 sm:p-4 lg:p-5 space-y-3">
+                  <div class="download-grid">
+                    <a href="https://www.mediafire.com/file/my4o86q9to630so/GTASA+2.00+AML1.2.3+FLA7.6+Unprot.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-purple-400 transition-colors">
+                      <i class="fa-brands fa-android text-green-500"></i>
+                      <span class="text-xs font-bold">APK</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/94reyhxm4xd8x30/com.rockstargames.gtasa.7z/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-purple-400 transition-colors">
+                      <i class="fa-solid fa-box-archive text-blue-500"></i>
+                      <span class="text-xs font-bold">Data</span>
+                    </a>
+                    <a href="https://www.mediafire.com/file/czfy3mqkwkumytg/MT+manager.apk/file" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-purple-400 transition-colors">
+                      <i class="fa-solid fa-screwdriver-wrench text-yellow-500"></i>
+                      <span class="text-xs font-bold">MT</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver" 
+                       target="_blank" rel="noopener noreferrer"
+                       class="download-btn bg-black/40 rounded-xl border border-white/10 hover:border-purple-400 transition-colors">
+                      <i class="fa-solid fa-folder-tree text-emerald-500"></i>
+                      <span class="text-xs font-bold">ZArchiver</span>
+                    </a>
+                  </div>
+                  
+                  <!-- DATA PAROLI QO'SHILDI (nusxalash tugmasi bilan) -->
+                  <div class="bg-purple-500/10 rounded-xl p-3 sm:p-4 border border-purple-500/30">
+                    <div class="flex items-center justify-center gap-2 text-purple-400 flex-wrap">
+                      <i class="fa-solid fa-lock text-sm sm:text-base"></i>
+                      <span class="text-[10px] sm:text-xs font-bold uppercase">DATA PAROLI:</span>
+                      <span class="text-[10px] sm:text-xs font-black bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">Nematillo_N1</span>
+                      <button onclick="copyPassword('Nematillo_N1')" class="hover:text-white transition-colors" title="Parolni nusxalash">
+                        <i class="fa-regular fa-copy text-sm sm:text-base"></i>
+                      </button>
+                    </div>
+                    <p class="text-[8px] sm:text-[9px] text-center text-purple-400/60 mt-2">🔐 Faylni ochish uchun parolni kiriting</p>
+                  </div>
+                  
+                  <div class="bg-black/60 rounded-xl p-4 sm:p-5 lg:p-6 text-center border border-dashed border-white/20">
+                    <i class="fa-solid fa-hourglass-half text-xl sm:text-2xl lg:text-3xl text-purple-400 opacity-50 mb-2"></i>
+                    <p class="text-[9px] sm:text-[10px] lg:text-xs font-bold text-purple-400 uppercase mb-1">Tez kunda</p>
+                    <p class="text-[8px] sm:text-[9px] lg:text-[10px] opacity-50">O'rnatish videosi tayyorlanmoqda</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END Adminning 1-gtasi -->
+
+          </div>
+        </div>
+      </div>
+      <!-- END Admin NEMATILLO gtalari SECTION -->
+
+      <!-- Social Links -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mt-4 sm:mt-6 lg:mt-8">
+        <a href="https://t.me/OZODBEK_MODZ" target="_blank" rel="noopener noreferrer"
+           class="glass-card p-3 sm:p-4 lg:p-5 flex items-center justify-center gap-2 hover:bg-[#0088cc]/10 transition-colors min-h-[44px]">
+          <i class="fa-brands fa-telegram text-lg sm:text-xl lg:text-2xl xl:text-3xl text-[#0088cc]"></i>
+          <span class="text-[10px] sm:text-xs lg:text-sm font-bold uppercase">Telegram</span>
+        </a>
+        <a href="https://www.youtube.com/@Ozodbek_Modz" target="_blank" rel="noopener noreferrer"
+           class="glass-card p-3 sm:p-4 lg:p-5 flex items-center justify-center gap-2 hover:bg-[#ff0000]/10 transition-colors min-h-[44px]">
+          <i class="fa-brands fa-youtube text-lg sm:text-xl lg:text-2xl xl:text-3xl text-[#ff0000]"></i>
+          <span class="text-[10px] sm:text-xs lg:text-sm font-bold uppercase">YouTube</span>
+        </a>
+        <a href="https://www.instagram.com/ozodbekmodz?igsh=dWEzNnEzajhrN3g4" target="_blank" rel="noopener noreferrer"           class="glass-card p-3 sm:p-4 lg:p-5 flex items-center justify-center gap-2 hover:bg-[#e4405f]/10 transition-colors min-h-[44px]">
+          <i class="fa-brands fa-instagram text-lg sm:text-xl lg:text-2xl xl:text-3xl text-[#e4405f]"></i>
+          <span class="text-[10px] sm:text-xs lg:text-sm font-bold uppercase">Instagram</span>
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-10 sm:mt-12 lg:mt-16 pt-6 sm:pt-8 lg:pt-10 text-center border-t border-white/5">
+        <div class="text-[8px] sm:text-[9px] lg:text-[10px] opacity-30 uppercase tracking-widest">
+          © 2026 GTA SA UZBEK | OZODBEK MODZ | 6 MOD
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast">
+    <span id="toast-msg"></span>
+  </div>
+
+  <script>
+    // Resource loading tracker
+    class LoadingManager {
+      constructor() {
+        this.resources = new Set();
+        this.loadedResources = new Set();
+        this.totalResources = 0;
+        this.onComplete = null;
+        this.timeouts = [];
+      }
+      
+      addResource(url) {
+        this.resources.add(url);
+        this.totalResources = this.resources.size;
+        this.updateStatus();
+      }
+      
+      markLoaded(url) {
+        if (this.resources.has(url)) {
+          this.loadedResources.add(url);
+          this.updateStatus();
+          
+          if (this.loadedResources.size === this.resources.size && this.onComplete) {
+            setTimeout(() => this.onComplete(), 500);
+          }
+        }
+      }
+      
+      updateStatus() {
+        const statusEl = document.getElementById('resourceStatus');        if (statusEl) {
+          statusEl.textContent = `Yuklanmoqda: ${this.loadedResources.size}/${this.totalResources} resurs`;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+          const percent = (this.loadedResources.size / this.totalResources) * 100;
+          progressFill.style.width = percent + '%';
+        }
+      }
+      
+      setTimeout(fn, delay) {
+        const id = setTimeout(fn, delay);
+        this.timeouts.push(id);
+        return id;
+      }
+      
+      clearAllTimeouts() {
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts = [];
+      }
+    }
+    
+    const loadingManager = new LoadingManager();
+    
+    // Track image loads
+    function trackImageLoad(img) {
+      const url = img.src;
+      loadingManager.addResource(url);
+      
+      if (img.complete) {
+        loadingManager.markLoaded(url);
+      } else {
+        img.addEventListener('load', () => loadingManager.markLoaded(url));
+        img.addEventListener('error', () => loadingManager.markLoaded(url));
+      }
+    }
+    
+    // Track all images on page
+    document.querySelectorAll('img').forEach(trackImageLoad);
+    
+    // Track iframes
+    document.querySelectorAll('iframe').forEach(iframe => {
+      const url = iframe.src;
+      if (url) {
+        loadingManager.addResource(url);
+        iframe.addEventListener('load', () => loadingManager.markLoaded(url));
+        iframe.addEventListener('error', () => loadingManager.markLoaded(url));
+      }
+    });    
+    // Typewriter with cleanup
+    function startTypewriter(element, texts) {
+      let currentText = 0;
+      let timeoutId;
+      
+      function typeWriter(text, i = 0) {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          timeoutId = loadingManager.setTimeout(() => typeWriter(text, i + 1), 80);
+        } else {
+          timeoutId = loadingManager.setTimeout(() => {
+            element.textContent = '';
+            currentText = (currentText + 1) % texts.length;
+            typeWriter(texts[currentText]);
+          }, 1500);
+        }
+      }
+      
+      typeWriter(texts[0]);
+    }
+    
+    // Initialize loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    const typewriterEl = document.getElementById('typewriterText');
+    
+    // Start typewriter
+    startTypewriter(typewriterEl, [
+      "GTA SA UZBEK",
+      "OZODBEK MODZ",
+      "MASTER EDITION",
+      "ANDROID READY",
+      "6 PREMIUM MOD"
+    ]);
+    
+    // Create particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'loading-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 3 + 's';
+      particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      particlesContainer.appendChild(particle);
+    }
+    
+    // When all resources loaded
+    loadingManager.onComplete = function() {
+      loadingManager.setTimeout(() => {        loadingScreen.style.opacity = '0';
+        loadingManager.setTimeout(() => {
+          if (loadingScreen.parentNode) {
+            loadingScreen.remove();
+            loadingManager.clearAllTimeouts();
+          }
+        }, 800);
+      }, 500);
+    };
+    
+    // Fallback: hide loading after 5 seconds max
+    loadingManager.setTimeout(() => {
+      if (loadingScreen.parentNode) {
+        loadingScreen.style.opacity = '0';
+        loadingManager.setTimeout(() => {
+          if (loadingScreen.parentNode) {
+            loadingScreen.remove();
+            loadingManager.clearAllTimeouts();
+          }
+        }, 800);
+      }
+    }, 5000);
+
+    // Swiper initialization
+    new Swiper('.mySwiper', {
+      autoplay: { delay: 3000 },
+      loop: true,
+      pagination: { el: '.swiper-pagination', clickable: true },
+      breakpoints: {
+        320: { slidesPerView: 1 },
+        640: { slidesPerView: 2 }
+      }
+    });
+
+    // Toggle main section
+    function toggleMainSection() {
+      const content = document.getElementById('main-accordion');
+      const chevron = document.getElementById('main-chevron');
+      const btn = document.getElementById('mainAccordionBtn');
+      const isOpen = content.classList.contains('open');
+      
+      content.classList.toggle('open');
+      chevron.style.transform = isOpen ? 'rotate(0)' : 'rotate(180deg)';
+      btn.setAttribute('aria-expanded', !isOpen);
+    }
+
+    // Toggle individual sections
+    function toggleSection(id, button) {
+      const content = document.getElementById(id);
+      const chevron = button.querySelector('.section-chevron');      const isOpen = content.classList.contains('open');
+      
+      content.classList.toggle('open');
+      button.setAttribute('aria-expanded', !isOpen);
+      
+      if (isOpen) {
+        chevron.classList.replace('fa-minus', 'fa-plus');
+      } else {
+        chevron.classList.replace('fa-plus', 'fa-minus');
+      }
+    }
+
+    // Copy password function (YANGI QO'SHILDI)
+    function copyPassword(password) {
+      navigator.clipboard.writeText(password).then(() => {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = "🔐 Parol nusxalandi: " + password;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }).catch(() => {
+        // Agar clipboard ishlamasa
+        alert("Parol: " + password);
+      });
+    }
+
+    // Toast notifications - fixed popup blocker issue
+    document.querySelectorAll('a[href*="mediafire"], a[href*="play.google"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        // Don't prevent default - let browser handle navigation
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = "📥 Yuklanmoqda...";
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+        // Browser will navigate naturally
+      });
+    });
+  </script>
+</body>
+</html>

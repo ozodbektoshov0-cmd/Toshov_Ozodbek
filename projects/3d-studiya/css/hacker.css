@@ -1,0 +1,115 @@
+/* ---- Hacker mavzusi: asosiy saytdagi yashil uslub (blender.css ustiga) ---- */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+:root{
+  --bg:#02040c;--pn:#050a18;--hd:#040815;--ip:#0c1830;--fd:#030712;--fh:#12264a;--bd:#12335a;
+  --tx:#e8edf7;--mt:#8ea0bd;--ac:#0a4f78;--or:#29b6f6;--sel:#0a3a5c;--rw:#060d1e;--rh:#0c1830;
+  --dk2:#030814;--odd:#050c1c;--vpa:#0a1c3c;
+  --ui:"Courier Prime",ui-monospace,Menlo,Consolas,monospace;
+  --neon:#29b6f6;--neon-soft:#29b6f633;
+}
+:root[data-theme=night]{
+  --bg:#010a04;--pn:#04140a;--hd:#031a0d;--ip:#0a2a16;--fd:var(--fd);--fh:#0f3a20;--bd:#0b3a1d;
+  --tx:#d4ffe2;--mt:#6fb88c;--ac:#0b6b34;--or:#00ff66;--sel:#0a4a25;--rw:#05180c;--rh:#0a2a16;
+  --dk2:var(--dk2);--odd:var(--odd);--vpa:#04200f;
+  --neon:#00ff66;--neon-soft:#00ff6633;
+}
+body{background:var(--bg);font-family:var(--ui);font-size:12px}
+button,select,input,textarea{font-family:var(--ui)}
+
+/* sarlavha, menyular */
+header{background:var(--hd);border-bottom:1px solid var(--bd)}
+.logo{color:var(--neon);text-shadow:0 0 10px var(--neon-soft);font-weight:700}
+.logo svg{color:var(--neon)}
+details.mn summary:hover,details.mn[open] summary,header .hb:hover{background:var(--fh);color:var(--neon)}
+details.mn>div{background:var(--dk2);border:1px solid var(--bd);box-shadow:0 10px 30px #000c,0 0 0 1px var(--neon-soft)}
+button,select,.it{background:var(--ip);color:var(--tx)}
+button:hover,.it:hover{background:var(--fh);color:var(--neon)}
+button.on,.pri{background:var(--ac);color:#eafff1}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:1px solid var(--neon)}
+
+/* workspace tablari */
+#ws button{color:var(--mt);border-right:1px solid var(--bd)}
+#ws button:hover{background:var(--fh);color:var(--neon)}
+#ws button.on{background:var(--rw);color:var(--neon);box-shadow:inset 0 -2px 0 var(--neon)}
+
+/* chap panel */
+#lt button{color:var(--tx)}
+#lt button:hover{background:var(--fh);color:var(--neon)}
+#lt button.on{background:var(--ac);color:#eafff1;box-shadow:0 0 12px -2px var(--neon)}
+#lt .ts{background:var(--bd)}
+
+/* viewport */
+#vp{background:radial-gradient(ellipse at 50% 35%,var(--vpa) 0%,var(--bg) 75%)}
+#vp:not(.night) #hrain{display:none}
+#c{position:relative;z-index:1}
+#hrain{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.5}
+#vp.nofx #hrain,#vp.nofx #hlog{display:none}
+#vhd{background:color-mix(in srgb,var(--hd) 85%,transparent);border-bottom:1px solid var(--bd)}
+#modesel{background:var(--ip);color:var(--tx)}
+#vh>*{color:var(--tx)}
+#vh>*:hover{background:var(--fh);color:var(--neon)}
+#vh button.on{background:var(--ac);color:#eafff1}
+#vlb{background:color-mix(in srgb,var(--hd) 80%,transparent);border:1px solid var(--bd);color:var(--neon)}
+#hint{color:var(--mt);text-shadow:0 0 8px #000,0 0 14px #000;z-index:1}
+.gzb button{background:color-mix(in srgb,var(--hd) 80%,transparent);border:1px solid var(--bd);color:var(--tx)}
+.gzb button:hover{background:var(--fh);color:var(--neon)}
+.gzb button.on{background:var(--ac)}
+#vp.drag{outline-color:var(--neon)}
+
+/* o'ng panel */
+aside{background:var(--pn);border-left:1px solid var(--bd)}
+.ph{background:var(--hd);color:var(--mt);border-bottom:1px solid var(--bd)}
+.oh{background:var(--rw);color:var(--tx)}
+.chev{border-top-color:var(--mt)}
+#list>button{background:var(--rw);color:var(--tx)}
+#list>button:nth-child(odd){background:var(--odd)}
+#list>button:hover{background:var(--rh)}
+#list>button.on{background:var(--sel);color:#fff}
+#list .ey:hover{background:var(--neon-soft)}
+#ptabs{background:var(--dk2);border-right:1px solid var(--bd)}
+#ptabs button{color:var(--mt)}
+#ptabs button:hover{background:var(--fh);color:var(--neon)}
+#ptabs button.on{background:var(--ac);color:#eafff1}
+#noprop{color:var(--mt)}
+#prop input[type=text]{background:var(--fd);border:1px solid var(--bd);color:var(--tx)}
+details.pn{border-bottom:1px solid var(--bd)}
+details.pn>summary{background:var(--hd);color:var(--tx)}
+details.pn>summary::before{border-left-color:var(--neon)}
+details.pn[open]>summary::before{border-top-color:var(--neon)}
+#xf input,#dec,#cf,#sf,#ef,#rq{background:var(--fd);border:1px solid var(--bd);color:var(--tx)}
+#xf input:hover,#cf:hover,#sf:hover,#ef:hover{background:var(--rh)}
+input[type=range]{accent-color:var(--neon)}
+input[type=checkbox]{accent-color:var(--neon)}
+
+/* timeline va holat paneli */
+#tlb{background:var(--pn);border-top:1px solid var(--bd)}
+.tc button{background:var(--ip)}
+.tc button.on{background:var(--ac)}
+#tlr{background:var(--fd);border-top:1px solid var(--bd)}
+footer{background:var(--fd);border-top:1px solid var(--bd)}
+#chips span{background:var(--rw);border:1px solid var(--bd);color:var(--mt)}
+#chips b{color:var(--neon)}
+#st,#dm{color:var(--mt)}
+#toast{background:var(--dk2);color:var(--neon);border:1px solid var(--neon-soft);box-shadow:0 0 18px -4px var(--neon)}
+
+/* dialoglar */
+#sp,#ab,#rp{border:1px solid var(--bd);box-shadow:0 20px 50px #000c,0 0 0 1px var(--neon-soft)}
+.sg>summary{background:var(--hd);color:var(--neon)}
+.ab-body h2{color:var(--neon)}
+.ab-body a{color:var(--neon)}
+
+/* skrollbarlar */
+*{scrollbar-color:var(--ac) var(--fd)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--fd)}
+::-webkit-scrollbar-thumb{background:var(--ac);border-radius:5px}
+
+/* hacker tugmalari va jurnal oynasi */
+#hx{position:absolute;left:10px;bottom:10px;z-index:3;display:flex;gap:6px}
+#hx a,#hx button{font:700 11px/1 var(--ui);padding:7px 10px;border-radius:5px;border:1px solid var(--bd);background:color-mix(in srgb,var(--hd) 85%,transparent);color:var(--tx);text-decoration:none;cursor:pointer;white-space:nowrap}
+#hx a:hover,#hx button:hover{color:var(--neon);border-color:var(--neon);background:var(--fh)}
+#hx button[aria-pressed=false]{color:var(--mt);text-decoration:line-through}
+#hlog{position:absolute;left:12px;bottom:50px;z-index:0;width:320px;height:130px;overflow:hidden;white-space:pre;pointer-events:none;font:11px/16px var(--ui);color:var(--neon);opacity:.3;text-shadow:0 0 6px var(--neon-soft)}
+@media(max-width:1100px){#hlog{display:none}}
+@media(prefers-reduced-motion:reduce){#hrain{display:none}}
