@@ -1,0 +1,13 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Toshov Ozodbek sayti uslubi: ko'k neon (standart) va yashil Matrix (night) */
+:root{--to-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--to-ac:#8b8cff;--to-soft:#8b8cff33;--to-ln:#26262e}
+:root[data-theme=night]{--to-ac:#34d399;--to-soft:#34d39933;--to-ln:#1d2b25}
+#to-back{position:fixed;right:12px;bottom:12px;z-index:99999;font:700 12px/1 var(--to-ui);padding:9px 14px;border-radius:999px;border:1px solid var(--to-ln);background:#131318;color:var(--to-ac);text-decoration:none;box-shadow:0 10px 24px -10px #000}
+:root[data-theme=night] #to-back{background:#0e1713}
+#to-back:hover{border-color:var(--to-ac);text-decoration:none}
+body,button,input,select,textarea{font-family:var(--to-ui)}
+#zm-keep{}
+::selection{background:var(--to-soft);color:#fff}
+:root{--bg:#09090b;--accent:#8b8cff;--glow:0 12px 40px -16px rgba(139,140,255,0.5);--text-color:#f4f4f5;--card-bg:rgba(19,19,24,0.88);--border:rgba(139,140,255,0.3)}
+:root[data-theme=night],body.night-mode{--bg:#050907;--accent:#34d399;--glow:0 12px 40px -16px rgba(52,211,153,0.5);--text-color:#ecfdf5;--card-bg:rgba(14,23,19,0.88);--border:rgba(52,211,153,0.3)}

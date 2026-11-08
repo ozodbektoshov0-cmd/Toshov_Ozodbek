@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IMG Tool | Toshov Ozodbek</title>
+<meta name="description" content="GTA IMG arxivlarini brauzerda ochish: fayllarni ko'rish, chiqarib olish, qo'shish, almashtirish, nomini o'zgartirish, o'chirish va arxivni qayta qurish.">
+<style>
+:root{--bg:#09090b;--panel:#131318;--panel2:#1a1a21;--line:#26262e;--text:#f4f4f5;--mute:#a1a1aa;--ac:#8b8cff;--ink:#0b0b14;--vi:#c084fc;--ok:#34d399;--bad:#f87171}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit;color:inherit}
+header.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 80%,transparent);position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}
+header.top h1{margin:0 auto 0 0;font-size:1.15rem;letter-spacing:-.02em}
+header.top h1 small{color:var(--mute);font-weight:400;margin-left:8px}
+.btn{border:1px solid var(--line);background:var(--panel2);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:500}
+.btn:hover:not(:disabled){border-color:var(--ac)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:linear-gradient(135deg,#6366f1,#a855f7);border:0;color:#fff}
+.btn.bad:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+main{max-width:1200px;margin:0 auto;padding:16px 18px 80px}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:48px 16px;text-align:center;color:var(--mute);cursor:pointer}
+.drop.over,.drop:hover{border-color:var(--ac);color:var(--text)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.bar input[type=search],.bar select{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
+.bar input[type=search]{flex:1 1 200px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--mute);font-size:.84rem}
+.chip[aria-pressed=true]{color:var(--text);border-color:var(--ac);background:color-mix(in srgb,var(--ac) 18%,transparent)}
+.info{display:flex;gap:18px;flex-wrap:wrap;color:var(--mute);font-size:.86rem;margin:6px 0 12px}
+.info b{color:var(--ac);font-weight:600}
+.list{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.head,.row{display:grid;grid-template-columns:34px minmax(0,1fr) 70px 100px 110px;gap:8px;align-items:center;padding:0 12px;height:38px}
+.head{background:var(--panel2);color:var(--mute);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+.head button{background:none;border:0;text-align:left;color:inherit;cursor:pointer;padding:0;text-transform:inherit;letter-spacing:inherit;font-size:inherit}
+.head button:hover{color:var(--text)}
+#vp{height:min(62vh,640px);overflow:auto;position:relative}
+#sp{position:relative}
+.row{position:absolute;left:0;right:0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);cursor:pointer}
+.row:hover{background:var(--panel2)}
+.row.sel{background:color-mix(in srgb,var(--ac) 16%,transparent)}
+.row .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem}
+.row .t{font-size:.72rem;text-align:center;border:1px solid var(--line);border-radius:6px;padding:1px 0;color:var(--mute);text-transform:uppercase}
+.row .s,.row .o{color:var(--mute);font-size:.82rem;font-family:ui-monospace,Menlo,Consolas,monospace;text-align:right}
+.row input{accent-color:var(--ac)}
+@media(max-width:640px){.head,.row{grid-template-columns:30px minmax(0,1fr) 80px}.head :nth-child(3),.head :nth-child(5),.row .t,.row .o{display:none}}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.note{color:var(--mute);font-size:.82rem;margin:14px 0 0}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:20px;width:min(460px,92vw)}
+dialog::backdrop{background:#000a}
+dialog h3{margin:0 0 12px}
+dialog input[type=text],dialog select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+dialog label{display:block;margin:8px 0;color:var(--mute);font-size:.88rem}
+.row2{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.err{color:var(--bad);min-height:1.2em;font-size:.85rem}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+</style>
+<link rel="stylesheet" href="site-theme.css"></head>
+<body>
+<header class="top">
+  <h1>IMG Tool <small>GTA arxiv muharriri</small></h1>
+  <button class="btn" id="b-open">IMG ochish</button>
+  <button class="btn" id="b-new">Yangi IMG</button>
+  <button class="btn pri" id="b-save" disabled>Arxivni saqlash</button>
+  <input id="f-img" type="file" accept=".img,.dir" multiple hidden>
+  <input id="f-add" type="file" multiple hidden>
+  <input id="f-rep" type="file" hidden>
+</header>
+<main>
+  <div id="empty" class="drop" tabindex="0" role="button">
+    <p style="font-size:1.1rem;margin:0 0 6px"><b>.img faylni shu yerga tashlang</b></p>
+    <p style="margin:0">SA uchun bitta .img, III va VC uchun .img va .dir birga. Fayl brauzerdan chiqmaydi.</p>
+  </div>
+  <div id="work" hidden>
+    <div class="info"><span id="i-name"></span><span>Versiya: <b id="i-ver"></b></span><span>Fayllar: <b id="i-n">0</b></span><span>Hajm: <b id="i-sz">0</b></span><span>Tanlangan: <b id="i-sel">0</b></span><span id="i-mod" style="color:var(--ok)"></span></div>
+    <div class="bar">
+      <input id="q" type="search" placeholder="Fayl qidirish..." aria-label="Qidirish">
+      <span id="types"></span>
+    </div>
+    <div class="acts">
+      <button class="btn" id="a-all">Hammasini tanlash</button>
+      <button class="btn" id="a-ext" disabled>Chiqarib olish (0)</button>
+      <button class="btn" id="a-add">Fayl qo‘shish</button>
+      <button class="btn" id="a-rep" disabled>Almashtirish</button>
+      <button class="btn" id="a-ren" disabled>Nomini o‘zgartirish</button>
+      <button class="btn bad" id="a-del" disabled>O‘chirish (0)</button>
+    </div>
+    <div class="list">
+      <div class="head"><span></span><button data-s="name">Nom</button><button data-s="type">Tur</button><button data-s="size">Hajm</button><button data-s="off">Joyi</button></div>
+      <div id="vp"><div id="sp"></div></div>
+    </div>
+    <p class="note">Hajm sektorlarda (2048 bayt) saqlanadi, shuning uchun chiqarilgan fayl oxirida nol bayt bo‘lishi mumkin. “Aniq hajm” yoqilsa, DFF, TXD va COL fayllari o‘z sarlavhasidagi hajmga qirqiladi.</p>
+  </div>
+</main>
+
+<dialog id="d-ren"><h3>Yangi nom</h3>
+  <input type="text" id="rn" maxlength="23" autocomplete="off" aria-label="Yangi nom">
+  <div class="err" id="rn-e"></div>
+  <div class="row2"><button class="btn" id="rn-c">Bekor</button><button class="btn pri" id="rn-ok">Saqlash</button></div>
+</dialog>
+<dialog id="d-add"><h3>Fayl qo‘shish</h3>
+  <div id="ad-l" style="color:var(--mute)"></div>
+  <label><input type="checkbox" id="ad-rep" checked> Bir xil nomli faylni almashtirish</label>
+  <div class="row2"><button class="btn" id="ad-c">Bekor</button><button class="btn pri" id="ad-ok">Qo‘shish</button></div>
+</dialog>
+<dialog id="d-ext"><h3>Chiqarib olish</h3>
+  <label><input type="checkbox" id="ex-trim" checked> Aniq hajm (DFF, TXD, COL qirqiladi)</label>
+  <label><input type="checkbox" id="ex-all"> Tanlov o‘rniga hamma fayllar</label>
+  <div class="row2"><button class="btn" id="ex-c">Bekor</button><button class="btn pri" id="ex-ok">Yuklab olish</button></div>
+</dialog>
+<dialog id="d-sv"><h3>Arxivni saqlash</h3>
+  <label>Format
+    <select id="sv-v"><option value="v2">V2 (GTA San Andreas): bitta .img</option><option value="v1">V1 (GTA III / Vice City): .img va .dir</option></select></label>
+  <label>Fayl nomi<input type="text" id="sv-n" aria-label="Fayl nomi"></label>
+  <div class="row2"><button class="btn" id="sv-c">Bekor</button><button class="btn pri" id="sv-ok">Saqlash</button></div>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s),SEC=2048,RH=38;
+let E=[],uid=1,SEL=new Set(),ver='v2',fname='gta3.img',view=[],sortK='name',sortD=1,typeF='all',mod=false;
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2800)};
+const fmt=n=>n>=1073741824?(n/1073741824).toFixed(2)+' GB':n>=1048576?(n/1048576).toFixed(1)+' MB':n>=1024?(n/1024).toFixed(1)+' KB':n+' B';
+const ext=n=>(n.lastIndexOf('.')>0?n.slice(n.lastIndexOf('.')+1):'').toLowerCase();
+const cs=(u,o,n)=>{let s='';for(let i=0;i<n&&u[o+i];i++)s+=String.fromCharCode(u[o+i]);return s};
+const save=(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),8000)};
+
+/* ---------- ochish ---------- */
+async function openFiles(fs){
+  const img=fs.find(f=>/\.img$/i.test(f.name)),dir=fs.find(f=>/\.dir$/i.test(f.name));
+  if(!img){toast('.img fayl tanlang');return}
+  try{
+    const head=new Uint8Array(await img.slice(0,8).arrayBuffer());
+    const list=[];
+    if(String.fromCharCode(...head.slice(0,4))==='VER2'){
+      const n=new DataView(head.buffer).getUint32(4,true);
+      if(n>200000)throw Error('Arxiv buzilgan');
+      const d=new Uint8Array(await img.slice(8,8+n*32).arrayBuffer()),dv=new DataView(d.buffer);
+      for(let i=0;i<d.length/32|0;i++){
+        const o=i*32,off=dv.getUint32(o,true)*SEC,sz=dv.getUint16(o+4,true)*SEC||dv.getUint16(o+6,true)*SEC;
+        list.push({id:uid++,name:cs(d,o+8,24),size:sz,off,src:{f:img,o:off}});
+      }
+      ver='v2';
+    }else if(dir){
+      const d=new Uint8Array(await dir.arrayBuffer()),dv=new DataView(d.buffer);
+      for(let i=0;i<d.length/32|0;i++){
+        const o=i*32,off=dv.getUint32(o,true)*SEC,sz=dv.getUint32(o+4,true)*SEC;
+        list.push({id:uid++,name:cs(d,o+8,24),size:sz,off,src:{f:img,o:off}});
+      }
+      ver='v1';
+    }else{toast('Bu V1 arxiv: .dir fayl ham kerak. Ikkalasini birga tanlang');return}
+    let bad=0;list.forEach(e=>{if(e.src.o+e.size>img.size){e.size=Math.max(0,img.size-e.src.o);bad++}});
+    E=list;SEL.clear();fname=img.name;mod=false;
+    toast(list.length+' ta fayl'+(bad?` (${bad} tasi arxivdan tashqarida, qisqartirildi)`:''));
+    render();
+  }catch(e){toast('Ochib bo‘lmadi: '+e.message)}
+}
+$('#b-open').onclick=()=>$('#f-img').click();$('#empty').onclick=()=>$('#f-img').click();
+$('#f-img').onchange=e=>{openFiles([...e.target.files]);e.target.value=''};
+$('#b-new').onclick=()=>{E=[];SEL.clear();ver='v2';fname='yangi.img';mod=true;render();toast('Bo‘sh arxiv yaratildi. “Fayl qo‘shish” ni bosing')};
+const dz=$('#empty');
+['dragenter','dragover'].forEach(n=>document.addEventListener(n,e=>{e.preventDefault();dz.classList.add('over')}));
+['dragleave','drop'].forEach(n=>document.addEventListener(n,e=>{e.preventDefault();dz.classList.remove('over')}));
+document.addEventListener('drop',e=>{const fs=[...e.dataTransfer.files];if(fs.some(f=>/\.img$/i.test(f.name)))openFiles(fs);else if(E.length||$('#work').hidden===false)startAdd(fs)});
+
+/* ---------- ro'yxat (virtual) ---------- */
+function filt(){
+  const q=$('#q').value.trim().toLowerCase();
+  view=E.filter(e=>(typeF==='all'||ext(e.name)===typeF)&&(!q||e.name.toLowerCase().includes(q)));
+  const k=sortK;
+  view.sort((a,b)=>{let r;if(k==='size')r=a.size-b.size;else if(k==='off')r=(a.src.f?a.off:1e15)-(b.src.f?b.off:1e15);else if(k==='type')r=ext(a.name).localeCompare(ext(b.name))||a.name.localeCompare(b.name);else r=a.name.toLowerCase().localeCompare(b.name.toLowerCase());return r*sortD});
+}
+function render(){
+  const has=!(E.length===0&&$('#work').hidden&&!mod);
+  $('#empty').hidden=has;$('#work').hidden=!has;$('#b-save').disabled=!has;
+  filt();
+  $('#i-name').textContent=fname;$('#i-ver').textContent=ver==='v2'?'V2 (SA)':'V1 (III/VC)';
+  $('#i-n').textContent=E.length;$('#i-sz').textContent=fmt(E.reduce((s,e)=>s+e.size,0));$('#i-mod').textContent=mod?'O‘zgartirilgan, saqlashni unutmang':'';
+  const ts={};E.forEach(e=>{const x=ext(e.name)||'-';ts[x]=(ts[x]||0)+1});
+  $('#types').innerHTML='<button class="chip" data-t="all" aria-pressed="'+(typeF==='all')+'">Hammasi</button> '+Object.keys(ts).sort((a,b)=>ts[b]-ts[a]).slice(0,8).map(x=>`<button class="chip" data-t="${x}" aria-pressed="${typeF===x}">${x} ${ts[x]}</button>`).join(' ');
+  sel();paint();
+}
+function sel(){
+  const n=[...SEL].filter(id=>E.some(e=>e.id===id)).length;
+  $('#i-sel').textContent=n;$('#a-ext').textContent='Chiqarib olish ('+n+')';$('#a-del').textContent='O‘chirish ('+n+')';
+  $('#a-ext').disabled=!n;$('#a-del').disabled=!n;$('#a-rep').disabled=n!==1;$('#a-ren').disabled=n!==1;
+}
+function paint(){
+  const vp=$('#vp'),sp=$('#sp');sp.style.height=view.length*RH+'px';
+  const st=Math.max(0,Math.floor(vp.scrollTop/RH)-4),en=Math.min(view.length,st+Math.ceil(vp.clientHeight/RH)+8);
+  let h='';
+  for(let i=st;i<en;i++){
+    const e=view[i],s=SEL.has(e.id);
+    h+=`<div class="row${s?' sel':''}" data-id="${e.id}" style="top:${i*RH}px"><input type="checkbox" ${s?'checked':''} aria-label="Tanlash"><span class="n" title="${e.name}">${e.name.replace(/</g,'&lt;')}</span><span class="t">${ext(e.name)||'-'}</span><span class="s">${fmt(e.size)}</span><span class="o">${e.src.f?'0x'+e.off.toString(16):'yangi'}</span></div>`;
+  }
+  sp.innerHTML=h;
+}
+$('#vp').addEventListener('scroll',paint);
+$('#vp').addEventListener('click',e=>{
+  const r=e.target.closest('.row');if(!r)return;const id=+r.dataset.id;
+  if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey){SEL.has(id)?SEL.delete(id):SEL.add(id)}
+  else if(e.shiftKey&&SEL.size){const ids=view.map(x=>x.id),a=ids.indexOf([...SEL].pop()),b=ids.indexOf(id);if(a>=0)for(let i=Math.min(a,b);i<=Math.max(a,b);i++)SEL.add(ids[i])}
+  else{SEL=new Set([id])}
+  sel();paint();
+});
+$('#q').oninput=()=>{$('#vp').scrollTop=0;render()};
+$('#types').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b){typeF=b.dataset.t;$('#vp').scrollTop=0;render()}});
+document.querySelectorAll('.head [data-s]').forEach(b=>b.onclick=()=>{const k=b.dataset.s;if(sortK===k)sortD=-sortD;else{sortK=k;sortD=1}render()});
+$('#a-all').onclick=()=>{const on=view.length&&view.every(e=>SEL.has(e.id));view.forEach(e=>on?SEL.delete(e.id):SEL.add(e.id));sel();paint()};
+
+/* ---------- nom ---------- */
+function nameErr(n,self){
+  if(!n)return 'Nom bo‘sh bo‘lmasin';
+  if(n.length>23)return 'Nom 23 belgidan oshmasin';
+  if(!/^[\w.\-]+$/.test(n))return 'Faqat lotin harflari, raqam, _ - . ruxsat';
+  if(E.some(e=>e!==self&&e.name.toLowerCase()===n.toLowerCase()))return 'Bunday nomli fayl allaqachon bor';
+  return '';
+}
+const one=()=>E.find(e=>SEL.has(e.id));
+$('#a-ren').onclick=()=>{const e=one();$('#rn').value=e.name;$('#rn-e').textContent='';$('#d-ren').showModal();$('#rn').select()};
+$('#rn-c').onclick=()=>$('#d-ren').close();
+const doRen=()=>{const e=one(),n=$('#rn').value.trim(),er=nameErr(n,e);if(er){$('#rn-e').textContent=er;return}e.name=n;mod=true;$('#d-ren').close();toast('Nom o‘zgartirildi');render()};
+$('#rn-ok').onclick=doRen;$('#rn').onkeydown=e=>{if(e.key==='Enter')doRen()};
+
+/* ---------- o'chirish ---------- */
+$('#a-del').onclick=()=>{
+  const n=SEL.size;if(!n||!confirm(n+' ta fayl arxivdan o‘chirilsinmi?'))return;
+  E=E.filter(e=>!SEL.has(e.id));SEL.clear();mod=true;render();toast('O‘chirildi');
+};
+
+/* ---------- qo'shish / almashtirish ---------- */
+let ADD=[];
+$('#a-add').onclick=()=>$('#f-add').click();
+$('#f-add').onchange=e=>{startAdd([...e.target.files]);e.target.value=''};
+function startAdd(fs){
+  if(!fs.length)return;ADD=fs;
+  $('#ad-l').textContent=fs.length+' ta fayl: '+fs.slice(0,4).map(f=>f.name).join(', ')+(fs.length>4?'...':'');
+  $('#d-add').showModal();
+}
+$('#ad-c').onclick=()=>$('#d-add').close();
+$('#ad-ok').onclick=()=>{
+  const rep=$('#ad-rep').checked;let a=0,r=0,s=0,bad=[];
+  for(const f of ADD){
+    const n=f.name;
+    if(n.length>23||!/^[\w.\-]+$/.test(n)){bad.push(n);continue}
+    const ex=E.find(e=>e.name.toLowerCase()===n.toLowerCase());
+    if(ex){if(!rep){s++;continue}ex.src={blob:f};ex.size=Math.ceil(f.size/SEC)*SEC||SEC;ex.raw=f.size;ex.off=0;r++}
+    else{E.push({id:uid++,name:n,size:Math.ceil(f.size/SEC)*SEC||SEC,raw:f.size,off:0,src:{blob:f}});a++}
+  }
+  $('#d-add').close();mod=true;render();
+  toast(`Qo‘shildi: ${a}, almashtirildi: ${r}`+(s?`, o‘tkazildi (nom bor): ${s}`:'')+(bad.length?`, nomi yaroqsiz: ${bad.length} (23 belgigacha, lotin harflari)`:''));
+};
+$('#a-rep').onclick=()=>$('#f-rep').click();
+$('#f-rep').onchange=e=>{
+  const f=e.target.files[0];e.target.value='';const x=one();if(!f||!x)return;
+  x.src={blob:f};x.size=Math.ceil(f.size/SEC)*SEC||SEC;x.raw=f.size;x.off=0;mod=true;render();toast(x.name+' almashtirildi');
+};
+
+/* ---------- chiqarib olish ---------- */
+const blobOf=e=>e.src.f?e.src.f.slice(e.src.o,e.src.o+e.size):e.src.blob;
+async function trimmed(e,trim){
+  const b=blobOf(e);
+  if(e.raw!=null&&!e.src.f)return b; // qo'shilgan fayl: asl hajmi
+  if(!trim||b.size<12)return b;
+  const x=ext(e.name);if(!['dff','txd','col'].includes(x))return b;
+  const h=new DataView(await b.slice(0,12).arrayBuffer());let tot=0;
+  if(x==='col'){const sg=h.getUint32(0,true)&0xffffff;if(sg===0x4c4f43)tot=h.getUint32(4,true)+8}
+  else{const t=h.getUint32(0,true);if([0x16,0x10].includes(t))tot=h.getUint32(4,true)+12}
+  return tot>0&&tot<=b.size&&b.size-tot<SEC?b.slice(0,tot):b;
+}
+const CRC=(()=>{const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let k=0;k<8;k++)c=c&1?0xEDB88320^c>>>1:c>>>1;t[i]=c>>>0}return t})();
+function crc32(b){let c=~0;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&255]^c>>>8;return~c>>>0}
+function zip(files){
+  const enc=new TextEncoder(),loc=[],cen=[];let off=0;
+  files.forEach(([name,data])=>{
+    const nb=enc.encode(name),crc=crc32(data),h=new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,nb.length,true);
+    loc.push(new Uint8Array(h.buffer),nb,data);
+    const c=new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,nb.length,true);c.setUint32(42,off,true);
+    cen.push(new Uint8Array(c.buffer),nb);off+=30+nb.length+data.length;
+  });
+  const cd=new Blob(cen),e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cd.size,true);e.setUint32(16,off,true);
+  return new Blob([...loc,cd,new Uint8Array(e.buffer)],{type:'application/zip'});
+}
+$('#a-ext').onclick=()=>{$('#ex-all').checked=false;$('#d-ext').showModal()};
+$('#ex-c').onclick=()=>$('#d-ext').close();
+$('#ex-ok').onclick=async()=>{
+  const list=$('#ex-all').checked?E.slice():E.filter(e=>SEL.has(e.id)),trim=$('#ex-trim').checked;
+  if(!list.length)return;$('#d-ext').close();toast('Tayyorlanmoqda...');
+  try{
+    if(list.length===1){save(await trimmed(list[0],trim),list[0].name);toast('Yuklandi');return}
+    const files=[];
+    for(let i=0;i<list.length;i++){
+      const b=await trimmed(list[i],trim);files.push([list[i].name,new Uint8Array(await b.arrayBuffer())]);
+      if(i%25===0){toast(`Chiqarilmoqda ${i+1} / ${list.length}`);await new Promise(r=>setTimeout(r,0))}
+    }
+    save(zip(files),fname.replace(/\.img$/i,'')+'_files.zip');toast(list.length+' ta fayl ZIP ga joylandi');
+  }catch(e){toast('Xato: '+e.message)}
+};
+
+/* ---------- arxivni qayta qurish ---------- */
+$('#b-save').onclick=()=>{$('#sv-v').value=ver;$('#sv-n').value=fname;$('#d-sv').showModal()};
+$('#sv-c').onclick=()=>$('#d-sv').close();
+$('#sv-ok').onclick=()=>{
+  const v=$('#sv-v').value;let n=$('#sv-n').value.trim()||'archive.img';if(!/\.img$/i.test(n))n+='.img';
+  if(E.some(e=>Math.ceil(e.size/SEC)>65535)&&v==='v2'){toast('V2 da fayl 128 MB dan oshmasin');return}
+  $('#d-sv').close();
+  const list=E.slice().sort((a,b)=>a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  const dirBytes=v==='v2'?8+list.length*32:0,dataStart=v==='v2'?Math.ceil(dirBytes/SEC)*SEC:0;
+  const dir=new Uint8Array(v==='v2'?dataStart:list.length*32),dv=new DataView(dir.buffer);
+  const parts=[];let pos=dataStart/SEC;
+  if(v==='v2'){dir.set([0x56,0x45,0x52,0x32],0);dv.setUint32(4,list.length,true)}
+  list.forEach((e,i)=>{
+    const o=(v==='v2'?8:0)+i*32,sec=Math.max(1,Math.ceil(e.size/SEC)),b=blobOf(e);
+    dv.setUint32(o,pos,true);
+    if(v==='v2'){dv.setUint16(o+4,sec,true)}else dv.setUint32(o+4,sec,true);
+    for(let k=0;k<Math.min(23,e.name.length);k++)dir[o+8+k]=e.name.charCodeAt(k)&127;
+    parts.push(b);const pad=sec*SEC-b.size;if(pad>0)parts.push(new Uint8Array(pad));
+    pos+=sec;
+  });
+  if(v==='v2')save(new Blob([dir,...parts],{type:'application/octet-stream'}),n);
+  else{save(new Blob(parts,{type:'application/octet-stream'}),n);setTimeout(()=>save(new Blob([dir]),n.replace(/\.img$/i,'.dir')),400)}
+  ver=v;fname=n;mod=false;render();toast('Arxiv saqlandi'+(v==='v1'?' (.img va .dir)':''));
+};
+window.addEventListener('beforeunload',e=>{if(mod&&E.length){e.preventDefault();e.returnValue=''}});
+})();
+</script>
+<script src="site-theme.js"></script></body>
+</html>

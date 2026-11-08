@@ -1,0 +1,23 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Toshov Ozodbek sayti uslubi: ko'k neon (standart) va yashil Matrix (night) */
+:root{--to-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--to-ac:#8b8cff;--to-soft:#8b8cff33;--to-ln:#26262e}
+:root[data-theme=night]{--to-ac:#34d399;--to-soft:#34d39933;--to-ln:#1d2b25}
+#to-back{position:fixed;right:12px;bottom:12px;z-index:99999;font:700 12px/1 var(--to-ui);padding:9px 14px;border-radius:999px;border:1px solid var(--to-ln);background:#131318;color:var(--to-ac);text-decoration:none;box-shadow:0 10px 24px -10px #000}
+:root[data-theme=night] #to-back{background:#0e1713}
+#to-back:hover{border-color:var(--to-ac);text-decoration:none}
+#zm-keep{}
+::selection{background:var(--to-soft);color:#fff}
+:root{--face:#0f0f13;--face2:#131318;--dark:#26262e;--light:#34343f;--txt:#f4f4f5;--sel:#3b3b8f;--vp:#09090b}
+:root[data-theme=night],body.night-mode{--face:#0a100d;--face2:#0e1713;--dark:#1d2b25;--light:#2a3d34;--txt:#ecfdf5;--sel:#0f5a43;--vp:#050907}
+
+.tbtn svg{stroke:var(--txt)!important}
+.tbtn.on{background:var(--sel)!important}
+.drop{border-color:var(--dark)!important;box-shadow:0 10px 30px #000c!important}
+#views{background:var(--dark)!important}
+.mi:hover,.mi.open,.di:hover{color:var(--to-ac)!important;background:var(--sel)!important}
+input,select,textarea{background:var(--face2);color:var(--txt);border:1px solid var(--dark)}
+#cmdhead{background:linear-gradient(90deg,var(--sel),var(--face2))!important;color:var(--to-ac)!important}
+#cmdopt h4{color:var(--to-ac)!important}
+#msgs,.lst,.of input,.of select,.fr input,.fr select{background:var(--face2)!important;color:var(--txt)!important}
+#msgbtns button,.tb,.tbtn:hover:not(:disabled){border-color:var(--light) var(--dark) var(--dark) var(--light)!important}
