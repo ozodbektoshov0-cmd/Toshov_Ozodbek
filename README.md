@@ -1,6 +1,6 @@
 # Toshov Ozodbek sayti
 
-Statik sayt: 23 ta onlayn asbob, ko‘k neon uslub, tungi (Matrix) rejim, IT bilim testi, yozish tezligi testi va terminal simulyator. Build jarayoni yo‘q, oddiy HTML, CSS va JavaScript.
+Statik sayt: 23 ta onlayn asbob, ko‘k neon uslub, tungi (Matrix) rejim, IT bilim testi, yozish tezligi testi va Linux terminal (v86, brauzerda). Build jarayoni yo‘q, oddiy HTML, CSS va JavaScript.
 
 ## Vercel'ga joylash
 
@@ -46,3 +46,43 @@ Sayt standart ko‘k neon mavzuda, orqada sekin siljiydigan kod matni. Sarlavhad
 ## Musiqa
 
 `assets/music.js` brauzerning o‘zida (WebAudio) original qorong‘i sintezator trekini chaladi, audio fayl yo‘q. Brauzer qoidasiga ko‘ra ovoz foydalanuvchi bosganidan keyin boshlanadi, shuning uchun bosh sahifada **START** kirish ekrani bor. ♪ tugmasi yoki terminaldagi `music` buyrug‘i musiqani yoqadi va o‘chiradi. Kirish ekranini o‘chirish uchun `music.js` ichidagi `intro();` qatorini olib tashlang.
+
+- `projects/uy-quruvchi/`: Uy quruvchi. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/3d-model-studio/`: 3D Model Studiya. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/3ds-max-studio/`: 3DS Max Object Studiya. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/avto-nomer/`: Avto nomer studiyasi. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/gta-id-baza/`: GTA ID baza va IMG. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/gta-light-studio/`: GTA Light Studiya. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/gta-v-to-sa/`: GTA V → SA konvertor. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/img-tool/`: IMG Tool. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/txd-tool/`: TXD Tool. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/map-editor/`: Map Editor. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+- `projects/zmodeler-web/`: ZModeler Web. Ko‘k/night mavzu `site-theme.css` va `site-theme.js` orqali asosiy sayt bilan umumiy.
+
+## Terminal
+
+`terminal.html` haqiqiy Linux'ni brauzerda v86 (WebAssembly) orqali ishga tushiradi. Fayllar manzillari `assets/terminal-linux.js` boshidagi `CONFIG` ichida (CDN). Oflayn yoki tezroq ishlashi uchun v86 fayllarini o'zingizning papkangizga qo'yib, manzillarni almashtiring.
+
+## Fayl markazi, Google kirish va Kirishlar
+
+- `files.html`: fayllar brauzerda (IndexedDB) saqlanadi, 1 GB gacha. Server kerak emas.
+- `kirishlar.html`, `assets/auth.js`, `assets/config.js`: Google bilan kirish va statistika. Ishlashi uchun Firebase kerak: `assets/config.js` ga sozlamalar va `ADMIN_EMAIL` yoziladi. Sozlanmagan bo'lsa, kirish tugmasi chiqmaydi.
+- Kirishda foydalanuvchiga rozilik so'raladi: ism, email, IP (ipapi.co orqali), qurilma, brauzer saqlanadi.
+
+Firestore qoidalari (ADMIN_EMAIL o'rniga o'z emailingiz):
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{id} {
+      allow create, update: if request.auth != null && request.auth.uid == id;
+      allow read: if request.auth != null && request.auth.token.email == 'ADMIN_EMAIL';
+    }
+    match /logins/{id} {
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow read: if request.auth != null && request.auth.token.email == 'ADMIN_EMAIL';
+    }
+  }
+}
+```

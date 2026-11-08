@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kirishlar | Toshov Ozodbek</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}
+    .stats .panel b{display:block;font-size:1.8rem;color:var(--accent);font-family:var(--font-mono)}
+    .stats .panel span{color:var(--muted);font-size:.85rem}
+    .tw{overflow:auto;border:1px solid var(--line);border-radius:14px;margin:10px 0 26px}
+    table{border-collapse:collapse;width:100%;min-width:760px;font-size:.88rem}
+    th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+    th{color:var(--accent);font-family:var(--font-mono);font-size:.78rem;letter-spacing:.06em}
+    .bar2{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .bad{color:#ff6b6b}
+  </style>
+</head>
+<body data-page="kirishlar" data-root="">
+  <main id="main" class="container">
+    <div class="tool-head"><h1>Kirishlar</h1><p>Google bilan kirgan foydalanuvchilar statistikasi. Faqat sayt egasiga ko‘rinadi.</p></div>
+    <div id="msg" class="panel"></div>
+    <div id="view" hidden>
+      <div class="stats">
+        <div class="panel"><b id="s-total">0</b><span>Jami foydalanuvchi</span></div>
+        <div class="panel"><b id="s-today">0</b><span>Bugun kirdi</span></div>
+        <div class="panel"><b id="s-susp">0</b><span>Shubhali</span></div>
+        <div class="panel"><b id="s-last" style="font-size:1.05rem">-</b><span>Oxirgi kirish</span></div>
+      </div>
+      <div class="bar2"><button class="btn ghost" id="b-susp" type="button">Shubhalilar</button><button class="btn ghost" id="b-ref" type="button">Yangilash</button><button class="btn" id="b-csv" type="button">CSV yuklab olish</button></div>
+      <h2>Foydalanuvchilar</h2>
+      <div class="tw"><table><thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Mamlakat, shahar</th><th>IP</th><th>Qurilma</th><th>Brauzer</th><th>Oxirgi kirish</th></tr></thead><tbody id="t-users"></tbody></table></div>
+      <h2>Kirishlar tarixi (oxirgi 50)</h2>
+      <div class="tw"><table><thead><tr><th>Vaqt</th><th>Ism</th><th>IP</th><th>Joy</th><th>Qurilma</th><th>Brauzer</th></tr></thead><tbody id="t-hist"></tbody></table></div>
+    </div>
+  </main>
+  <script src="assets/app.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script>
+  (function () {
+    var $ = function (i) { return document.getElementById(i); }, esc = TO.esc, onlySusp = false, users = [];
+    var msg = $('msg'), view = $('view');
+    function say(h) { msg.hidden = false; view.hidden = true; msg.innerHTML = h; }
+    if (!window.TO_FIREBASE || !TO_FIREBASE.config.apiKey) {
+      say('<p><b>Firebase hali ulanmagan.</b> <code>assets/config.js</code> ichiga Firebase sozlamalarini va <code>ADMIN_EMAIL</code> ni yozing, so‘ng Firestore qoidalarini joylang (README.md da yozilgan). Shundan keyin shu yerda statistika paydo bo‘ladi.</p>');
+      return;
+    }
+    function ts(x) { return x && x.toDate ? x.toDate() : null; }
+    function f(d) { return d ? d.toLocaleString('uz') : '-'; }
+    // shubhali: bir emailda 3 va undan ko'p turli IP
+    function suspicious(rows) { var m = {}; rows.forEach(function (r) { (m[r.email] = m[r.email] || {})[r.ip || '?'] = 1; }); return function (email) { return Object.keys(m[email] || {}).length >= 3; }; }
+    async function load() {
+      var A = TOAUTH;
+      if (!A.user) { say('<p>Davom etish uchun yuqoridagi <b>Kirish</b> tugmasi bilan Google orqali kiring.</p>'); return; }
+      if (!A.admin) { say('<p class="bad">Bu sahifa faqat sayt egasi uchun.</p>'); return; }
+      msg.hidden = true; view.hidden = false;
+      var us = await A.db.collection('users').orderBy('last', 'desc').limit(500).get();
+      var hs = await A.db.collection('logins').orderBy('at', 'desc').limit(500).get();
+      users = us.docs.map(function (d) { return d.data(); });
+      var hist = hs.docs.map(function (d) { return d.data(); });
+      var isS = suspicious(hist), today = new Date().toDateString();
+      var shown = users.filter(function (u) { return !onlySusp || isS(u.email); });
+      $('s-total').textContent = users.length;
+      $('s-today').textContent = users.filter(function (u) { var d = ts(u.last); return d && d.toDateString() === today; }).length;
+      $('s-susp').textContent = users.filter(function (u) { return isS(u.email); }).length;
+      $('s-last').textContent = users[0] ? f(ts(users[0].last)) : '-';
+      $('t-users').innerHTML = shown.map(function (u, i) { return '<tr><td>' + (i + 1) + '</td><td>' + esc(u.name) + '</td><td>' + esc(u.email) + '</td><td>' + esc(u.place || '-') + '</td><td>' + esc(u.ip || '-') + '</td><td>' + esc(u.device) + '</td><td>' + esc(u.browser) + '</td><td>' + f(ts(u.last)) + '</td></tr>'; }).join('');
+      $('t-hist').innerHTML = hist.slice(0, 50).map(function (h) { return '<tr><td>' + f(ts(h.at)) + '</td><td>' + esc(h.name) + '</td><td>' + esc(h.ip || '-') + '</td><td>' + esc(h.place || '-') + '</td><td>' + esc(h.device) + '</td><td>' + esc(h.browser) + '</td></tr>'; }).join('');
+    }
+    $('b-susp').onclick = function () { onlySusp = !onlySusp; this.textContent = onlySusp ? 'Hammasi' : 'Shubhalilar'; load(); };
+    $('b-ref').onclick = load;
+    $('b-csv').onclick = function () {
+      var rows = [['Ism', 'Email', 'Joy', 'IP', 'Qurilma', 'Brauzer', 'Oxirgi kirish']].concat(users.map(function (u) { return [u.name, u.email, u.place, u.ip, u.device, u.browser, f(ts(u.last))]; }));
+      var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      TO.download('kirishlar.csv', new Blob([csv], { type: 'text/csv' }));
+    };
+    say('<p>Yuklanmoqda...</p>');
+    var t = setInterval(function () { if (window.TOAUTH && TOAUTH.ready) { clearInterval(t); TOAUTH.onChange.push(load); load(); } }, 300);
+  })();
+  </script>
+</body>
+</html>

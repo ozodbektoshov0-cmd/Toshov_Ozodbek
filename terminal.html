@@ -3,188 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Terminal simulyator | Toshov Ozodbek</title>
-  <meta name="description" content="Brauzerdagi terminal simulyator. help buyrug'ini yozib boshlang.">
+  <title>Linux terminal | Toshov Ozodbek</title>
+  <meta name="description" content="Brauzeringizda ishlaydigan haqiqiy Linux terminal (v86 emulyatori). Server kerak emas.">
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.3.0/css/xterm.min.css">
+  <style>
+    .lx { border: 1px solid var(--line); border-radius: var(--radius); background: #000; overflow: hidden; }
+    .lx-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: .85rem; color: var(--muted); }
+    .lx-bar .sp { flex: 1; }
+    .lx-bar button { font: inherit; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--accent); cursor: pointer; }
+    .lx-bar button:hover { border-color: var(--accent); }
+    .lx-screen { position: relative; height: min(70vh, 560px); padding: 8px; }
+    #xt { height: 100%; }
+    .lx-cover { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 20px; background: #000; z-index: 2; }
+    .lx-cover p { margin: 0; color: var(--muted); max-width: 52ch; }
+    .lx-cover .st { font-family: var(--font-mono); color: var(--accent); min-height: 1.4em; }
+    .lx-prog { width: min(320px, 80%); height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; display: none; }
+    .lx-prog i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+    .lx-note { margin-top: 14px; font-size: .9rem; color: var(--muted); }
+    .lx-note code { font-family: var(--font-mono); color: var(--accent); }
+  </style>
 </head>
 <body data-page="terminal" data-root="">
   <main id="main" class="container">
     <div class="tool-head">
-      <h1>Terminal simulyator</h1>
-      <p>Bu o‘yinchoq terminal: haqiqiy buyruqlar bajarilmaydi, lekin sayt va men haqimda ma’lumot olish mumkin. <b>help</b> deb yozing.</p>
+      <h1>Linux terminal</h1>
+      <p>Bu haqiqiy Linux: <b>v86</b> emulyatori orqali butunlay brauzeringizda ishlaydi. Buyruqlar sizning qurilmangizda bajariladi, serverga hech narsa yuborilmaydi. Sahifani yopsangiz, mashina o‘chadi.</p>
     </div>
 
-    <div class="term" id="term">
-      <div class="term-bar"><i></i><i></i><i></i><span style="margin-left:8px">ozodbek@sayt: ~</span></div>
-      <div class="term-body" id="out" role="log" aria-live="polite"></div>
-      <label class="sr" for="cmd">Buyruq kiriting</label>
-      <div class="term-in"><span class="p" id="prompt">ozodbek@sayt:~$</span><input id="cmd" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="lx">
+      <div class="lx-bar"><span id="lx-title">root@linux: ~</span><span class="sp"></span><button id="lx-reset" type="button" hidden>Qayta ishga tushirish</button></div>
+      <div class="lx-screen">
+        <div class="lx-cover" id="cover">
+          <p>Linux (buildroot) yadrosi va emulyator internetdan yuklanadi, taxminan 10 dan 40 MB. Wi-Fi bo‘lsa yaxshi.</p>
+          <button class="btn" id="start" type="button">Linuxni ishga tushirish</button>
+          <div class="lx-prog" id="prog"><i></i></div>
+          <div class="st" id="st" role="status" aria-live="polite"></div>
+        </div>
+        <div id="xt"></div>
+      </div>
     </div>
-    <p class="kbd-hint">Yuqoriga va pastga o‘qlar oldingi buyruqlarni qaytaradi, Tab tugmasi buyruqni to‘ldiradi.</p>
+    <p class="lx-note">Maslahat: <code>ls /</code>, <code>uname -a</code>, <code>cat /proc/cpuinfo</code>, <code>free</code>, <code>ps</code>, <code>vi</code>. Internet tarmog‘i bu mashinada ulanmagan.</p>
   </main>
   <script src="assets/app.js"></script>
-  <script>
-  (function () {
-    var out = document.getElementById('out');
-    var inp = document.getElementById('cmd');
-    var promptEl = document.getElementById('prompt');
-    var cwd = '~';
-    var hist = [], hi = 0;
-
-    var FILES = {
-      'about.txt': "Men Toshov Ozodbek. Veb sahifalar va foydali kichik dasturlar yarataman.\nLoyihalarim GitHub'da: github.com/ozodbektoshov0-cmd",
-      'projects.txt': "audio-darsliklar-2026  Maktab darsliklarini audio tinglash platformasi (TypeScript)\nProQR                  Bepul QR kod yaratuvchi (HTML)\nEasy-html-editing      Mobil uchun HTML muharriri (HTML)\nO-zbekistonim-shaharlari  Tarixiy shaharlar haqida sahifa (HTML)\nGTA-SA-ANDROID-15      GTA SA modlar portali (open gta)\n3D-Studiya             Brauzerda 3D muharrir (open 3d)\nunity-asset-viewer     Unity fayl ko‘ruvchi (open unity)",
-      'secret.txt': "Topdingiz! Endi 'quiz' yozib, IT testini yeching."
-    };
-
-    var TOOLS = window.TO ? window.TO.TOOLS : [];
-    var COMMANDS = ['help', 'about', 'whoami', 'ls', 'cat', 'pwd', 'cd', 'date', 'echo', 'clear', 'projects', 'github', 'telegram', 'instagram', 'tools', 'open', 'theme', 'fx', 'music', 'neofetch', 'history', 'quiz', 'typing', 'banner', 'hello'];
-
-    function print(text, cls) {
-      var d = document.createElement('div');
-      d.className = 'term-line' + (cls ? ' ' + cls : '');
-      d.textContent = text;
-      out.appendChild(d);
-      out.scrollTop = out.scrollHeight;
-    }
-    function echoCmd(c) {
-      var d = document.createElement('div');
-      d.className = 'term-line';
-      var p = document.createElement('span'); p.className = 'p'; p.textContent = 'ozodbek@sayt:' + cwd + '$ ';
-      var s = document.createElement('span'); s.className = 'c'; s.textContent = c;
-      d.appendChild(p); d.appendChild(s); out.appendChild(d);
-    }
-
-    var HELP = [
-      'Mavjud buyruqlar:',
-      '  help        shu ro‘yxatni ko‘rsatadi',
-      '  about       men haqimda qisqacha',
-      '  projects    loyihalarim ro‘yxati',
-      '  tools       barcha asboblar',
-      '  open <nom>  asbob yoki loyihani ochadi (open qr, open 3d, open gta)',
-      '  quiz        IT testiga o‘tadi',
-      '  typing      yozish tezligi testiga o‘tadi',
-      '  github, telegram, instagram   sahifalarimni ochadi',
-      '  ls, cat <fayl>, pwd, cd, echo, date, whoami',
-      '  theme       ko‘k va tungi (Matrix) rejimni almashtiradi',
-      '  fx          fon animatsiyasini yoqadi yoki o‘chiradi',
-      '  music       hacker musiqani yoqadi yoki o‘chiradi',
-      '  neofetch    tizim ma’lumoti',
-      '  history     oldingi buyruqlar',
-      '  clear       ekranni tozalaydi'
-    ].join('\n');
-
-    var run = {
-      help: function () { print(HELP); },
-      hello: function () { print('Salom! Yaxshi kun tilayman.'); },
-      about: function () { print(FILES['about.txt']); },
-      whoami: function () { print('ozodbek'); },
-      pwd: function () { print(cwd === '~' ? '/home/ozodbek' : '/home/ozodbek/' + cwd.replace('~/', '')); },
-      ls: function () { print(Object.keys(FILES).filter(function (f) { return f !== 'secret.txt'; }).join('   ') + '   .secret'); },
-      cat: function (a) {
-        var f = a[0];
-        if (!f) return print('Foydalanish: cat <fayl>', 'term-err');
-        if (f === '.secret') return print(FILES['secret.txt']);
-        if (FILES[f] && f !== 'secret.txt') return print(FILES[f]);
-        print('cat: ' + f + ': bunday fayl yo‘q', 'term-err');
-      },
-      cd: function (a) { if (a[0] && a[0] !== '~' && a[0] !== '.') print('cd: ' + a[0] + ': bunday papka yo‘q', 'term-err'); },
-      date: function () { print(new Date().toLocaleString('uz-UZ', { dateStyle: 'full', timeStyle: 'medium' })); },
-      echo: function (a) { print(a.join(' ')); },
-      projects: function () { print(FILES['projects.txt']); },
-      telegram: function () { print('Telegram ochilmoqda...'); window.open(window.TO.SITE.telegram, '_blank', 'noopener'); },
-      instagram: function () { print('Instagram ochilmoqda...'); window.open(window.TO.SITE.instagram, '_blank', 'noopener'); },
-      github: function () { print('GitHub sahifasi ochilmoqda...'); window.open('https://github.com/ozodbektoshov0-cmd', '_blank', 'noopener'); },
-      tools: function () {
-        if (!TOOLS.length) return print('Asboblar ro‘yxati yuklanmadi.', 'term-err');
-        print(TOOLS.map(function (t) { return '  ' + t.id.padEnd(16) + t.t; }).join('\n'));
-        print('Ochish uchun: open <nom>', 'term-dim');
-      },
-      open: function (a) {
-        var id = (a[0] || '').toLowerCase();
-        if (!id) return print('Foydalanish: open <asbob>. Ro‘yxat uchun: tools', 'term-err');
-        var PRJ = { '3d': 'projects/3d-studiya/', '3d-studiya': 'projects/3d-studiya/', 'gta': 'projects/gta-sa/', 'gta-sa': 'projects/gta-sa/', 'unity': 'projects/unity-asset-viewer/' };
-        if (PRJ[id]) { print('Loyiha ochilmoqda...'); setTimeout(function () { location.href = PRJ[id]; }, 400); return; }
-        var t = TOOLS.filter(function (x) { return x.id === id; })[0];
-        if (!t) return print('open: "' + id + '" topilmadi. "tools" buyrug‘ini sinang.', 'term-err');
-        print(t.t + ' ochilmoqda...');
-        setTimeout(function () { location.href = t.h || ('tools/' + t.id + '.html'); }, 400);
-      },
-      quiz: function () { print('IT testi ochilmoqda...'); setTimeout(function () { location.href = 'quiz.html'; }, 400); },
-      typing: function () { print('Yozish testi ochilmoqda...'); setTimeout(function () { location.href = 'typing.html'; }, 400); },
-      theme: function () {
-        if (!window.TO) return;
-        var n = window.TO.getTheme() === 'night' ? 'blue' : 'night';
-        window.TO.setTheme(n);
-        print('Mavzu: ' + (n === 'night' ? 'tungi (Matrix)' : 'ko‘k'), 'term-ok');
-      },
-      music: function () {
-        if (!window.TOMUSIC) return print('Musiqa hali yuklanmadi.', 'term-err');
-        window.TOMUSIC.toggle();
-        setTimeout(function () { print('Musiqa: ' + (window.TOMUSIC.isOn() ? 'yoqildi' : 'o‘chirildi')); }, 300);
-      },
-      fx: function () {
-        if (!window.TOFX) return print('Fon animatsiyasi hali yuklanmadi.', 'term-err');
-        window.TOFX.set(!window.TOFX.get());
-        print('Fon animatsiyasi: ' + (window.TOFX.get() ? 'yoqildi' : 'o‘chirildi'));
-      },
-      neofetch: function () {
-        print([
-          'ozodbek@sayt',
-          '-------------',
-          'Sayt     : Toshov Ozodbek',
-          'Brauzer  : ' + navigator.userAgent.split(') ').pop().slice(0, 40),
-          'Til      : ' + navigator.language,
-          'Ekran    : ' + screen.width + 'x' + screen.height,
-          'Asboblar : ' + TOOLS.length + ' ta'
-        ].join('\n'));
-      },
-      history: function () { print(hist.length ? hist.map(function (h, i) { return (i + 1) + '  ' + h; }).join('\n') : 'Tarix bo‘sh.'); },
-      clear: function () { out.innerHTML = ''; },
-      banner: function () {
-        print([
-          '+--------------------------+',
-          '|     TOSHOV OZODBEK       |',
-          '|  asboblar, test, terminal|',
-          '+--------------------------+'
-        ].join('\n'), 'term-dim');
-      }
-    };
-
-    function exec(line) {
-      var raw = line.trim();
-      echoCmd(line);
-      if (!raw) return;
-      hist.push(raw); hi = hist.length;
-      var parts = raw.split(/\s+/);
-      var cmd = parts[0].toLowerCase();
-      var args = parts.slice(1);
-      if (cmd === 'sudo') return print('Kechirasiz, bu yerda sudo ishlamaydi. Bu o‘yinchoq terminal.', 'term-err');
-      if (cmd === 'rm') return print('Bu yerda hech narsa o‘chirilmaydi. Xotirjam bo‘ling.', 'term-err');
-      if (run[cmd]) return run[cmd](args);
-      print('"' + cmd + '": buyruq topilmadi. Yordam uchun help yozing.', 'term-err');
-    }
-
-    inp.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { var v = inp.value; inp.value = ''; exec(v); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); if (hi > 0) { hi--; inp.value = hist[hi]; } }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); if (hi < hist.length - 1) { hi++; inp.value = hist[hi]; } else { hi = hist.length; inp.value = ''; } }
-      else if (e.key === 'Tab') {
-        e.preventDefault();
-        var v = inp.value.trim();
-        if (!v || v.indexOf(' ') !== -1) return;
-        var m = COMMANDS.filter(function (c) { return c.indexOf(v) === 0; });
-        if (m.length === 1) inp.value = m[0] + ' ';
-        else if (m.length > 1) print(m.join('   '), 'term-dim');
-      }
-      else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); run.clear(); }
-    });
-    document.getElementById('term').addEventListener('click', function () { inp.focus(); });
-
-    print('Terminal simulyatoriga xush kelibsiz.', 'term-ok');
-    print('Yordam uchun "help" deb yozing.', 'term-warn');
-    inp.focus();
-  })();
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.3.0/lib/xterm.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm-addon-fit/0.8.0/xterm-addon-fit.min.js"></script>
+  <script src="assets/terminal-linux.js"></script>
 </body>
 </html>

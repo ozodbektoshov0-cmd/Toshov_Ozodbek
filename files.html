@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fayl markazi | Toshov Ozodbek</title>
+  <meta name="description" content="Fayllarni brauzerda saqlash: sudrab tashlang, yuklab oling, o‘chiring. 1 GB gacha.">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .drop{border:2px dashed var(--line);border-radius:18px;padding:36px 20px;text-align:center;cursor:pointer;transition:.2s;background:var(--panel)}
+    .drop.over,.drop:hover{border-color:var(--accent);box-shadow:0 0 30px -10px var(--accent)}
+    .drop b{color:var(--accent)}
+    .fprog{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:12px;display:none}
+    .fprog i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+    .fstat{display:flex;gap:18px;flex-wrap:wrap;margin:16px 0;font-family:var(--font-mono);color:var(--muted)}
+    .fstat b{color:var(--accent)}
+    .frow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:var(--panel)}
+    .frow .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .frow small{color:var(--muted);font-family:var(--font-mono)}
+    .frow button{font:inherit;border:1px solid var(--line);background:transparent;color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer}
+    .frow button:hover{border-color:var(--accent);color:var(--accent)}
+    .frow .acts{display:flex;gap:6px}
+    @media(max-width:560px){.frow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-page="files" data-root="">
+  <main id="main" class="container">
+    <div class="tool-head">
+      <h1>Fayl markazi</h1>
+      <p>Fayllaringiz brauzeringizning o‘zida (IndexedDB) saqlanadi: serverga yuborilmaydi va boshqa qurilmadan ko‘rinmaydi. Har bir fayl 1 GB gacha.</p>
+    </div>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Fayl tanlash">
+      <p><b>Fayllarni shu yerga sudrab tashlang</b> yoki bosib tanlang</p>
+      <input id="pick" type="file" multiple hidden>
+      <div class="fprog" id="fp"><i></i></div>
+    </div>
+    <div class="fstat"><span>Fayllar: <b id="cnt">0</b></span><span>Jami hajm: <b id="tot">0 B</b></span><span id="quota"></span></div>
+    <div id="list" aria-live="polite"></div>
+  </main>
+  <script src="assets/app.js"></script>
+  <script>
+  (function () {
+    var MAX = 1024 * 1024 * 1024, db;
+    var $ = function (i) { return document.getElementById(i); };
+    function fmt(n) { var u = ['B', 'KB', 'MB', 'GB'], i = 0; while (n >= 1024 && i < 3) { n /= 1024; i++; } return (i ? n.toFixed(1) : n) + ' ' + u[i]; }
+    function open() { return new Promise(function (ok, no) { var r = indexedDB.open('to-files', 1); r.onupgradeneeded = function () { r.result.createObjectStore('f', { keyPath: 'id', autoIncrement: true }); }; r.onsuccess = function () { ok(r.result); }; r.onerror = function () { no(r.error); }; }); }
+    function tx(m) { return db.transaction('f', m).objectStore('f'); }
+    function all() { return new Promise(function (ok) { var r = tx('readonly').getAll(); r.onsuccess = function () { ok(r.result); }; }); }
+    function put(rec) { return new Promise(function (ok, no) { var r = tx('readwrite').add(rec); r.onsuccess = ok; r.onerror = function () { no(r.error); }; }); }
+    function del(id) { return new Promise(function (ok) { var r = tx('readwrite').delete(id); r.onsuccess = ok; }); }
+    function get(id) { return new Promise(function (ok) { var r = tx('readonly').get(id); r.onsuccess = function () { ok(r.result); }; }); }
+    function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    async function render() {
+      var a = (await all()).sort(function (x, y) { return y.at - x.at; });
+      $('cnt').textContent = a.length; $('tot').textContent = fmt(a.reduce(function (s, f) { return s + f.size; }, 0));
+      $('list').innerHTML = a.map(function (f) { return '<div class="frow"><div class="n">' + esc(f.name) + '<br><small>' + fmt(f.size) + ' · ' + new Date(f.at).toLocaleString('uz') + '</small></div><div></div><div class="acts"><button data-d="' + f.id + '">Yuklab olish</button><button data-x="' + f.id + '">O‘chirish</button></div></div>'; }).join('') || '<p class="muted">Hozircha fayl yo‘q.</p>';
+      if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) { $('quota').textContent = 'Brauzer joyi: ' + fmt(e.usage || 0) + ' / ' + fmt(e.quota || 0); });
+    }
+    async function add(files) {
+      var fp = $('fp'), bar = fp.firstElementChild; fp.style.display = 'block';
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        if (f.size > MAX) { TO.toast(f.name + ': 1 GB dan katta'); continue; }
+        bar.style.width = Math.round(i / files.length * 100) + '%';
+        try { await put({ name: f.name, size: f.size, type: f.type, at: Date.now(), blob: f }); }
+        catch (e) { TO.toast(f.name + ': saqlab bo‘lmadi (joy yetmaydi)'); }
+      }
+      bar.style.width = '100%'; setTimeout(function () { fp.style.display = 'none'; bar.style.width = 0; }, 500);
+      render();
+    }
+    open().then(function (d) { db = d; render();
+      var drop = $('drop'), pick = $('pick');
+      drop.onclick = function () { pick.click(); };
+      drop.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick.click(); } };
+      pick.onchange = function () { add(pick.files); pick.value = ''; };
+      ['dragenter', 'dragover'].forEach(function (n) { drop.addEventListener(n, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+      ['dragleave', 'drop'].forEach(function (n) { drop.addEventListener(n, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+      drop.addEventListener('drop', function (e) { add(e.dataTransfer.files); });
+      $('list').addEventListener('click', async function (e) {
+        var d = e.target.getAttribute('data-d'), x = e.target.getAttribute('data-x');
+        if (d) { var r = await get(+d); var u = URL.createObjectURL(r.blob); var a = document.createElement('a'); a.href = u; a.download = r.name; a.click(); setTimeout(function () { URL.revokeObjectURL(u); }, 4000); }
+        if (x) { await del(+x); render(); }
+      });
+    }, function () { $('list').innerHTML = '<p class="muted">Brauzeringiz fayl saqlashga ruxsat bermadi (maxfiy oyna bo‘lishi mumkin).</p>'; });
+  })();
+  </script>
+</body>
+</html>
