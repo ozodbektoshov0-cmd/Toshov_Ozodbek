@@ -1,37 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 
 /* ---- ko'k (cyan) mavzu: standart ---- */
 :root {
-  --bg: #02040c;
-  --bg2: rgba(4, 9, 22, 0.9);
-  --panel: rgba(7, 13, 30, 0.84);
-  --line: #123456;
-  --text: #e8edf7;
-  --muted: #9aa8c0;
-  --accent: #29b6f6;
-  --accent-ink: #02121c;
-  --gold: #7c6cff;
-  --danger: #ff5d6c;
-  --ok: #3ddc84;
+  --bg: #09090b;
+  --bg2: rgba(14, 14, 18, 0.94);
+  --panel: rgba(255, 255, 255, 0.04);
+  --line: rgba(255, 255, 255, 0.09);
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --accent: #8b8cff;
+  --accent-ink: #0b0b14;
+  --gold: #c084fc;
+  --danger: #f87171;
+  --ok: #34d399;
   --radius: 16px;
   --star-pattern: none;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-head: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: dark;
 }
-/* ---- night mode: yashil Matrix ---- */
+/* ikkinchi mavzu: zumrad (emerald) */
 :root[data-theme='night'] {
-  --bg: #010a04;
-  --bg2: rgba(1, 14, 7, 0.88);
-  --panel: rgba(3, 24, 12, 0.8);
-  --line: #0e4a25;
-  --text: #d4ffe2;
-  --muted: #7cc29a;
-  --accent: #00ff66;
-  --accent-ink: #00180a;
-  --gold: #19e3ff;
-  --ok: #00ff66;
+  --bg: #050907;
+  --bg2: rgba(8, 14, 11, 0.94);
+  --panel: rgba(255, 255, 255, 0.04);
+  --line: rgba(167, 243, 208, 0.12);
+  --text: #ecfdf5;
+  --muted: #8fb3a2;
+  --accent: #34d399;
+  --accent-ink: #022c1c;
+  --gold: #22d3ee;
+  --ok: #34d399;
 }
 
 * { box-sizing: border-box; }
@@ -427,3 +427,120 @@ input[type='text'], input[type='number'], input[type='search'], input[type='date
 .tags span { font-family: var(--font-mono); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--text); background: rgba(4, 9, 22, .8); }
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 760px) { .about-grid { grid-template-columns: 1fr; } }
+
+/* hero: HACKING yozuvi */
+.hk{font-family:var(--font-mono);font-weight:700;letter-spacing:.5em;font-size:clamp(1rem,3.2vw,1.5rem);color:var(--accent);text-shadow:0 0 14px var(--accent);margin:2px 0 14px;animation:hkb 3s steps(2,end) infinite}
+@keyframes hkb{0%,92%{opacity:1}94%{opacity:.35}96%{opacity:1}98%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.hk{animation:none}}
+
+/* =====================================================================
+   PREMIUM TO'Q DIZAYN: grafit fon, shisha kartalar, indigo-violet gradient
+   (oldingi neon qatlamlarni bekor qiladi)
+   ===================================================================== */
+:root{--grad:linear-gradient(135deg,#6366f1 0%,#a855f7 100%);--glass:rgba(255,255,255,.04);--glass2:rgba(255,255,255,.07);--shadow:0 24px 60px -28px rgba(0,0,0,.8);--rim:inset 0 1px 0 rgba(255,255,255,.06)}
+:root[data-theme='night']{--grad:linear-gradient(135deg,#10b981 0%,#22d3ee 100%)}
+html{background:var(--bg)}
+body{background:var(--bg);letter-spacing:-.005em}
+/* ambient fon: yumshoq gradient dog'lar (animatsiyasiz) */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:
+ radial-gradient(60vw 50vh at 85% -5%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%),
+ radial-gradient(50vw 45vh at -5% 40%,color-mix(in srgb,var(--gold) 14%,transparent),transparent 70%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:56px 56px;-webkit-mask:radial-gradient(ellipse at 50% 0,#000,transparent 70%);mask:radial-gradient(ellipse at 50% 0,#000,transparent 70%)}
+#bg-rain,.code-ghost{display:none!important}
+.hero .lead,.tool-head p,.tool-row p{text-shadow:none}
+
+/* tepa qator va sarlavha */
+.topbar,#fx-btn{display:none}
+.site-header{background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--line)}
+.site-header .bar{min-height:64px;max-width:1160px;margin:0 auto}
+.brand{font-family:var(--font-head);font-weight:700;font-size:1rem;letter-spacing:-.01em;text-transform:none;color:var(--text);display:flex;align-items:center;gap:10px}
+.brand::before{content:'';width:22px;height:22px;border-radius:7px;background:var(--grad);box-shadow:0 6px 18px -6px var(--accent)}
+.brand:hover{text-shadow:none}
+.nav a,.dd-btn{color:var(--muted);font-size:.9rem;font-weight:500;text-transform:none;letter-spacing:0;padding:8px 12px;border-radius:10px}
+.nav a:hover,.dd-btn:hover{background:var(--glass2);color:var(--text)}
+.nav a[aria-current='page'],.dd-btn[aria-current='page']{color:var(--text);background:var(--glass2);box-shadow:none;border-radius:10px}
+.dd-menu{background:color-mix(in srgb,var(--bg) 94%,#fff);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:8px}
+.dd-menu a{font-size:.88rem;padding:8px 10px;color:var(--muted)}
+.dd-menu a.dd-all{color:var(--text);border-bottom:1px solid var(--line);border-radius:10px 10px 0 0}
+.pill{font-size:.85rem;font-weight:600;text-transform:none;letter-spacing:0;padding:8px 14px;border:1px solid var(--line);background:var(--glass);color:var(--text);box-shadow:none;margin-left:8px}
+.pill:hover{background:var(--glass2);filter:none}
+.pill[aria-pressed='true']{box-shadow:none;border-color:var(--accent);color:var(--accent)}
+.icon-btn{border-radius:10px;font-size:.9rem;font-weight:600;background:var(--glass);width:38px;height:38px}
+.icon-btn:hover{border-color:var(--accent);color:var(--text)}
+.icon-btn[aria-pressed='false']{text-decoration:none}
+@media(max-width:960px){.nav{background:color-mix(in srgb,var(--bg) 96%,#fff);backdrop-filter:blur(18px)}}
+
+/* sarlavhalar */
+h1,h2,h3{letter-spacing:-.025em}
+label{font-family:var(--font-body);font-size:.82rem;font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)}
+.sec-title,.prompt-line,.crumb,.about-card h2,.quiz-top{font-family:var(--font-head);text-transform:none;letter-spacing:-.02em}
+.sec-title{border-left:0;padding-left:0;font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--text);margin:0 0 20px}
+.sec-title::before,.prompt-line::before,.crumb::before,.about-card h2::before{content:none}
+.crumb{font-size:.85rem;color:var(--muted);font-weight:500}.crumb a{color:var(--muted)}.crumb a:hover{color:var(--text)}
+.about-card h2{font-size:1.3rem;color:var(--text)}
+
+/* tugmalar */
+.btn{border-radius:12px;padding:11px 20px;font-size:.92rem;font-weight:600;text-transform:none;letter-spacing:0;background:var(--grad);color:#fff;box-shadow:0 10px 28px -12px var(--accent),var(--rim)}
+.btn:hover{filter:brightness(1.08);box-shadow:0 14px 34px -12px var(--accent),var(--rim)}
+.btn.ghost{background:var(--glass);color:var(--text);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line));color:var(--text);background:var(--glass2)}
+.btn.gold{background:var(--glass);color:var(--text);border:1px solid var(--line)}
+.btn.gold:hover{background:var(--glass2)}
+.chip{border-radius:999px;font-weight:500;background:var(--glass);border:1px solid var(--line);color:var(--muted)}
+.chip:hover{color:var(--text);background:var(--glass2)}
+.chip[aria-pressed='true']{box-shadow:none;background:color-mix(in srgb,var(--accent) 18%,transparent);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));color:var(--text)}
+input[type='text'],input[type='number'],input[type='search'],input[type='date'],input[type='url'],input[type='email'],select,textarea,:root[data-theme='night'] input[type='text'],:root[data-theme='night'] input[type='number'],:root[data-theme='night'] input[type='search'],:root[data-theme='night'] input[type='date'],:root[data-theme='night'] select,:root[data-theme='night'] textarea{background:var(--glass);border:1px solid var(--line);color:var(--text);border-radius:12px}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+:focus-visible{outline:2px solid var(--accent)}
+
+/* kartalar: shisha */
+.panel,.about-card,:root[data-theme='night'] .panel,:root[data-theme='night'] .about-card{background:linear-gradient(180deg,var(--glass2),var(--glass));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow),var(--rim);backdrop-filter:blur(14px)}
+.stat{background:var(--glass);border:1px solid var(--line);border-radius:18px;box-shadow:var(--rim)}
+.stat b{font-family:var(--font-head);font-weight:700;color:var(--text)}
+.stat span{font-family:var(--font-body);text-transform:none;letter-spacing:0;font-size:.82rem}
+.proj,.feature,.tool-row,.clock-card{background:linear-gradient(180deg,var(--glass2),var(--glass));border:1px solid var(--line);border-radius:20px;box-shadow:var(--rim);transition:transform .25s,border-color .25s,background .25s}
+.proj:hover,.feature:hover,.tool-row:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 24px 50px -28px var(--accent),var(--rim);transform:translateY(-3px);text-decoration:none}
+.proj .cover{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 22%,#0000),color-mix(in srgb,var(--gold) 14%,#0000));color:var(--text);text-shadow:none;border-bottom:1px solid var(--line)}
+.proj .tags{color:var(--accent);font-family:var(--font-body);font-weight:600;font-size:.8rem}
+.tool-row .glyph{border-radius:14px;color:var(--text);background:var(--glass2);border:1px solid var(--line);box-shadow:none}
+.tool-row:hover .glyph{border-color:var(--accent);color:var(--accent)}
+.tool-row .cat{font-family:var(--font-body);text-transform:none;letter-spacing:0;font-size:.78rem;color:var(--accent);font-weight:600}
+.feature .term-peek{font-family:var(--font-mono);color:var(--accent)}
+.tags span{font-family:var(--font-body);text-transform:none;letter-spacing:0;font-weight:500;background:var(--glass);font-size:.82rem}
+.about-card h1{text-transform:none;color:var(--text)}
+.about-card .sub{color:var(--accent)}
+
+/* hero */
+.hero{padding:56px 0 24px}
+.hero-grid{min-height:min(66vh,600px)}
+.hero h1{text-transform:none;font-size:clamp(2.8rem,7.4vw,5.2rem);line-height:1.02;letter-spacing:-.04em;margin-bottom:16px}
+.hero h1 .w{color:var(--text)}
+.hero h1 .c{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.prompt-line{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-size:.82rem;font-weight:500;color:var(--muted);padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--glass);margin-bottom:18px}
+.prompt-line::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 25%,transparent)}
+.hk{font-family:var(--font-body);font-weight:600;letter-spacing:.32em;font-size:.78rem;color:var(--muted);text-shadow:none;animation:none;margin:0 0 16px;text-transform:uppercase}
+.hero .lead{color:var(--muted);font-size:1.1rem;max-width:52ch}
+.social-row a{width:44px;height:44px;border-radius:14px;background:var(--glass);border:1px solid var(--line);color:var(--text);box-shadow:var(--rim)}
+.social-row a:hover{border-color:var(--accent);color:var(--accent);background:var(--glass2);transform:translateY(-2px)}
+.emblem::before{box-shadow:none;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 35%,transparent),transparent 65%);filter:blur(30px);border-radius:50%}
+.emblem .ring{display:none}
+.emblem .core{width:64%;border-radius:34%;background:linear-gradient(145deg,var(--glass2),var(--glass));border:1px solid var(--line);box-shadow:0 40px 80px -30px var(--accent),var(--rim);backdrop-filter:blur(10px);animation:flt 7s ease-in-out infinite}
+.emblem .core span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:none}
+@keyframes flt{50%{transform:translateY(-12px) rotate(2deg)}}
+
+/* terminal va testlar */
+.term{background:#050507;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);color:#e4e4e7}
+.term-bar{background:#0d0d11;border-bottom:1px solid var(--line)}
+.term-line .p,.term-in .p{color:var(--accent)}
+.opt{background:var(--glass);border-radius:14px;font-weight:500}
+:root[data-theme='night'] .opt{background:var(--glass)}
+.bar-fill{background:var(--grad);box-shadow:none}
+.big-num,.type-text,.kbd-hint,.quiz-top{color:var(--accent)}
+.quiz-top{font-size:.85rem;font-weight:600}
+.type-text{color:var(--text)}.kbd-hint{color:var(--muted)}
+
+/* pastki qism va xabar */
+.site-footer{text-align:left;font-family:var(--font-body);font-size:.88rem;margin-top:96px;border-top:1px solid var(--line)}
+.site-footer .bar{justify-content:space-between;text-align:left}
+.site-footer a:hover{color:var(--text)}
+.toast{border-radius:14px;background:var(--text);color:var(--bg);font-weight:600}

@@ -190,13 +190,13 @@
     '#music-btn[aria-pressed="true"]{color:var(--accent,var(--neon,#0f6));border-color:var(--accent,var(--neon,#0f6))}' +
     '#music-btn.waiting{animation:mpulse 1.2s ease-in-out infinite}' +
     '@keyframes mpulse{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--neon,#0f6)) 40%,transparent)}}' +
-    '#intro{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 40%,#08142c,#02040c 70%);display:grid;place-items:center;padding:24px;text-align:center;font-family:var(--font-head,sans-serif);color:var(--text,#e8edf7)}' +
+    '#intro{position:fixed;inset:0;z-index:200;background:radial-gradient(60vw 50vh at 50% 30%,color-mix(in srgb,var(--accent,#8b8cff) 22%,#09090b),#09090b 70%);display:grid;place-items:center;padding:24px;text-align:center;font-family:var(--font-head,sans-serif);color:var(--text,#e8edf7)}' +
     '#intro .box{max-width:520px;width:100%;display:grid;justify-items:center;gap:14px}' +
     '#intro .emblem{--es:min(190px,52vw)}' +
-    '#intro h1{font-size:clamp(1rem,3.4vw,1.25rem);margin:6px 0 0;letter-spacing:.22em;text-transform:uppercase;font-weight:700}' +
+    '#intro h1{font-size:clamp(1.6rem,5vw,2.2rem);margin:6px 0 0;letter-spacing:-.01em;font-weight:700}' +
     '#intro p.s{color:var(--muted,#9aa8c0);margin:0;font-size:.92rem;max-width:42ch}' +
-    '#intro .go{font:inherit;font-weight:800;letter-spacing:.2em;font-size:1.15rem;padding:16px 56px;border-radius:999px;cursor:pointer;color:#02040c;background:var(--accent,#29b6f6);border:0;box-shadow:0 0 38px color-mix(in srgb,var(--accent,#29b6f6) 70%,transparent)}' +
-    '#intro .tiny{font-size:.7rem;letter-spacing:.3em;color:var(--muted,#9aa8c0)}' +
+    '#intro .go{font:inherit;font-weight:600;font-size:1.05rem;padding:14px 44px;border-radius:14px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);border:0;box-shadow:0 18px 40px -16px var(--accent,#8b8cff)}' +
+    '#intro .tiny{font-size:.7rem;letter-spacing:.24em;color:var(--muted,#9aa8c0)}' +
     '#intro .no{font:inherit;background:none;border:0;color:var(--muted,#9aa8c0);text-decoration:underline;cursor:pointer;font-size:.85rem}' +
     '#intro button:focus-visible{outline:3px solid #fff;outline-offset:3px}';
   document.head.appendChild(css);
@@ -233,9 +233,22 @@
       if (withMusic) start(); else if (want) stop();
       el.remove(); document.body.style.overflow = '';
     }
-    document.getElementById('intro-go').addEventListener('click', function () { close(true); });
-    document.getElementById('intro-no').addEventListener('click', function () { close(false); });
-    el.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(false); });
+    function verify(withMusic) {
+      var a = 2 + Math.floor(Math.random() * 8), b = 2 + Math.floor(Math.random() * 8);
+      if (withMusic) start();
+      var bx = el.querySelector('.box');
+      bx.innerHTML = '<div class="emblem"><div class="ring"></div><div class="core"><span>TO</span></div></div><h1>Tekshiruv</h1>' +
+        '<p class="s">Inson ekanligingizni tasdiqlang:</p>' +
+        '<div style="font:700 1.8rem var(--font-mono,monospace);letter-spacing:.1em">' + a + ' + ' + b + ' = <input id="intro-ans" inputmode="numeric" autocomplete="off" aria-label="Javob" style="width:3.2ch;font:inherit;text-align:center;background:transparent;color:var(--accent,#29b6f6);border:0;border-bottom:2px solid var(--accent,#29b6f6);outline:0"></div>' +
+        '<div class="tiny" id="intro-err" aria-live="polite" style="min-height:1.2em"></div><button class="go" type="button" id="intro-ok">KIRISH</button>';
+      var inp = document.getElementById('intro-ans'); inp.focus();
+      function go() { if (parseInt(inp.value, 10) === a + b) close(withMusic); else { document.getElementById('intro-err').textContent = 'Noto‘g‘ri, qayta urinib ko‘ring'; inp.value = ''; inp.focus(); } }
+      document.getElementById('intro-ok').addEventListener('click', go);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    }
+    document.getElementById('intro-go').addEventListener('click', function () { verify(true); });
+    document.getElementById('intro-no').addEventListener('click', function () { verify(false); });
+    
     document.getElementById('intro-go').focus();
   }
 

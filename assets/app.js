@@ -49,12 +49,23 @@
   TOOLS.push(
     { h: 'projects/3d-studiya/', id: '3d-studiya', t: '3D Studiya', d: 'Brauzerda 3D modellarni ko‘rish, tahrirlash va konvertatsiya qilish.', i: '◐', c: 'loyiha' },
     { h: 'projects/gta-sa/', id: 'gta-sa', t: 'GTA SA modlar portali', d: 'GTA San Andreas uchun o‘zbekcha modlar, Cheat Menu va grafik paketlar.', i: '▣', c: 'loyiha' },
-    { h: 'projects/unity-asset-viewer/', id: 'unity-asset-viewer', t: 'Unity Asset Ko‘ruvchi', d: 'Unity bundle va .assets fayllarini ochish, tekstura va mesh yuklab olish.', i: '◆', c: 'loyiha' }
+    { h: 'projects/unity-asset-viewer/', id: 'unity-asset-viewer', t: 'Unity Asset Ko‘ruvchi', d: 'Unity bundle va .assets fayllarini ochish, tekstura va mesh yuklab olish.', i: '◆', c: 'loyiha' },
+    { h: 'projects/uy-quruvchi/', id: 'uy-quruvchi', t: 'Uy quruvchi', d: 'Brauzerda uy loyihasini 3D ko‘rinishda chizish, model qo‘yish va OBJ, GLTF formatlariga eksport qilish.', i: '⌂', c: 'loyiha' },
+    { h: 'projects/3d-model-studio/', id: '3d-model-studio', t: '3D Model Studiya', d: 'Vektor va OBJ modellarni ko‘rish, o‘lchash va DFF masshtabiga mos OBJ qilib chiqarish.', i: '◈', c: 'loyiha' },
+    { h: 'projects/3ds-max-studio/', id: '3ds-max-studio', t: '3DS Max Object Studiya', d: '3DS Max uslubidagi obyekt muharriri: bir nechta obyektni birlashtirib OBJ va STL qilib saqlash.', i: '▣', c: 'loyiha' },
+    { h: 'projects/avto-nomer/', id: 'avto-nomer', t: 'Avto nomer studiyasi', d: '195 dan ortiq davlat va viloyatlar uchun avtomobil raqam belgisini yaratish va rasm qilib yuklash.', i: '▭', c: 'loyiha' },
+    { h: 'projects/gta-id-baza/', id: 'gta-id-baza', t: 'GTA ID baza va IMG', d: 'GTA ID raqamlar bazasi va IMG arxivlari bilan ishlash.', i: '#', c: 'loyiha' },
+    { h: 'projects/gta-light-studio/', id: 'gta-light-studio', t: 'GTA Light Studiya', d: 'GTA mashinalari uchun chiroq va logotip teksturalarini tayyorlash studiyasi.', i: '☀', c: 'loyiha' },
+    { h: 'projects/gta-v-to-sa/', id: 'gta-v-to-sa', t: 'GTA V → SA konvertor', d: 'GTA V modellarini San Andreas formatiga o‘tkazish.', i: '⇄', c: 'loyiha' },
+    { h: 'projects/img-tool/', id: 'img-tool', t: 'IMG Tool', d: 'GTA IMG arxivlarini ochish: fayllarni qidirish, chiqarib olish, qo‘shish, almashtirish, nomini o‘zgartirish, o‘chirish va arxivni qayta qurish.', i: '▥', c: 'loyiha' },
+    { h: 'projects/txd-tool/', id: 'txd-tool', t: 'TXD Tool', d: 'GTA TXD fayllarini ochish, teksturalarni PNG ga eksport va import qilish, nomini o‘zgartirish, o‘chirish, DXT va mipmap bilan saqlash.', i: '▤', c: 'loyiha' },
+    { h: 'projects/map-editor/', id: 'map-editor', t: 'Map Editor', d: 'GTA SA IPL va IDE fayllarini xarita ustida ko‘rish va tahrirlash: qidirish, ko‘chirish, aylantirish, klonlash, qo‘shish, o‘chirish va saqlash.', i: '⌖', c: 'loyiha' },
+    { h: 'projects/zmodeler-web/', id: 'zmodeler-web', t: 'ZModeler Web', d: 'ZModeler 2 interfeysidan ilhomlangan brauzerdagi past poligonli model muharriri.', i: '◆', c: 'loyiha' }
   );
 
 
   var FEATURES = [
-    { id: 'terminal', href: 'terminal.html', t: 'Terminal simulyator', d: "Buyruqlar yozib saytni va men haqimda ma'lumotni kashf eting.", peek: '$ help' },
+    { id: 'terminal', href: 'terminal.html', t: 'Linux terminal', d: "Brauzerda ishlaydigan haqiqiy Linux: bash, ls, vi va boshqa buyruqlar.", peek: '$ uname -a' },
     { id: 'quiz', href: 'quiz.html', t: 'IT bilim testi', d: "60 ta savoldan tasodifiy tanlanadi. Natijangiz saqlanadi.", peek: '20 / 20 ?' },
     { id: 'typing', href: 'typing.html', t: 'Yozish tezligi testi', d: "Daqiqada nechta so'z yozishingizni o'lchang.", peek: '62 WPM' }
   ];
@@ -63,7 +74,7 @@
     { k: 'terminal', href: 'terminal.html', t: 'Terminal' },
     { k: 'quiz', href: 'quiz.html', t: 'IT test' },
     { k: 'typing', href: 'typing.html', t: 'Yozish' },
-    { k: 'projects', href: 'projects.html', t: 'Loyihalar' },
+    { k: 'files', href: 'files.html', t: 'Files' },
     { k: 'about', href: 'about.html', t: 'Bio' }
   ];
 
@@ -154,8 +165,7 @@
       '<div class="dd" id="dd"><button class="dd-btn" id="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="dd-menu"' + inTools + '>Tools <span aria-hidden="true">▾</span></button>' +
       '<div class="dd-menu" id="dd-menu" role="menu" hidden>' + toolLinks + '</div></div>' +
       links +
-      '<button class="icon-btn" id="fx-btn" type="button" aria-label="Fon animatsiyasini yoqish yoki o‘chirish" aria-pressed="true">FX</button>' +
-      '<button class="pill" id="night-btn" type="button" aria-pressed="' + night + '">Night mode</button></nav>' +
+      '<button class="pill" id="night-btn" type="button" aria-pressed="' + night + '">Tema</button></nav>' +
       '<button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Menyu" aria-expanded="false" aria-controls="nav">☰</button>' +
       '</div></header>';
     document.body.insertBefore(w, document.body.firstChild);
@@ -166,9 +176,8 @@
     $('#night-btn').addEventListener('click', function () {
       var next = getTheme() === 'night' ? 'blue' : 'night';
       setTheme(next);
-      toast(next === 'night' ? 'Night mode yoqildi' : 'Night mode o‘chirildi');
+      toast(next === 'night' ? 'Zumrad mavzusi yoqildi' : 'Standart mavzu yoqildi');
     });
-    $('#fx-btn').addEventListener('click', function () { if (window.TOFX) window.TOFX.set(!window.TOFX.get()); });
 
     var mb = $('#menu-btn'), nav = $('#nav');
     mb.addEventListener('click', function () {
@@ -201,8 +210,8 @@
     var f = document.createElement('footer');
     f.className = 'site-footer';
     f.innerHTML =
-      '<div class="container bar"><span>© ' + SITE.year + ' ' + SITE.name + '</span>' +
-      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'projects.html">Loyihalar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a> &nbsp; <a href="' + SITE.telegram + '" target="_blank" rel="noopener">Telegram</a> &nbsp; <a href="' + SITE.instagram + '" target="_blank" rel="noopener">Instagram</a></span></div>';
+      '<div class="container bar"><span>© ' + SITE.year + ' ' + SITE.name + ' • Fayllar Fayl markazida saqlanadi</span>' +
+      '<span><a href="' + root + 'tools.html">Asboblar</a> &nbsp; <a href="' + root + 'files.html">Fayl markazi</a> &nbsp; <a href="' + root + 'kirishlar.html">Kirishlar</a> &nbsp; <a href="' + root + 'about.html">Men haqimda</a> &nbsp; <a href="' + SITE.github + '" target="_blank" rel="noopener">GitHub</a> &nbsp; <a href="' + SITE.telegram + '" target="_blank" rel="noopener">Telegram</a> &nbsp; <a href="' + SITE.instagram + '" target="_blank" rel="noopener">Instagram</a></span></div>';
     document.body.appendChild(f);
   }
 
@@ -282,7 +291,7 @@
 
   buildHeader();
   buildFooter();
-  (function () { ['bg.js', 'music.js'].forEach(function (n) { var s = document.createElement('script'); s.src = root + 'assets/' + n; s.defer = true; document.body.appendChild(s); }); })();
+  (function () { ['config.js', 'auth.js', 'music.js'].forEach(function (n) { var s = document.createElement('script'); s.src = root + 'assets/' + n; s.async = false; document.body.appendChild(s); }); })();
   mountToolHead();
   mountFeatures();
   mountToolBrowser({ limit: document.body.getAttribute('data-limit') ? parseInt(document.body.getAttribute('data-limit'), 10) : 0 });
