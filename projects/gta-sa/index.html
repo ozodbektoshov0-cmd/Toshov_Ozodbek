@@ -27,7 +27,7 @@
       theme: {
         extend: {
           colors: {
-            primary: '#f59e0b',
+            primary: '#8b8cff',
           }
         }
       }
@@ -35,12 +35,12 @@
   </script>
   
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Rajdhani:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      background: #0a0a0a;
+      background: #09090b;
       color: #f1f1f1;
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
@@ -85,7 +85,7 @@
       content: '';
       position: absolute;
       inset: -10px;
-      background: conic-gradient(from 0deg, #f59e0b, transparent, #f59e0b, transparent, #f59e0b);
+      background: conic-gradient(from 0deg, #8b8cff, transparent, #8b8cff, transparent, #8b8cff);
       border-radius: min(6vw, 40px);
       animation: spin-slow 4s linear infinite;
       opacity: 0.7;
@@ -97,8 +97,8 @@
       50% { transform: translateY(-15px) rotate(2deg); }
     }
         @keyframes glow {
-      from { filter: drop-shadow(0 0 5px #f59e0b); }
-      to { filter: drop-shadow(0 0 20px #f59e0b) drop-shadow(0 0 40px #f59e0b); }
+      from { filter: drop-shadow(0 0 5px #8b8cff); }
+      to { filter: drop-shadow(0 0 20px #8b8cff) drop-shadow(0 0 40px #8b8cff); }
     }
     
     @keyframes spin-slow {
@@ -123,10 +123,10 @@
       left: 0;
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      background: linear-gradient(90deg, #8b8cff, #fbbf24);
       transition: width 0.3s ease;
       border-radius: clamp(5px, 2vw, 10px);
-      box-shadow: 0 0 20px #f59e0b;
+      box-shadow: 0 0 20px #8b8cff;
     }
     
     /* Resource Status */
@@ -157,7 +157,7 @@
     .loading-dot {
       width: clamp(6px, 2vw, 12px);
       height: clamp(6px, 2vw, 12px);
-      background: #f59e0b;
+      background: #8b8cff;
       border-radius: 50%;
       animation: dotWave 1.2s ease-in-out infinite;
     }
@@ -183,7 +183,7 @@
       position: absolute;
       width: clamp(1px, 0.5vw, 3px);
       height: clamp(1px, 0.5vw, 3px);
-      background: #f59e0b;
+      background: #8b8cff;
       border-radius: 50%;
       animation: particleFloat 3s ease-in-out infinite;
     }
@@ -249,7 +249,7 @@
       position: absolute;
       top: max(-5px, -1vw);
       right: max(-5px, -1vw);
-      background: #f59e0b;
+      background: #8b8cff;
       color: black;
       padding: clamp(2px, 1vw, 4px) clamp(6px, 2vw, 12px);
       border-radius: 20px;
@@ -345,7 +345,7 @@
            loading="lazy" />
       
       <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-center uppercase" 
-          style="font-family: 'Orbitron'">
+          style="font-family: 'Inter'">
         <span class="text-primary">GTA SA</span> UZBEK
       </h1>
       
