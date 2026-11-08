@@ -18,8 +18,8 @@
   function paintGrid() {
     try {
       if (typeof grid === 'undefined' || !grid.material) return;
-      if (theme === 'night') grid.material.color.setRGB(0, 1.6, 0.7);
-      else grid.material.color.setRGB(0.2, 1.5, 2.0);
+      if (theme === 'night') grid.material.color.setRGB(0.1, 1.3, 0.8);
+      else grid.material.color.setRGB(0.5, 0.5, 1.6);
     } catch (e) { /* to'r topilmasa, o'tkazib yuboramiz */ }
   }
   paintGrid();

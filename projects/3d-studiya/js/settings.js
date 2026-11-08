@@ -108,9 +108,9 @@ const sec=[
  {k:'snS',t:'rng',l:'Magnit: o’lcham qadami',mn:.01,mx:1,st:.01,v:.1,ap:snapAp},
  {k:'hl',t:'rng',l:'Bekor qilish tarixi',h:'Eng ko’p saqlanadigan amallar soni.',mn:10,mx:500,st:10,v:200}]],
 ['Interfeys va asboblar',[
- {k:'lang',t:'sel',l:'Dastur tili',o:[['uz','O’zbekcha'],['en','English'],['ru','Русский']],v:'uz',ap:v=>window.I18N&&I18N.set(v)},
+ {k:'lang',t:'sel',l:'Dastur tili',o:[['uz','O’zbekcha'],['en','English'],['ru','Русский'],['ar','العربية']],v:'uz',ap:v=>window.I18N&&I18N.set(v)},
  {k:'ui',t:'sel',l:'Interfeys o’lchami',o:[[11,'Kichik'],[12,'Oddiy'],[14,'Katta'],[16,'Juda katta']],v:12,ap:v=>document.body.style.fontSize=v+'px'},
- {k:'acc',t:'col',l:'Asosiy rang',v:'#4772b3',ap:v=>document.documentElement.style.setProperty('--ac',v),sw:['#4772b3','#2e8b57','#8a5cc2','#c0392b','#d98a1f']},
+ {k:'acc',t:'col',l:'Asosiy rang',v:'#ff9f2e',ap:v=>document.documentElement.style.setProperty('--ac',v),sw:['#ff9f2e','#4772b3','#2e8b57','#8a5cc2','#c0392b']},
  {k:'tLt',t:'chk',l:'Chap asboblar paneli',v:true,ap:v=>vis('#lt',v)},
  {k:'tVh',t:'chk',l:'Ko’rinish tugmalari (Ortho, Old…)',v:true,ap:v=>vis('#vh',v)},
  {k:'tAs',t:'chk',l:'O’ng panel (Outliner, Xossalar)',v:true,ap:v=>vis('aside',v)},
@@ -133,6 +133,8 @@ const sec=[
 const I=sec.flatMap(s=>s[1]),DEF={};I.forEach(i=>{if(i.k)DEF[i.k]=i.v});
 const conv=(k,v)=>typeof DEF[k]=='boolean'?!!v:v;
 try{C=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){C=Object.assign({},DEF)}
+/* v52: eski standart ko’k rang saqlanib qolgan bo’lsa, yangi amber rangga bir marta o’tkaziladi */
+try{if(!localStorage.getItem('acc52')){localStorage.setItem('acc52','1');if(C.acc=='#4772b3')C.acc=DEF.acc}}catch(e){}
 const save=()=>{try{const o={};for(const k in C)if(!I.find(i=>i.k==k&&i.np))o[k]=C[k];localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
 function applyAll(keys){I.forEach(i=>{if(!i.ap||i.t=='btn'||i.np||(keys&&!keys.includes(i.k))||(i.on&&!C[i.on]))return;i.ap(C[i.k])})}
 function detect(k){for(const g in PS){const p=PS[g];if(p.k.includes(k))C[g]=Object.keys(p.t).find(n=>p.k.every((kk,i)=>C[kk]==conv(kk,p.t[n][i])))||p.c}}

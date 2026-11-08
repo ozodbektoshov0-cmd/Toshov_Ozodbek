@@ -3,8 +3,8 @@
  "short_name": "3D Studiya",
  "start_url": "./",
  "display": "standalone",
- "background_color": "#010a04",
- "theme_color": "#010a04",
+ "background_color": "#1d1d1d",
+ "theme_color": "#1d1d1d",
  "icons": [
   {
    "src": "icon-192.png",
@@ -16,5 +16,6 @@
    "sizes": "512x512",
    "type": "image/png"
   }
- ]
+ ],
+ "orientation": "landscape"
 }

@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3DS MAX OBJECT STUDIO PRO | Toshov Ozodbek</title>
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darker: #0c0d0f;
+            --bg-dark: #141619;
+            --bg-med: #1b1e23;
+            --bg-panel: #23272e;
+            --border: #31363f;
+            --accent: #f59e0b;
+            --accent-glow: 0 0 18px rgba(245, 158, 11, 0.45);
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+        body.night-mode {
+            --accent: #00ff41;
+            --accent-glow: 0 0 18px rgba(0, 255, 65, 0.5);
+        }
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-darker);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
+            padding: 6px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 46px;
+            z-index: 100;
+        }
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font: 700 10px 'Share Tech Mono', monospace;
+            letter-spacing: 0.5px;
+            transition: 0.2s;
+        }
+        .back-btn:hover {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+        .logo-text {
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            font-size: 13px;
+            text-shadow: var(--accent-glow);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 3DS MAX WORKSPACE */
+        .workspace {
+            display: grid;
+            grid-template-columns: 320px 1fr 310px;
+            flex: 1;
+            height: calc(100vh - 46px - 28px);
+            background: var(--bg-darker);
+            overflow: hidden;
+        }
+
+        .sidebar-left, .sidebar-right {
+            background: var(--bg-dark);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 12px;
+            gap: 11px;
+            scrollbar-width: thin;
+        }
+        .sidebar-right {
+            border-right: none;
+            border-left: 1px solid var(--border);
+        }
+        .panel-section {
+            background: var(--bg-med);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .panel-section-title {
+            font: 700 10px 'Share Tech Mono', monospace;
+            color: var(--accent);
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
+        }
+        .v-btn {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            padding: 7px 9px;
+            border-radius: 5px;
+            font: 700 10px 'Share Tech Mono', monospace;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: 0.18s;
+        }
+        .v-btn:hover, .v-btn.active {
+            border-color: var(--accent);
+            color: #000;
+            background: var(--accent);
+        }
+
+        .drop-zone {
+            border: 1.5px dashed var(--accent);
+            background: rgba(245, 158, 11, 0.04);
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            background: rgba(245, 158, 11, 0.12);
+            box-shadow: var(--accent-glow);
+        }
+        .drop-zone input { display: none; }
+        .drop-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        .drop-text { font-size: 11px; font-weight: 800; color: #fff; }
+        .drop-sub { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-family: 'Share Tech Mono', monospace; }
+
+        .ctrl-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .ctrl-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .ctrl-label b { color: var(--accent); }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            height: 5px;
+            cursor: pointer;
+        }
+        select {
+            width: 100%;
+            background: var(--bg-panel);
+            color: #fff;
+            border: 1px solid var(--border);
+            padding: 7px 8px;
+            border-radius: 5px;
+            font: 700 10px 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* VIEWPORT CONTAINER */
+        .viewport-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+            gap: 2px;
+            background: #000;
+            position: relative;
+        }
+        .viewport-container.quad {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        .vp-box {
+            background: radial-gradient(circle at center, #2c3036 0%, #17191c 100%);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .vp-box.hidden-vp {
+            display: none;
+        }
+        .vp-box canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .vp-label {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            background: rgba(12, 14, 18, 0.78);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font: 700 10px 'Share Tech Mono', monospace;
+            color: var(--accent);
+            pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .vp-watermark {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font: 800 11px 'Share Tech Mono', monospace;
+            color: rgba(255, 255, 255, 0.45);
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+        .vp-overlay-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+        }
+        .vp-icon-btn {
+            background: rgba(18, 20, 24, 0.88);
+            border: 1px solid var(--border);
+            color: #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font: 700 10px 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: 0.18s;
+        }
+        .vp-icon-btn:hover, .vp-icon-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* THUMBNAIL PREVIEW OF EXTRACTED MASK */
+        .mask-preview-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 7px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        #maskPreviewCanvas {
+            width: 58px;
+            height: 58px;
+            border-radius: 5px;
+            border: 1px solid var(--accent);
+            background: #000;
+            flex-shrink: 0;
+        }
+        .mask-info {
+            font: 10px 'Share Tech Mono', monospace;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .m-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 7px 4px;
+            text-align: center;
+            cursor: pointer;
+            font: 700 9px 'Inter', sans-serif;
+            transition: 0.15s;
+        }
+        .m-card:hover, .m-card.active {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.16);
+            color: var(--accent);
+        }
+
+        footer {
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            padding: 4px 16px;
+            height: 28px;
+            font: 10px 'Share Tech Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            z-index: 100;
+        }
+        #status { color: var(--accent); }
+
+        #loaderOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(12, 13, 15, 0.86);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 200;
+            font: 700 12px 'Share Tech Mono', monospace;
+            color: var(--accent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        #loaderOverlay.show { opacity: 1; pointer-events: auto; }
+        .spinner {
+            border: 3px solid rgba(245, 158, 11, 0.15);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 1060px) {
+            .workspace { grid-template-columns: 1fr; overflow-y: auto; }
+            .viewport-container { min-height: 440px; order: -1; }
+        }
+    </style>
+<link rel="stylesheet" href="site-theme.css"></head>
+<body>
+
+<header>
+    <div class="brand-wrap">
+        <a href="../../tools.html" class="back-btn" id="backHomeBtn">← ASBOBLAR</a>
+        <div class="logo-text">Toshov Ozodbek // 3DS MAX OBJECT STUDIO PRO v2.0</div>
+    </div>
+    <div class="top-actions">
+        <button class="v-btn active" id="viewSingleBtn" type="button" style="flex:none;padding:6px 12px;">💻 1 OYNA (MAXIMIZE)</button>
+        <button class="v-btn" id="viewAllBtn" type="button" style="flex:none;padding:6px 12px;">📊 4 OYNA (QUAD CAD)</button>
+        <button class="v-btn" id="modeToggle" type="button" style="flex:none;padding:6px 12px;">NIGHT MODE</button>
+    </div>
+</header>
+
+<div class="workspace">
+    <!-- CHAP BOSHQARUV PANELI -->
+    <div class="sidebar-left">
+        <!-- 1. Rasm Yuklash va Avto-Maska -->
+        <div class="panel-section">
+            <div class="panel-section-title">
+                <span>📂 1. RASM YUKLASH (2D → 3D OBYEKT)</span>
+            </div>
+            <label class="drop-zone" id="dropZone" for="fileInput">
+                <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                <span class="drop-icon">🛞</span>
+                <div class="drop-text">DISK YOKI OBYEKT RASMINI TASHLANG</div>
+                <div class="drop-sub">Fon va teshiklarni avtomatik qirqib, 3ds Max model yasaydi</div>
+            </label>
+
+            <div class="mask-preview-wrap">
+                <canvas id="maskPreviewCanvas" width="80" height="80"></canvas>
+                <div class="mask-info">
+                    <div id="maskStatusTxt" style="color:var(--accent);font-weight:700;">AVTO MASKA: FAOL</div>
+                    <div>Oq qism = 3D Metall</div>
+                    <div>Qora qism = Ochiq teshik</div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="v-btn" id="invertMaskBtn" type="button">◐ FON / OBYEKTNI TESKARI QILISH</button>
+            </div>
+            <div class="btn-row">
+                <button class="v-btn active" id="demoWheelBtn" type="button">★ 3DS MAX DISK NAMUNASI</button>
+            </div>
+        </div>
+
+        <!-- 2. 3ds Max Modifikatorlar Steki -->
+        <div class="panel-section">
+            <div class="panel-section-title">
+                <span>🛠 2. 3DS MAX MODIFIER STACK</span>
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label">3D Model Turi (Object Mode)</div>
+                <select id="objectModeSelect">
+                    <option value="wheel_rim" selected>🛞 Avto Disk / G‘ildirak (Chuqur Silindr Obod + Spitsa)</option>
+                    <option value="solid_3d">🧊 Yaxlit 3D Obyekt (Fon qirqilgan + Bevel 3D)</option>
+                </select>
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Fon Ajratish Chegarasi (Threshold)</span><b id="threshVal">128</b></div>
+                <input type="range" id="threshRange" min="20" max="235" value="128">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label">Model Sifati (Rasm Aniqligi)</div>
+                <select id="qualitySelect">
+                    <option value="std">Standart (700 px)</option>
+                    <option value="high" selected>Yuqori (1100 px)</option>
+                    <option value="ultra">Ultra (1700 px, sekinroq)</option>
+                </select>
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label">Setka Zichligi (Mesh Density)</div>
+                <select id="densitySelect">
+                    <option value="low">Past (yengil, tez)</option>
+                    <option value="mid" selected>O‘rta (tavsiya)</option>
+                    <option value="high">Yuqori (juda silliq sirt)</option>
+                </select>
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Qirra Silliqligi (Detal ↔ Silliq)</span><b id="detailVal">30</b></div>
+                <input type="range" id="detailRange" min="0" max="100" value="30">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Disk Obodi Chuqurligi (Barrel Width)</span><b id="barrelDepthVal">58 mm</b></div>
+                <input type="range" id="barrelDepthRange" min="0" max="140" value="58">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Spitsa Qalinligi (Spoke Thickness)</span><b id="spokeThickVal">16 mm</b></div>
+                <input type="range" id="spokeThickRange" min="4" max="50" value="16">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Markazga Botiqlik (Concave Dish)</span><b id="concaveVal">14 mm</b></div>
+                <input type="range" id="concaveRange" min="-30" max="40" value="14">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Qirra Yumshoqligi (3D Chamfer / Bevel)</span><b id="bevelVal">3.0 mm</b></div>
+                <input type="range" id="bevelRange" min="0" max="8" step="0.5" value="3.0">
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Markaziy Bolt Teshiklari (5x114.3 Hub)</span></div>
+                <select id="lugHolesToggle">
+                    <option value="on" selected>Ha (5 ta Bolt + Stupitsa Chuqurchasi)</option>
+                    <option value="off">Yo‘q (Faqat rasmdagi teshiklar)</option>
+                </select>
+            </div>
+
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Rezina Balon (Qora Tire)</span></div>
+                <select id="tireToggle">
+                    <option value="on" selected>Ha (qora rezina balon avtomatik, wheel.dff o‘lchamida)</option>
+                    <option value="off">Yo‘q (faqat disk)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D VIEWPORT WORKSPACE -->
+    <div class="viewport-container" id="viewportContainer">
+        <!-- TOP VIEW -->
+        <div class="vp-box hidden-vp" id="topView">
+            <div class="vp-label">Top View [Orthographic]</div>
+        </div>
+        <!-- FRONT VIEW -->
+        <div class="vp-box hidden-vp" id="frontView">
+            <div class="vp-label">Front View [Orthographic]</div>
+        </div>
+        <!-- LEFT VIEW -->
+        <div class="vp-box hidden-vp" id="leftView">
+            <div class="vp-label">Left View [Orthographic]</div>
+        </div>
+        <!-- PERSPECTIVE VIEW -->
+        <div class="vp-box" id="perspectiveView">
+            <div class="vp-label">Perspective View [3ds Max Clay / Phong Shader]</div>
+            <div class="vp-watermark">Toshov Ozodbek 3D STUDIO</div>
+            <div class="vp-overlay-controls">
+                <button class="vp-icon-btn" id="wireOverlayToggle" type="button">🕸 Edged Faces (F4)</button>
+                <button class="vp-icon-btn active" id="spinToggleBtn" type="button">🔄 Auto-Orbit</button>
+                <button class="vp-icon-btn" id="resetCamBtn" type="button">⟲ Reset Camera</button>
+            </div>
+        </div>
+
+        <div id="loaderOverlay">
+            <div class="spinner"></div>
+            <span id="loadStatusLbl">3DS MAX MESH GENERATING...</span>
+        </div>
+    </div>
+
+    <!-- O'NG PANEL: MATERIAL, YORUG'LIK VA EXPORT -->
+    <div class="sidebar-right">
+        <div class="panel-section">
+            <div class="panel-section-title">🎨 3DS MAX MATERIALS</div>
+            <div class="grid-3" id="materialGrid">
+                <div class="m-card active" data-mat="max_mint">🟢 3ds Max Mint</div>
+                <div class="m-card" data-mat="alloy_silver">💿 Silver Alloy</div>
+                <div class="m-card" data-mat="dark_gunmetal">🌑 Gunmetal</div>
+                <div class="m-card" data-mat="gold_bbs">🟡 BBS Gold</div>
+                <div class="m-card" data-mat="bronze_rays">🥉 Bronze TE37</div>
+                <div class="m-card" data-mat="clay_grey">⚪ Grey Clay</div>
+                <div class="m-card" data-mat="neon_cyber">💙 Cyber Blue</div>
+                <div class="m-card" data-mat="crimson_red">🔴 Sport Red</div>
+                <div class="m-card" data-mat="wire_only">🌐 Wireframe</div>
+            </div>
+
+            <div class="ctrl-row" style="margin-top:4px;">
+                <div class="ctrl-label"><span>Maxsus Rang Tanlash</span></div>
+                <input type="color" id="customColorPicker" value="#8ab892" style="width:100%;height:30px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-section-title">💡 LIGHTING &amp; SHADING</div>
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Yorug‘lik Kuchi (Key Light)</span><b id="lightIntensityVal">1.3x</b></div>
+                <input type="range" id="lightIntensityRange" min="5" max="25" value="13">
+            </div>
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Metallik Yaltirash (Metalness)</span><b id="metalVal">0.25</b></div>
+                <input type="range" id="metalRange" min="0" max="100" value="25">
+            </div>
+            <div class="ctrl-row">
+                <div class="ctrl-label"><span>Sirt Silliqligi (Roughness)</span><b id="roughVal">0.42</b></div>
+                <input type="range" id="roughRange" min="5" max="100" value="42">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-section-title">🚀 EXPORT 3D MODEL (1 OBYEKT)</div>
+            <button class="v-btn" id="exportObjBtn" style="background:var(--accent);color:#000;font-weight:800;padding:11px;font-size:11px;" type="button">⬇ EXPORT .OBJ (3DS MAX / BLENDER)</button>
+            <button class="v-btn" id="exportDffBtn" style="padding:9px;border-color:var(--accent);color:var(--accent);" type="button">⬇ EXPORT .DFF (GTA SA / ZMODELER)</button>
+            <button class="v-btn" id="exportStlBtn" style="padding:9px;" type="button">⬇ EXPORT .STL (3D PRINTER)</button>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-section-title">📊 MESH STATISTICS</div>
+            <div style="font:10px 'Share Tech Mono',monospace;display:flex;flex-direction:column;gap:4px;color:#cbd5e1;">
+                <div>Obyekt: <span id="infoObjName" style="color:var(--accent);">3DS_MAX_WHEEL_RIM</span></div>
+                <div>Poligonlar (Triangles): <span id="infoFacesCount">0</span></div>
+                <div>Nuqtalar (Vertices): <span id="infoVerticesCount">0</span></div>
+                <div>Konturlar (Shapes): <span id="infoShapesCount">0</span></div>
+                <div>Teshiklar (Holes): <span id="infoHolesCount">Ochiq (Hollow)</span></div>
+                <div>Balon: <span id="infoTireInfo" style="color:var(--accent);">—</span></div>
+                <div>O‘lcham: <span id="infoSizeInfo" style="color:var(--accent);">—</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div id="status">✓ 3ds Max Object Studio tayyor. Fon va teshiklar avtomatik kesilib, haqiqiy 3D obyekt qurildi.</div>
+    <div id="meshStats">CONTOUR EXTRUSION + RADIAL CONCAVE + CYLINDRICAL BARREL</div>
+</footer>
+
+<script>
+// Night Mode
+const modeToggle = document.getElementById('modeToggle');
+modeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('night-mode');
+    modeToggle.textContent = document.body.classList.contains('night-mode') ? 'LIGHT MODE' : 'NIGHT MODE';
+});
+
+document.getElementById('backHomeBtn').addEventListener('click', () => {
+    try { sessionStorage.setItem('toshov_ozodbek_return_from_tool', '1'); } catch (e) {}
+});
+
+function setLoader(show, text) {
+    const el = document.getElementById('loaderOverlay');
+    if (text) document.getElementById('loadStatusLbl').textContent = text;
+    el.classList.toggle('show', show);
+}
+
+function setStatus(msg) {
+    document.getElementById('status').textContent = '✓ ' + msg;
+}
+
+// ==================== THREE.JS SAHNA VA 4-VIEWPORT TIZIMI ====================
+const viewportIds = ['topView', 'frontView', 'leftView', 'perspectiveView'];
+const scenes = {}, cameras = {}, renderers = {}, controls = {};
+const masterModelGroup = new THREE.Group();
+let cloneGroups = {};
+let isSpinning = true;
+let showEdgedFaces = false;
+let currentMaterialPreset = 'max_mint';
+let sourceImageElement = null;
+let invertMaskPolarity = null; // null = auto-detect, true/false = manual override
+let rebuildTimer = null;
+
+function initThreeViewports() {
+    viewportIds.forEach(vpId => {
+        const vpEl = document.getElementById(vpId);
+        const w = Math.max(200, vpEl.clientWidth);
+        const h = Math.max(200, vpEl.clientHeight);
+
+        const scene = new THREE.Scene();
+        scenes[vpId] = scene;
+
+        // 3ds Max uslubidagi qora-kulrang setka
+        const grid = new THREE.GridHelper(520, 52, 0x4b5563, 0x262930);
+        grid.name = 'studioGrid';
+        grid.position.y = -95;
+        scene.add(grid);
+
+        // 3-Point Studio Lighting (115.png dagi kabi silliq hajmli soyalar uchun)
+        const amb = new THREE.AmbientLight(0xffffff, 0.48);
+        scene.add(amb);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+        keyLight.position.set(140, 220, 190);
+        keyLight.name = 'keyLight';
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.42);
+        fillLight.position.set(-160, 60, 120);
+        scene.add(fillLight);
+
+        const backLight = new THREE.DirectionalLight(0xffffff, 0.38);
+        backLight.position.set(0, -140, -180);
+        scene.add(backLight);
+
+        let cam;
+        if (vpId === 'topView') {
+            cam = new THREE.OrthographicCamera(w / -2.2, w / 2.2, h / 2.2, h / -2.2, 1, 2000);
+            cam.position.set(0, 350, 0);
+            cam.lookAt(0, 0, 0);
+        } else if (vpId === 'frontView') {
+            cam = new THREE.OrthographicCamera(w / -2.2, w / 2.2, h / 2.2, h / -2.2, 1, 2000);
+            cam.position.set(0, 0, 350);
+            cam.lookAt(0, 0, 0);
+        } else if (vpId === 'leftView') {
+            cam = new THREE.OrthographicCamera(w / -2.2, w / 2.2, h / 2.2, h / -2.2, 1, 2000);
+            cam.position.set(-350, 0, 0);
+            cam.lookAt(0, 0, 0);
+        } else {
+            cam = new THREE.PerspectiveCamera(38, w / h, 1, 3000);
+            cam.position.set(-115, 35, 235);
+        }
+        cameras[vpId] = cam;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        vpEl.appendChild(renderer.domElement);
+        renderers[vpId] = renderer;
+
+        if (vpId === 'perspectiveView') {
+            const ctrl = new THREE.OrbitControls(cam, renderer.domElement);
+            ctrl.enableDamping = true;
+            ctrl.dampingFactor = 0.06;
+            ctrl.target.set(0, 0, 0);
+            controls[vpId] = ctrl;
+            scene.add(masterModelGroup);
+        } else {
+            const cg = new THREE.Group();
+            cloneGroups[vpId] = cg;
+            scene.add(cg);
+        }
+    });
+
+    window.addEventListener('resize', resizeAllViewports);
+}
+
+function resizeAllViewports() {
+    viewportIds.forEach(vpId => {
+        const vpEl = document.getElementById(vpId);
+        if (!vpEl || vpEl.classList.contains('hidden-vp')) return;
+        const w = Math.max(100, vpEl.clientWidth);
+        const h = Math.max(100, vpEl.clientHeight);
+        const cam = cameras[vpId];
+        const ren = renderers[vpId];
+
+        if (cam.isOrthographicCamera) {
+            cam.left = w / -2.2;
+            cam.right = w / 2.2;
+            cam.top = h / 2.2;
+            cam.bottom = h / -2.2;
+        } else {
+            cam.aspect = w / h;
+        }
+        cam.updateProjectionMatrix();
+        ren.setSize(w, h);
+    });
+}
+
+function animateLoop() {
+    requestAnimationFrame(animateLoop);
+
+    if (isSpinning) {
+        masterModelGroup.rotation.y += 0.0045;
+    }
+
+    if (controls['perspectiveView']) {
+        controls['perspectiveView'].update();
+    }
+
+    // Perspective sahmani 3 ta ortografik oynaga sinxronlash
+    ['topView', 'frontView', 'leftView'].forEach(vpId => {
+        const vpEl = document.getElementById(vpId);
+        if (!vpEl.classList.contains('hidden-vp') && cloneGroups[vpId]) {
+            cloneGroups[vpId].rotation.copy(masterModelGroup.rotation);
+            renderers[vpId].render(scenes[vpId], cameras[vpId]);
+        }
+    });
+
+    renderers['perspectiveView'].render(scenes['perspectiveView'], cameras['perspectiveView']);
+}
+
+// ==================== SIFAT MODULI (PS3D): yuqori aniqlikdagi maska, kontur, setka, silliq normallar ====================
+const PS3D = (function () {
+    'use strict';
+    const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+    // ---- Rasmni sifatli o'lchamga keltirish (nisbat saqlanadi, ko'p bosqichli kichraytirish) ----
+    function drawFitted(img, maxSide, pad) {
+        const iw = img.naturalWidth || img.width || 1024;
+        const ih = img.naturalHeight || img.height || 1024;
+        const s = maxSide / Math.max(iw, ih);
+        const dw = Math.max(8, Math.round(iw * s));
+        const dh = Math.max(8, Math.round(ih * s));
+        let src = img, sw = iw, sh = ih;
+        while (sw > dw * 2 && sh > dh * 2) {
+            const nw = Math.max(dw, Math.round(sw / 2)), nh = Math.max(dh, Math.round(sh / 2));
+            const c = document.createElement('canvas');
+            c.width = nw; c.height = nh;
+            const x = c.getContext('2d');
+            x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+            x.drawImage(src, 0, 0, nw, nh);
+            src = c; sw = nw; sh = nh;
+        }
+        const gw = dw + pad * 2, gh = dh + pad * 2;
+        const c = document.createElement('canvas');
+        c.width = gw; c.height = gh;
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        ctx.clearRect(0, 0, gw, gh);
+        ctx.drawImage(src, pad, pad, dw, dh);
+        return { ctx, gw, gh, dw, dh, pad };
+    }
+
+    // ---- Maydonni yengil tekislash (3 nuqtali, 0..3 marta) ----
+    function blurField(f, w, h, passes) {
+        let a = f;
+        for (let p = 0; p < passes; p++) {
+            const t = new Float32Array(a.length), o = new Float32Array(a.length);
+            for (let y = 0; y < h; y++) {
+                const r = y * w;
+                for (let x = 0; x < w; x++) {
+                    const l = a[r + (x > 0 ? x - 1 : x)], c = a[r + x], rr = a[r + (x < w - 1 ? x + 1 : x)];
+                    t[r + x] = l * 0.25 + c * 0.5 + rr * 0.25;
+                }
+            }
+            for (let y = 0; y < h; y++) {
+                const yu = (y > 0 ? y - 1 : y) * w, yc = y * w, yd = (y < h - 1 ? y + 1 : y) * w;
+                for (let x = 0; x < w; x++) o[yc + x] = t[yu + x] * 0.25 + t[yc + x] * 0.5 + t[yd + x] * 0.25;
+            }
+            a = o;
+        }
+        return a;
+    }
+
+    // ---- Douglas-Peucker (yopiq kontur): burchaklar saqlanadi, sub-piksel aniqlik ----
+    function dpSimplifyClosed(pts, eps) {
+        const n = pts.length;
+        if (n < 8) return pts;
+        let far = 0, fd = -1;
+        for (let i = 1; i < n; i++) {
+            const d = (pts[i].x - pts[0].x) ** 2 + (pts[i].y - pts[0].y) ** 2;
+            if (d > fd) { fd = d; far = i; }
+        }
+        const keep = new Uint8Array(n);
+        keep[0] = 1; keep[far] = 1;
+        const eps2 = eps * eps;
+        const stack = [[0, far], [far, n]];
+        while (stack.length) {
+            const [i0, i1] = stack.pop();
+            if (i1 - i0 < 2) continue;
+            const a = pts[i0 % n], b = pts[i1 % n];
+            const dx = b.x - a.x, dy = b.y - a.y, L2 = dx * dx + dy * dy;
+            let md = -1, mi = -1;
+            for (let i = i0 + 1; i < i1; i++) {
+                const p = pts[i % n];
+                let d2;
+                if (L2 < 1e-12) d2 = (p.x - a.x) ** 2 + (p.y - a.y) ** 2;
+                else {
+                    const t = clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / L2, 0, 1);
+                    const qx = a.x + t * dx, qy = a.y + t * dy;
+                    d2 = (p.x - qx) ** 2 + (p.y - qy) ** 2;
+                }
+                if (d2 > md) { md = d2; mi = i; }
+            }
+            if (md > eps2) { keep[mi % n] = 1; stack.push([i0, mi], [mi, i1]); }
+        }
+        const out = [];
+        for (let i = 0; i < n; i++) if (keep[i]) out.push(pts[i]);
+        return out.length >= 3 ? out : pts;
+    }
+
+    // ---- Zinapoyani yo'qotish uchun yengil Laplace tekislash (zich kontur ustida, burchaklar saqlanadi) ----
+    function relaxClosed(pts, passes, w) {
+        let cur = pts;
+        for (let p = 0; p < passes; p++) {
+            const n = cur.length, next = new Array(n);
+            for (let i = 0; i < n; i++) {
+                const p0 = cur[(i - 1 + n) % n], p1 = cur[i], p2 = cur[(i + 1) % n];
+                const v1x = p1.x - p0.x, v1y = p1.y - p0.y, v2x = p2.x - p1.x, v2y = p2.y - p1.y;
+                const l = Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y);
+                const cosA = l > 1e-9 ? (v1x * v2x + v1y * v2y) / l : 1;
+                next[i] = cosA < 0.2 ? { x: p1.x, y: p1.y }
+                    : { x: p1.x * (1 - 2 * w) + (p0.x + p2.x) * w, y: p1.y * (1 - 2 * w) + (p0.y + p2.y) * w };
+            }
+            cur = next;
+        }
+        return cur;
+    }
+
+    // ---- Eng ingichka detal yarim-eni (piksel): chamfer masofa xaritasi + o'q (ridge) nuqtalari ----
+    function estimateMinHalfWidth(field, w, h, thr) {
+        const n = w * h, INF = 1e9;
+        function dt(inside) {
+            const d = new Float32Array(n);
+            for (let i = 0; i < n; i++) d[i] = inside(i) ? INF : 0;
+            for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+                const i = y * w + x; if (!d[i]) continue;
+                let v = d[i];
+                if (x > 0) v = Math.min(v, d[i - 1] + 1);
+                if (y > 0) {
+                    v = Math.min(v, d[i - w] + 1);
+                    if (x > 0) v = Math.min(v, d[i - w - 1] + 1.4142);
+                    if (x < w - 1) v = Math.min(v, d[i - w + 1] + 1.4142);
+                }
+                d[i] = v;
+            }
+            for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+                const i = y * w + x; if (!d[i]) continue;
+                let v = d[i];
+                if (x < w - 1) v = Math.min(v, d[i + 1] + 1);
+                if (y < h - 1) {
+                    v = Math.min(v, d[i + w] + 1);
+                    if (x < w - 1) v = Math.min(v, d[i + w + 1] + 1.4142);
+                    if (x > 0) v = Math.min(v, d[i + w - 1] + 1.4142);
+                }
+                d[i] = v;
+            }
+            return d;
+        }
+        const vals = [];
+        for (const inside of [i => field[i] >= thr, i => field[i] < thr]) {
+            const d = dt(inside);
+            for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+                const i = y * w + x, v = d[i];
+                if (v < 1.5 || v > 1e8) continue;
+                if (v >= d[i - 1] && v >= d[i + 1] && v >= d[i - w] && v >= d[i + w] &&
+                    (v > d[i - 1] || v > d[i + 1] || v > d[i - w] || v > d[i + w])) vals.push(v);
+            }
+        }
+        if (vals.length < 20) return 6;
+        vals.sort((a, b) => a - b);
+        return Math.max(1.5, vals[Math.floor(vals.length * 0.04)]);
+    }
+
+    // ---- Setkani muntazam bo'lish: uzun qirralar maxLen dan kichik bo'lguncha ikkiga bo'linadi (yoriqsiz!) ----
+    function tessellate(pos, maxLen) {
+        const L2 = maxLen * maxLen, out = [];
+        const split = (ax, ay, az, bx, by, bz) => ((bx - ax) ** 2 + (by - ay) ** 2 + (bz - az) ** 2) > L2;
+        function tri(ax, ay, az, bx, by, bz, cx, cy, cz, depth) {
+            const sab = depth < 14 && split(ax, ay, az, bx, by, bz);
+            const sbc = depth < 14 && split(bx, by, bz, cx, cy, cz);
+            const sca = depth < 14 && split(cx, cy, cz, ax, ay, az);
+            if (!sab && !sbc && !sca) { out.push(ax, ay, az, bx, by, bz, cx, cy, cz); return; }
+            const d = depth + 1;
+            const mabx = (ax + bx) / 2, maby = (ay + by) / 2, mabz = (az + bz) / 2;
+            const mbcx = (bx + cx) / 2, mbcy = (by + cy) / 2, mbcz = (bz + cz) / 2;
+            const mcax = (cx + ax) / 2, mcay = (cy + ay) / 2, mcaz = (cz + az) / 2;
+            if (sab && sbc && sca) {
+                tri(ax, ay, az, mabx, maby, mabz, mcax, mcay, mcaz, d);
+                tri(mabx, maby, mabz, bx, by, bz, mbcx, mbcy, mbcz, d);
+                tri(mcax, mcay, mcaz, mbcx, mbcy, mbcz, cx, cy, cz, d);
+                tri(mabx, maby, mabz, mbcx, mbcy, mbcz, mcax, mcay, mcaz, d);
+            } else if (sab && !sbc && !sca) {
+                tri(ax, ay, az, mabx, maby, mabz, cx, cy, cz, d); tri(mabx, maby, mabz, bx, by, bz, cx, cy, cz, d);
+            } else if (sbc && !sab && !sca) {
+                tri(bx, by, bz, mbcx, mbcy, mbcz, ax, ay, az, d); tri(mbcx, mbcy, mbcz, cx, cy, cz, ax, ay, az, d);
+            } else if (sca && !sab && !sbc) {
+                tri(cx, cy, cz, mcax, mcay, mcaz, bx, by, bz, d); tri(mcax, mcay, mcaz, ax, ay, az, bx, by, bz, d);
+            } else if (!sca) { // ab va bc bo'lingan
+                tri(mabx, maby, mabz, bx, by, bz, mbcx, mbcy, mbcz, d);
+                tri(ax, ay, az, mabx, maby, mabz, mbcx, mbcy, mbcz, d);
+                tri(ax, ay, az, mbcx, mbcy, mbcz, cx, cy, cz, d);
+            } else if (!sab) { // bc va ca bo'lingan
+                tri(mbcx, mbcy, mbcz, cx, cy, cz, mcax, mcay, mcaz, d);
+                tri(bx, by, bz, mbcx, mbcy, mbcz, mcax, mcay, mcaz, d);
+                tri(bx, by, bz, mcax, mcay, mcaz, ax, ay, az, d);
+            } else { // ca va ab bo'lingan
+                tri(mcax, mcay, mcaz, ax, ay, az, mabx, maby, mabz, d);
+                tri(cx, cy, cz, mcax, mcay, mcaz, mabx, maby, mabz, d);
+                tri(cx, cy, cz, mabx, maby, mabz, bx, by, bz, d);
+            }
+        }
+        const nT = pos.length / 9;
+        for (let t = 0; t < nT; t++) {
+            const o = t * 9;
+            tri(pos[o], pos[o + 1], pos[o + 2], pos[o + 3], pos[o + 4], pos[o + 5], pos[o + 6], pos[o + 7], pos[o + 8], 0);
+        }
+        return new Float32Array(out);
+    }
+
+    // ---- Nuqtalarni payvandlash + burchak chegarali (crease) silliq normallar ----
+    function weld(pos, creaseDeg) {
+        const nTri = Math.floor(pos.length / 9), Q = 2000;
+        const map = new Map(), upos = [];
+        const triU = new Int32Array(nTri * 3);
+        for (let t = 0; t < nTri; t++) for (let k = 0; k < 3; k++) {
+            const o = t * 9 + k * 3;
+            const key = Math.round(pos[o] * Q) + '_' + Math.round(pos[o + 1] * Q) + '_' + Math.round(pos[o + 2] * Q);
+            let id = map.get(key);
+            if (id === undefined) { id = upos.length / 3; map.set(key, id); upos.push(pos[o], pos[o + 1], pos[o + 2]); }
+            triU[t * 3 + k] = id;
+        }
+        const nU = upos.length / 3;
+        const fn = new Float32Array(nTri * 3), fa = new Float32Array(nTri), good = new Uint8Array(nTri), ang = new Float32Array(nTri * 3);
+        for (let t = 0; t < nTri; t++) {
+            const a = triU[t * 3] * 3, b = triU[t * 3 + 1] * 3, c = triU[t * 3 + 2] * 3;
+            const e1x = upos[b] - upos[a], e1y = upos[b + 1] - upos[a + 1], e1z = upos[b + 2] - upos[a + 2];
+            const e2x = upos[c] - upos[a], e2y = upos[c + 1] - upos[a + 1], e2z = upos[c + 2] - upos[a + 2];
+            const nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
+            const l = Math.hypot(nx, ny, nz);
+            if (l < 1e-9 || triU[t * 3] === triU[t * 3 + 1] || triU[t * 3 + 1] === triU[t * 3 + 2] || triU[t * 3] === triU[t * 3 + 2]) continue;
+            good[t] = 1; fa[t] = l * 0.5; fn[t * 3] = nx / l; fn[t * 3 + 1] = ny / l; fn[t * 3 + 2] = nz / l;
+            // Burchak bo'yicha og'irlik: ingichka (sliver) uchburchaklar normallarni buzmasligi uchun
+            const e3x = upos[c] - upos[b], e3y = upos[c + 1] - upos[b + 1], e3z = upos[c + 2] - upos[b + 2];
+            const l1 = Math.hypot(e1x, e1y, e1z), l2 = Math.hypot(e2x, e2y, e2z), l3 = Math.hypot(e3x, e3y, e3z);
+            const cl = x => Math.max(-1, Math.min(1, x));
+            ang[t * 3] = Math.acos(cl((e1x * e2x + e1y * e2y + e1z * e2z) / (l1 * l2 || 1)));
+            ang[t * 3 + 1] = Math.acos(cl((-e1x * e3x - e1y * e3y - e1z * e3z) / (l1 * l3 || 1)));
+            ang[t * 3 + 2] = Math.PI - ang[t * 3] - ang[t * 3 + 1];
+        }
+        const head = new Int32Array(nU).fill(-1), nextC = new Int32Array(nTri * 3).fill(-1);
+        for (let c = nTri * 3 - 1; c >= 0; c--) {
+            if (!good[(c / 3) | 0]) continue;
+            const u = triU[c]; nextC[c] = head[u]; head[u] = c;
+        }
+        const cosC = Math.cos(creaseDeg * Math.PI / 180);
+        const outPos = [], outNrm = [], cornerOut = new Int32Array(nTri * 3).fill(-1);
+        for (let u = 0; u < nU; u++) {
+            const groups = [];
+            for (let c = head[u]; c >= 0; c = nextC[c]) {
+                const t = (c / 3) | 0, nx = fn[t * 3], ny = fn[t * 3 + 1], nz = fn[t * 3 + 2];
+                let g = null;
+                for (let k = 0; k < groups.length; k++) {
+                    const G = groups[k];
+                    if (G.rx * nx + G.ry * ny + G.rz * nz >= cosC) { g = G; break; }
+                }
+                if (!g) { g = { rx: nx, ry: ny, rz: nz, sx: 0, sy: 0, sz: 0, corners: [] }; groups.push(g); }
+                const wgt = ang[c] > 1e-6 ? ang[c] : 1e-6;
+                g.sx += nx * wgt; g.sy += ny * wgt; g.sz += nz * wgt; g.corners.push(c);
+            }
+            for (const g of groups) {
+                const l = Math.hypot(g.sx, g.sy, g.sz) || 1, vi = outPos.length / 3;
+                outPos.push(upos[u * 3], upos[u * 3 + 1], upos[u * 3 + 2]);
+                outNrm.push(g.sx / l, g.sy / l, g.sz / l);
+                for (const c of g.corners) cornerOut[c] = vi;
+            }
+        }
+        const idx = [];
+        for (let t = 0; t < nTri; t++) if (good[t]) idx.push(cornerOut[t * 3], cornerOut[t * 3 + 1], cornerOut[t * 3 + 2]);
+        const outNormals = smoothNormals(outNrm, idx, 3, 0.80);
+        return { positions: new Float32Array(outPos), normals: outNormals, indices: idx, uniquePositions: nU };
+    }
+
+    // ---- Normallarni qo'shni nuqtalar bo'yicha tekislash: tessellatsiya "narvon" va "g'ijim" shovqinini yo'qotadi.
+    // Qirralar (crease) nuqtalari alohida indeksga ega, shuning uchun o'tkir burchaklar tekislanmaydi.
+    function smoothNormals(nrm, idx, passes, cosT) {
+        const nV = nrm.length / 3, nT = idx.length / 3;
+        const deg = new Int32Array(nV + 1);
+        for (let t = 0; t < nT; t++) for (let k = 0; k < 3; k++) { deg[idx[t * 3 + k] + 1] += 2; }
+        for (let i = 0; i < nV; i++) deg[i + 1] += deg[i];
+        const adj = new Int32Array(deg[nV]), fill = deg.slice(0, nV);
+        for (let t = 0; t < nT; t++) {
+            const a = idx[t * 3], b = idx[t * 3 + 1], c = idx[t * 3 + 2];
+            adj[fill[a]++] = b; adj[fill[a]++] = c;
+            adj[fill[b]++] = a; adj[fill[b]++] = c;
+            adj[fill[c]++] = a; adj[fill[c]++] = b;
+        }
+        let cur = Float32Array.from(nrm), nxt = new Float32Array(nrm.length);
+        for (let p = 0; p < passes; p++) {
+            for (let i = 0; i < nV; i++) {
+                const x = cur[i * 3], y = cur[i * 3 + 1], z = cur[i * 3 + 2];
+                let sx = x, sy = y, sz = z;
+                for (let e = deg[i]; e < deg[i + 1]; e++) {
+                    const j = adj[e] * 3, jx = cur[j], jy = cur[j + 1], jz = cur[j + 2];
+                    if (x * jx + y * jy + z * jz >= cosT) { sx += jx * 0.5; sy += jy * 0.5; sz += jz * 0.5; }
+                }
+                const l = Math.hypot(sx, sy, sz) || 1;
+                nxt[i * 3] = sx / l; nxt[i * 3 + 1] = sy / l; nxt[i * 3 + 2] = sz / l;
+            }
+            const tmp = cur; cur = nxt; nxt = tmp;
+        }
+        return cur;
+    }
+
+    return { drawFitted, blurField, dpSimplifyClosed, relaxClosed, estimateMinHalfWidth, tessellate, weld };
+})();
+
+// ==================== 1. RASMNI TAHLIL QILISH VA AVTO-MASKA (YUQORI ANIQLIK, NISBAT SAQLANADI) ====================
+// Rasm oq fondagi qora chizmami yoki qora/shaffof fondagi obyektmi — avtomatik aniqlanadi.
+// Eski versiyada rasm 220x220 KVADRATGA cho'zilib siqilardi; endi nisbat saqlanadi va 700-1700 px aniqlikda ishlanadi.
+function getQualityMaxSide() {
+    const q = document.getElementById('qualitySelect');
+    const v = q ? q.value : 'high';
+    return v === 'ultra' ? 1700 : (v === 'std' ? 700 : 1100);
+}
+function getDetailValue() {
+    const d = document.getElementById('detailRange');
+    return d ? (parseInt(d.value, 10) || 0) : 30;
+}
+
+// ==================== 1a. FOTO-SEGMENTATSIYA: FON RANGINI RASMNING O'ZIDAN O'RGANADI ====================
+// Eski usul faqat yorqinlikni (oq/qora) chegaralab kesardi: oq fonli rasmda xrom/yaltiroq (och) qismlar fon bilan
+// aralashib, spitsalar parchalanib ketardi. Yangi usul: (1) rasm chetidan fon rangini aniqlaydi, (2) fonga o'xshash
+// sohalarni bog'langan komponentlarga ajratadi, (3) faqat haqiqiy fon (tashqi fon + spitsalar orasidagi katta
+// teshiklar) kesiladi, xrom yaltirashlar esa obyekt ichida qoladi, (4) mayda dog'lar tozalanadi va qirralar tekislanadi.
+function segmentPhoto(rgba, gw, gh, pad, sens) {
+    sens = Math.max(-1, Math.min(1, sens || 0));
+    const n = gw * gh, x0 = pad, x1 = gw - pad, y0 = pad, y1 = gh - pad;
+    const W = x1 - x0, H = y1 - y0, area = W * H;
+    // --- 1. Fon rangi: rasm chetidagi halqaning mediani ---
+    const r = Math.max(3, Math.round(Math.min(W, H) * 0.012));
+    const hist = [new Uint32Array(256), new Uint32Array(256), new Uint32Array(256)];
+    let ringN = 0;
+    const take = (x, y) => {
+        const i = (y * gw + x) * 4;
+        if (rgba[i + 3] < 200) return;
+        hist[0][rgba[i]]++; hist[1][rgba[i + 1]]++; hist[2][rgba[i + 2]]++; ringN++;
+    };
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        if (x < x0 + r || x >= x1 - r || y < y0 + r || y >= y1 - r) take(x, y);
+    }
+    if (ringN < 50) return null;
+    const bg = hist.map(hh => { let c = 0, v = 0; for (; v < 256; v++) { c += hh[v]; if (c >= ringN / 2) break; } return Math.min(255, v); });
+    let near = 0;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        if (!(x < x0 + r || x >= x1 - r || y < y0 + r || y >= y1 - r)) continue;
+        const i = (y * gw + x) * 4;
+        if (Math.max(Math.abs(rgba[i] - bg[0]), Math.abs(rgba[i + 1] - bg[1]), Math.abs(rgba[i + 2] - bg[2])) < 30) near++;
+    }
+    if (near / ringN < 0.55) return null; // fon bir xil emas — eski usulga qaytamiz
+
+    // --- 2. Fonga o'xshashlik (3x3 o'rtachalangan masofa) ---
+    const d0 = new Float32Array(n).fill(255);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        const i = (y * gw + x) * 4;
+        d0[y * gw + x] = rgba[i + 3] < 30 ? 0 : Math.max(Math.abs(rgba[i] - bg[0]), Math.abs(rgba[i + 1] - bg[1]), Math.abs(rgba[i + 2] - bg[2]));
+    }
+    const d = new Float32Array(n).fill(255);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        let s = 0, c = 0;
+        for (let dy = -1; dy <= 1; dy++) { const yy = y + dy; if (yy < y0 || yy >= y1) continue;
+            for (let dx = -1; dx <= 1; dx++) { const xx = x + dx; if (xx < x0 || xx >= x1) continue; s += d0[yy * gw + xx]; c++; } }
+        d[y * gw + x] = s / c;
+    }
+    const TBG = 14;
+    const cand = new Uint8Array(n);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (d[y * gw + x] < TBG) cand[y * gw + x] = 1;
+    // 1 piksellik ingichka ko'prikchalar orqali "oqib ketmasligi" uchun yengil eroziya
+    const er = new Uint8Array(n);
+    for (let y = y0 + 1; y < y1 - 1; y++) for (let x = x0 + 1; x < x1 - 1; x++) {
+        const p = y * gw + x;
+        if (cand[p] && cand[p - 1] && cand[p + 1] && cand[p - gw] && cand[p + gw]) er[p] = 1;
+    }
+    // chetdagi piksellar eroziyada yo'qolmasin (tashqi fon chetga tegib turadi)
+    for (let x = x0; x < x1; x++) { er[y0 * gw + x] = cand[y0 * gw + x]; er[(y1 - 1) * gw + x] = cand[(y1 - 1) * gw + x]; }
+    for (let y = y0; y < y1; y++) { er[y * gw + x0] = cand[y * gw + x0]; er[y * gw + x1 - 1] = cand[y * gw + x1 - 1]; }
+
+    // --- 3. Bog'langan komponentlar (4-qo'shnilik) ---
+    const lab = new Int32Array(n), stack = new Int32Array(n);
+    const comps = [];
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        const s = y * gw + x;
+        if (!er[s] || lab[s]) continue;
+        const id = comps.length + 1; let sp = 0, cnt = 0, border = false;
+        stack[sp++] = s; lab[s] = id;
+        while (sp) {
+            const p = stack[--sp]; cnt++;
+            const px = p % gw, py = (p - px) / gw;
+            if (px === x0 || px === x1 - 1 || py === y0 || py === y1 - 1) border = true;
+            if (px > x0 && er[p - 1] && !lab[p - 1]) { lab[p - 1] = id; stack[sp++] = p - 1; }
+            if (px < x1 - 1 && er[p + 1] && !lab[p + 1]) { lab[p + 1] = id; stack[sp++] = p + 1; }
+            if (py > y0 && er[p - gw] && !lab[p - gw]) { lab[p - gw] = id; stack[sp++] = p - gw; }
+            if (py < y1 - 1 && er[p + gw] && !lab[p + gw]) { lab[p + gw] = id; stack[sp++] = p + gw; }
+        }
+        comps.push({ cnt, border });
+    }
+    // Obyekt ichidagi yaltirash (xrom) rasmda "shiny" bo'ladi: bunda kichik och dog'lar teshik emas, obyektning o'zi.
+    const pickBg = (minHole) => {
+        const keep = new Uint8Array(comps.length + 1);
+        comps.forEach((c, i) => { if (c.border ? c.cnt > area * 0.0005 : c.cnt >= minHole) keep[i + 1] = 1; });
+        return keep;
+    };
+    let keep = pickBg(Math.max(6, area * 0.00006));
+    // Obyekt ichidagi "och" sohalarni sanaymiz. Anti-alias chetlari (1-3 px) hisobga kirmasin deb 7x7 ichki yadro olinadi.
+    let fgN = 0, fgLight = 0;
+    const lt = new Int32Array((gw + 1) * (gh + 1));
+    for (let y = 0; y < gh; y++) { let row = 0; for (let x = 0; x < gw; x++) { const p = y * gw + x; row += (!keep[lab[p]] && d[p] < 90 && x >= x0 && x < x1 && y >= y0 && y < y1) ? 1 : 0; lt[(y + 1) * (gw + 1) + x + 1] = lt[y * (gw + 1) + x + 1] + row; } }
+    for (let y = y0 + 3; y < y1 - 3; y++) for (let x = x0 + 3; x < x1 - 3; x++) {
+        const p = y * gw + x;
+        if (keep[lab[p]]) continue;
+        fgN++;
+        const sum = lt[(y + 4) * (gw + 1) + x + 4] - lt[(y - 3) * (gw + 1) + x + 4] - lt[(y + 4) * (gw + 1) + x - 3] + lt[(y - 3) * (gw + 1) + x - 3];
+        if (sum === 49) fgLight++;
+    }
+    const bgL = 0.299 * bg[0] + 0.587 * bg[1] + 0.114 * bg[2];
+    const shiny = bgL > 150 && fgN > 0 && fgLight / fgN > 0.06;
+    if (shiny) keep = pickBg(area * 0.0012);
+
+    // --- 4. Ishonchli fon (urug') + silliq o'tish bo'ylab o'stirish ---
+    // Rasmdagi yumshoq soya yoki yorug'lik gradienti fon bilan bir xil "silliq" sirt: qo'shni pikselga o'tishda
+    // yorqinlik sakrashi kichik bo'lsa, fon davom etadi. Qora chiziq/qirra (katta sakrash) kesib to'xtatadi.
+    // Xrom yaltirash esa qora kontur bilan o'ralgan, shuning uchun fonga qo'shilib ketmaydi.
+    const L = new Float32Array(n);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        let sum = 0, c = 0;
+        for (let dy = -1; dy <= 1; dy++) { const yy = y + dy; if (yy < y0 || yy >= y1) continue;
+            for (let dx = -1; dx <= 1; dx++) { const xx = x + dx; if (xx < x0 || xx >= x1) continue; const i = (yy * gw + xx) * 4; sum += 0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]; c++; } }
+        L[y * gw + x] = sum / c;
+    }
+    let bgm = new Uint8Array(n), qn = 0;
+    const queue = stack; // qayta ishlatamiz
+    if (shiny) {
+        // Yaltiroq (xrom) obyekt: xrom och yo'llar fonga tegib turishi mumkin, shuning uchun "o'sish" xavfli.
+        // O'rniga: fon = silliq + och + KENG soha. Ingichka xrom chiziqlar (kengligi < 2R) fon bo'la olmaydi —
+        // morfologik "ochish" (opening, disk R) ularni olib tashlaydi, katta teshiklar (spitsalar orasi, soya bilan) qoladi.
+        const R = Math.max(3, Math.round(Math.min(W, H) * 0.011 * (1 - 0.35 * sens)));
+        // 5x5 lokal tebranish (range) — silliqlikni o'lchaydi
+        const tmx = new Float32Array(n), tmn = new Float32Array(n), rg = new Float32Array(n);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            let mx = -1e9, mn = 1e9;
+            for (let dx = -2; dx <= 2; dx++) { const xx = Math.min(x1 - 1, Math.max(x0, x + dx)), v = L[y * gw + xx]; if (v > mx) mx = v; if (v < mn) mn = v; }
+            tmx[y * gw + x] = mx; tmn[y * gw + x] = mn;
+        }
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            let mx = -1e9, mn = 1e9;
+            for (let dy = -2; dy <= 2; dy++) { const yy = Math.min(y1 - 1, Math.max(y0, y + dy)), p = yy * gw + x; if (tmx[p] > mx) mx = tmx[p]; if (tmn[p] < mn) mn = tmn[p]; }
+            rg[y * gw + x] = mx - mn;
+        }
+        const Lmin = bgL * (0.55 - 0.15 * sens), RG = Math.max(3, 10 + 14 * sens), CHR = 45 + 20 * sens;
+        const cl = new Uint8Array(n);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            const p = y * gw + x, i = p * 4;
+            const chroma = Math.max(rgba[i], rgba[i + 1], rgba[i + 2]) - Math.min(rgba[i], rgba[i + 1], rgba[i + 2]);
+            if (rgba[i + 3] < 30 || (L[p] >= Lmin && rg[p] < RG && chroma < CHR)) cl[p] = 1;
+        }
+        // chamfer masofa: cl ichida eng yaqin "cl emas" pikselgacha
+        const INF = 1e9, dist = new Float32Array(n);
+        const chamfer = (zero) => {
+            for (let p = 0; p < n; p++) dist[p] = zero(p) ? 0 : INF;
+            for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+                const p = y * gw + x; let v = dist[p]; if (!v) continue;
+                if (x > x0) v = Math.min(v, dist[p - 1] + 1);
+                if (y > y0) { v = Math.min(v, dist[p - gw] + 1); if (x > x0) v = Math.min(v, dist[p - gw - 1] + 1.4142); if (x < x1 - 1) v = Math.min(v, dist[p - gw + 1] + 1.4142); }
+                dist[p] = v;
+            }
+            for (let y = y1 - 1; y >= y0; y--) for (let x = x1 - 1; x >= x0; x--) {
+                const p = y * gw + x; let v = dist[p]; if (!v) continue;
+                if (x < x1 - 1) v = Math.min(v, dist[p + 1] + 1);
+                if (y < y1 - 1) { v = Math.min(v, dist[p + gw] + 1); if (x < x1 - 1) v = Math.min(v, dist[p + gw + 1] + 1.4142); if (x > x0) v = Math.min(v, dist[p + gw - 1] + 1.4142); }
+                dist[p] = v;
+            }
+        };
+        chamfer(p => !cl[p]);
+        // yadro: cl ichida chetdan kamida R masofadagi piksellar; rasm chetiga tegib turgan soha yadroni yo'qotmasin
+        const core = new Uint8Array(n);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            const p = y * gw + x;
+            if (cl[p] && (dist[p] >= R || (dist[p] >= 1e8))) core[p] = 1;
+        }
+        // yadro komponentlari: chetga tegadigan yoki toza-oq (fon rangidagi) markazi bor bo'lsa — haqiqiy teshik/fon
+        const cl2 = new Int32Array(n); let cid = 0;
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            const s0 = y * gw + x; if (!core[s0] || cl2[s0]) continue;
+            cid++; let sp = 0, cnt = 0, border = false, pure = 0; const mem = [];
+            stack[sp++] = s0; cl2[s0] = cid;
+            while (sp) {
+                const p = stack[--sp]; cnt++; mem.push(p);
+                const px = p % gw, py = (p - px) / gw;
+                if (px < x0 + 2 * R || px >= x1 - 2 * R || py < y0 + 2 * R || py >= y1 - 2 * R) border = true;
+                if (d0[p] < 14) pure++;
+                if (px > x0 && core[p - 1] && !cl2[p - 1]) { cl2[p - 1] = cid; stack[sp++] = p - 1; }
+                if (px < x1 - 1 && core[p + 1] && !cl2[p + 1]) { cl2[p + 1] = cid; stack[sp++] = p + 1; }
+                if (py > y0 && core[p - gw] && !cl2[p - gw]) { cl2[p - gw] = cid; stack[sp++] = p - gw; }
+                if (py < y1 - 1 && core[p + gw] && !cl2[p + gw]) { cl2[p + gw] = cid; stack[sp++] = p + gw; }
+            }
+            const ok = (border && cnt > R * R) || (pure >= 25 && cnt >= area * 0.0004);
+            if (!ok) for (const p of mem) core[p] = 0;
+        }
+        // fon = tasdiqlangan yadroning R-kengayishi (= morfologik ochish) ∩ cl
+        chamfer(p => core[p] === 1);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const p = y * gw + x; if (dist[p] <= R + 0.5 && cl[p]) bgm[p] = 1; }
+    } else {
+        for (let p = 0; p < n; p++) if (lab[p] && keep[lab[p]]) { bgm[p] = 1; queue[qn++] = p; }
+    }
+    const STEP = 5;
+    let qh = 0;
+    while (qh < qn) {
+        const p = queue[qh++], px = p % gw, py = (p - px) / gw, lp = L[p];
+        if (px > x0 && !bgm[p - 1] && Math.abs(L[p - 1] - lp) <= STEP && rgba[(p - 1) * 4 + 3] >= 30) { bgm[p - 1] = 1; queue[qn++] = p - 1; }
+        if (px < x1 - 1 && !bgm[p + 1] && Math.abs(L[p + 1] - lp) <= STEP && rgba[(p + 1) * 4 + 3] >= 30) { bgm[p + 1] = 1; queue[qn++] = p + 1; }
+        if (py > y0 && !bgm[p - gw] && Math.abs(L[p - gw] - lp) <= STEP && rgba[(p - gw) * 4 + 3] >= 30) { bgm[p - gw] = 1; queue[qn++] = p - gw; }
+        if (py < y1 - 1 && !bgm[p + gw] && Math.abs(L[p + gw] - lp) <= STEP && rgba[(p + gw) * 4 + 3] >= 30) { bgm[p + gw] = 1; queue[qn++] = p + gw; }
+    }
+    // Qirradagi o'tish piksellarini (anti-alias) fonga qaytarish: fonga tegib turgan va fonga yaqinroq piksellar
+    for (let it = 0; it < 2; it++) {
+        const nx = bgm.slice();
+        for (let y = y0 + 1; y < y1 - 1; y++) for (let x = x0 + 1; x < x1 - 1; x++) {
+            const p = y * gw + x;
+            if (bgm[p]) continue;
+            let nb = -1;
+            if (bgm[p - 1]) nb = L[p - 1]; else if (bgm[p + 1]) nb = L[p + 1]; else if (bgm[p - gw]) nb = L[p - gw]; else if (bgm[p + gw]) nb = L[p + gw];
+            if (nb < 0) continue;
+            // piksel qora tomonga emas, fon tomoniga yaqinmi? (yarim yo'l: fon yorqinligining 60% idan yuqori)
+            if (Math.abs(L[p] - nb) < Math.max(40, Math.abs(nb - 40) * 0.45)) nx[p] = 1;
+        }
+        bgm = nx;
+    }
+    let fg = new Uint8Array(n);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const p = y * gw + x; fg[p] = bgm[p] ? 0 : 1; }
+
+    // --- 5. Mayda obyekt dog'larini (shovqin) tozalash ---
+    const minSpeck = Math.max(4, area * (shiny ? 0.0004 : 0.00004));
+    lab.fill(0);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        const s = y * gw + x;
+        if (!fg[s] || lab[s]) continue;
+        let sp = 0, cnt = 0; const members = [];
+        stack[sp++] = s; lab[s] = 1;
+        while (sp) {
+            const p = stack[--sp]; cnt++; members.push(p);
+            const px = p % gw, py = (p - px) / gw;
+            if (px > x0 && fg[p - 1] && !lab[p - 1]) { lab[p - 1] = 1; stack[sp++] = p - 1; }
+            if (px < x1 - 1 && fg[p + 1] && !lab[p + 1]) { lab[p + 1] = 1; stack[sp++] = p + 1; }
+            if (py > y0 && fg[p - gw] && !lab[p - gw]) { lab[p - gw] = 1; stack[sp++] = p - gw; }
+            if (py < y1 - 1 && fg[p + gw] && !lab[p + gw]) { lab[p + gw] = 1; stack[sp++] = p + gw; }
+        }
+        if (cnt < minSpeck) for (const p of members) fg[p] = 0;
+    }
+
+    // --- 6. Qirralarni silliqlash: 5x5 ko'pchilik filtri (2 marta, integral rasm bilan tez) — tishsiz, toza kontur ---
+    const rad = shiny ? Math.max(2, Math.round(Math.min(W, H) * 0.0022)) : 1;
+    for (let it = 0; it < 2; it++) {
+        const ii = new Int32Array((gw + 1) * (gh + 1));
+        for (let y = 0; y < gh; y++) { let row = 0; for (let x = 0; x < gw; x++) { row += fg[y * gw + x]; ii[(y + 1) * (gw + 1) + x + 1] = ii[y * (gw + 1) + x + 1] + row; } }
+        const o = new Uint8Array(n);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+            const xa = Math.max(x0, x - rad), xb = Math.min(x1, x + rad + 1), ya = Math.max(y0, y - rad), yb = Math.min(y1, y + rad + 1);
+            const sum = ii[yb * (gw + 1) + xb] - ii[ya * (gw + 1) + xb] - ii[yb * (gw + 1) + xa] + ii[ya * (gw + 1) + xa];
+            o[y * gw + x] = sum * 2 >= (xb - xa) * (yb - ya) ? 1 : 0;
+        }
+        fg = o;
+    }
+    return { fg, shiny, bg };
+}
+
+function extractBinaryFieldFromImage(img) {
+    const pad = 4;
+    // Manba rasmdan 1.5 baravardan ortiq kattalashtirish yangi ma'lumot bermaydi, faqat sekinlashtiradi va uchburchaklarni ko'paytiradi
+    const srcMax = Math.max(img.naturalWidth || img.width || 1024, img.naturalHeight || img.height || 1024);
+    const fit = PS3D.drawFitted(img, Math.min(getQualityMaxSide(), Math.max(700, Math.round(srcMax * 1.5))), pad);
+    const { ctx, gw, gh } = fit;
+    const rgba = ctx.getImageData(0, 0, gw, gh).data;
+    const threshold = parseInt(document.getElementById('threshRange').value, 10) || 128;
+
+    // 4 ta burchakdagi 5x5 maydonni o'rtachalab, fon turini aniqlaymiz
+    const patch = (cx, cy) => {
+        let al = 0, lu = 0, n = 0;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+            const x = Math.min(gw - pad - 1, Math.max(pad, cx + dx));
+            const y = Math.min(gh - pad - 1, Math.max(pad, cy + dy));
+            const i = (y * gw + x) * 4;
+            al += rgba[i + 3]; lu += 0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]; n++;
+        }
+        return [al / n, lu / n];
+    };
+    const cs = [patch(pad + 3, pad + 3), patch(gw - pad - 4, pad + 3), patch(pad + 3, gh - pad - 4), patch(gw - pad - 4, gh - pad - 4)];
+    const avgCornerAlpha = cs.reduce((s, c) => s + c[0], 0) / 4;
+    const avgCornerLum = cs.reduce((s, c) => s + c[1], 0) / 4;
+
+    // Shaffof fonli PNG: eng aniq maska — alfa kanalining o'zi (qora logotip ham yo'qolmaydi)
+    const useAlpha = avgCornerAlpha < 60;
+    let darkIsForeground = (!useAlpha && avgCornerAlpha > 180 && avgCornerLum > 140);
+    let flip = false;
+    if (invertMaskPolarity !== null) {
+        if (useAlpha) flip = !!invertMaskPolarity;
+        else darkIsForeground = invertMaskPolarity ? !darkIsForeground : darkIsForeground;
+    }
+
+    document.getElementById('maskStatusTxt').textContent = useAlpha
+        ? (flip ? 'AVTO: SHAFFOF QISM = OBYEKT' : 'AVTO: SHAFFOF FON KESILDI')
+        : (darkIsForeground ? 'AVTO: OQ FON KESILDI' : 'AVTO: QORA FON KESILDI');
+
+    let field = new Float32Array(gw * gh);
+    // Shaffof bo'lmagan rasm (foto): fon rangini o'rganib segmentatsiya qilamiz; bir xil fon topilmasa — eski usul.
+    const seg = useAlpha ? null : segmentPhoto(rgba, gw, gh, pad, 0.6 + (threshold - 128) / 107 * 0.4);
+    if (seg) {
+        const inv = invertMaskPolarity === true;
+        for (let p = 0; p < field.length; p++) field[p] = (seg.fg[p] ? 255 : 0);
+        if (inv) for (let y = pad; y < gh - pad; y++) for (let x = pad; x < gw - pad; x++) { const p = y * gw + x; field[p] = 255 - field[p]; }
+        document.getElementById('maskStatusTxt').textContent = inv ? 'AVTO: OBYEKT / FON ALMASHTIRILDI' : (seg.shiny ? 'AVTO: FON ANIQLANDI (xrom / yaltiroq obyekt)' : 'AVTO: FON ANIQLANDI');
+    } else
+    for (let y = pad; y < gh - pad; y++) {
+        for (let x = pad; x < gw - pad; x++) {
+            const p = y * gw + x, i4 = p * 4;
+            const a = rgba[i4 + 3];
+            if (useAlpha) { field[p] = flip ? 255 - a : a; continue; }
+            if (a < 30) { field[p] = 0; continue; }
+            const lum = 0.299 * rgba[i4] + 0.587 * rgba[i4 + 1] + 0.114 * rgba[i4 + 2];
+            field[p] = (darkIsForeground ? (255 - lum) : lum) * (a / 255);
+        }
+    }
+
+    // Segmentatsiyalangan niqob: pikselli zinapoyani sub-piksel silliq konturga aylantirish uchun qo'shimcha tekislash
+    if (seg) field = PS3D.blurField(field, gw, gh, seg.shiny ? 3 : 2);
+    // Faqat juda yengil tekislash (0..3 marta) — kichik detallar yo'qolmasligi uchun
+    const passes = Math.round(getDetailValue() / 100 * 3);
+    if (passes > 0) field = PS3D.blurField(field, gw, gh, passes);
+
+    // Segmentatsiyalangan (0/255) niqobda slayder "sezgirlik" vazifasini bajaradi, kontur esa har doim 50% darajasida olinadi
+    const iso = seg ? 128 : threshold;
+    drawMaskPreview(field, gw, gh, iso);
+    return { field, w: gw, h: gh, threshold: iso, scale: 160 / Math.max(gw, gh), pad };
+}
+
+function drawMaskPreview(field, w, h, threshold) {
+    const S = 160;
+    const pCanvas = document.getElementById('maskPreviewCanvas');
+    pCanvas.width = S;
+    pCanvas.height = S;
+    const pCtx = pCanvas.getContext('2d');
+    const imgData = pCtx.createImageData(S, S);
+    const d = imgData.data;
+    const s = S / Math.max(w, h);
+    const ow = Math.round(w * s), oh = Math.round(h * s);
+    const ox = Math.floor((S - ow) / 2), oy = Math.floor((S - oh) / 2);
+
+    for (let y = 0; y < S; y++) {
+        for (let x = 0; x < S; x++) {
+            const p4 = (y * S + x) * 4;
+            const sx = Math.floor((x - ox) / s), sy = Math.floor((y - oy) / s);
+            if (sx < 0 || sy < 0 || sx >= w || sy >= h) {
+                d[p4] = 8; d[p4 + 1] = 10; d[p4 + 2] = 14; d[p4 + 3] = 255;
+                continue;
+            }
+            const isSolid = field[sy * w + sx] >= threshold;
+            d[p4]     = isSolid ? 138 : 12;
+            d[p4 + 1] = isSolid ? 184 : 15;
+            d[p4 + 2] = isSolid ? 146 : 20;
+            d[p4 + 3] = 255;
+        }
+    }
+    pCtx.putImageData(imgData, 0, 0);
+}
+
+// ==================== 2. TOPOLOGIK MARCHING SQUARES VA TESHIKLAR IYERARXIYASI ====================
+function traceContoursAndHoles(field, w, h, threshold) {
+    const segments = [];
+    const vEdgeOffset = (h + 1) * (w + 1);
+
+    const hEdgeId = (x, y) => y * (w + 1) + x;
+    const vEdgeId = (x, y) => vEdgeOffset + y * (w + 1) + x;
+
+    function interp(x1, y1, v1, x2, y2, v2) {
+        const dv = v2 - v1;
+        let t = Math.abs(dv) < 1e-5 ? 0.5 : (threshold - v1) / dv;
+        t = Math.max(0.001, Math.min(0.999, t));
+        return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
+    }
+
+    function addSeg(fromId, toId, p0, p1) {
+        segments.push({ fromId, toId, p0, p1 });
+    }
+
+    for (let y = 0; y < h - 1; y++) {
+        const r0 = y * w;
+        const r1 = (y + 1) * w;
+        for (let x = 0; x < w - 1; x++) {
+            const vTL = field[r0 + x];
+            const vTR = field[r0 + x + 1];
+            const vBR = field[r1 + x + 1];
+            const vBL = field[r1 + x];
+
+            let mask = 0;
+            if (vTL >= threshold) mask |= 8;
+            if (vTR >= threshold) mask |= 4;
+            if (vBR >= threshold) mask |= 2;
+            if (vBL >= threshold) mask |= 1;
+            if (mask === 0 || mask === 15) continue;
+
+            const idT = hEdgeId(x, y), idB = hEdgeId(x, y + 1);
+            const idL = vEdgeId(x, y), idR = vEdgeId(x + 1, y);
+
+            const pT = () => interp(x, y, vTL, x + 1, y, vTR);
+            const pR = () => interp(x + 1, y, vTR, x + 1, y + 1, vBR);
+            const pB = () => interp(x, y + 1, vBL, x + 1, y + 1, vBR);
+            const pL = () => interp(x, y, vTL, x, y + 1, vBL);
+
+            switch (mask) {
+                case 1:  addSeg(idL, idB, pL(), pB()); break;
+                case 2:  addSeg(idB, idR, pB(), pR()); break;
+                case 3:  addSeg(idL, idR, pL(), pR()); break;
+                case 4:  addSeg(idR, idT, pR(), pT()); break;
+                case 5:  addSeg(idL, idT, pL(), pT()); addSeg(idR, idB, pR(), pB()); break;
+                case 6:  addSeg(idB, idT, pB(), pT()); break;
+                case 7:  addSeg(idL, idT, pL(), pT()); break;
+                case 8:  addSeg(idT, idL, pT(), pL()); break;
+                case 9:  addSeg(idT, idB, pT(), pB()); break;
+                case 10: addSeg(idT, idR, pT(), pR()); addSeg(idB, idL, pB(), pL()); break;
+                case 11: addSeg(idT, idR, pT(), pR()); break;
+                case 12: addSeg(idR, idL, pR(), pL()); break;
+                case 13: addSeg(idR, idB, pR(), pB()); break;
+                case 14: addSeg(idB, idL, pB(), pL()); break;
+            }
+        }
+    }
+
+    const startMap = new Map();
+    const used = new Uint8Array(segments.length);
+    for (let i = 0; i < segments.length; i++) {
+        const k = segments[i].fromId;
+        if (!startMap.has(k)) startMap.set(k, []);
+        startMap.get(k).push(i);
+    }
+
+    const rawLoops = [];
+    for (let i = 0; i < segments.length; i++) {
+        if (used[i]) continue;
+        used[i] = 1;
+        const pts = [segments[i].p0, segments[i].p1];
+        let currTo = segments[i].toId;
+
+        while (true) {
+            const list = startMap.get(currTo);
+            if (!list) break;
+            let nextIdx = -1;
+            for (let c = 0; c < list.length; c++) {
+                if (!used[list[c]]) { nextIdx = list[c]; break; }
+            }
+            if (nextIdx === -1) break;
+            used[nextIdx] = 1;
+            pts.push(segments[nextIdx].p1);
+            currTo = segments[nextIdx].toId;
+        }
+        if (pts.length > 4) pts.pop();
+        if (pts.length >= 4) rawLoops.push(pts);
+    }
+
+    // Har bir yopiq konturni silliqlash va 3D markazga (-80..+80) o'tkazish
+    const scale = 160 / Math.max(w, h);
+    const halfX = w / 2, halfY = h / 2;
+
+    const loops = [];
+    rawLoops.forEach(loop => {
+        const simplified = simplifyAndSmoothLoop(loop, 0.2 * contourEpsMul);
+        if (simplified.length < 4) return;
+
+        // 3D dunyo koordinatalariga o'tkazish (Y o'qini tiklash)
+        const vec2Pts = simplified.map(p => new THREE.Vector2((p.x - halfX) * scale, -(p.y - halfY) * scale));
+        const signedArea = THREE.ShapeUtils.area(vec2Pts);
+        if (Math.abs(signedArea) < 3 * scale * scale) return; // Faqat 3 px dan kichik chang nuqtalarni tashlaymiz
+
+        loops.push({
+            pts: vec2Pts,
+            area: signedArea,
+            absArea: Math.abs(signedArea)
+        });
+    });
+
+    // Kattadan kichikka saralash va Point-in-Polygon orqali tashqi shakl vs ichki teshiklarni ajratish
+    loops.sort((a, b) => b.absArea - a.absArea);
+
+    function pointInPoly(pt, vs) {
+        let inside = false;
+        for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+            const xi = vs[i].x, yi = vs[i].y;
+            const xj = vs[j].x, yj = vs[j].y;
+            const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / ((yj - yi) || 1e-7) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    const shapes = [];
+    const solidRecords = [];
+
+    loops.forEach(item => {
+        // Ushbu kontur nechta kattaroq kontur ichida yotganini sanaymiz (Even = Solid, Odd = Hole!)
+        let depth = 0;
+        let parentSolid = null;
+        for (let i = 0; i < solidRecords.length; i++) {
+            if (pointInPoly(item.pts[0], solidRecords[i].pts)) {
+                depth++;
+                parentSolid = solidRecords[i];
+            }
+        }
+        // Shuningdek barcha oldingi looplar ichida chuqurlikni tekshiramiz
+        let totalParents = 0;
+        for (let i = 0; i < loops.length; i++) {
+            if (loops[i] === item || loops[i].absArea <= item.absArea) continue;
+            if (pointInPoly(item.pts[0], loops[i].pts)) totalParents++;
+        }
+
+        if (totalParents % 2 === 0) {
+            // Bu qattiq jism (Solid Shape)
+            if (THREE.ShapeUtils.isClockWise(item.pts)) item.pts.reverse();
+            const shape = new THREE.Shape(item.pts);
+            shapes.push(shape);
+            solidRecords.push({ shape, pts: item.pts, absArea: item.absArea });
+        } else if (parentSolid) {
+            // Bu ichki teshik (Hole — masalan, spitsalar orasi!)
+            if (!THREE.ShapeUtils.isClockWise(item.pts)) item.pts.reverse();
+            const holePath = new THREE.Path(item.pts);
+            parentSolid.shape.holes.push(holePath);
+        }
+    });
+
+    return { shapes, maxRadius: calcMaxRadius(loops) };
+}
+
+function calcMaxRadius(loops) {
+    let maxR = 65;
+    if (loops.length > 0) {
+        let rSum = 0;
+        const outer = loops[0].pts;
+        outer.forEach(p => { rSum = Math.max(rSum, Math.hypot(p.x, p.y)); });
+        if (rSum > 20) maxR = rSum;
+    }
+    return maxR;
+}
+
+let contourEpsMul = 1; // DFF eksport uchun kontur soddalashtirish koeffitsienti (1 = maksimal aniqlik)
+function simplifyAndSmoothLoop(pts, tol = 0.2) {
+    // 1. Ketma-ket takrorlanuvchi nuqtalarni olib tashlash
+    const clean = [pts[0]];
+    for (let i = 1; i < pts.length; i++) {
+        const prev = clean[clean.length - 1];
+        if (Math.hypot(pts[i].x - prev.x, pts[i].y - prev.y) >= 0.02) clean.push(pts[i]);
+    }
+    if (clean.length < 4) return clean;
+    // 2. Zinapoyani yo'qotish: zich kontur ustida yengil, burchak saqlovchi tekislash
+    const relaxPasses = Math.round(getDetailValue() / 100 * 3);
+    const relaxed = relaxPasses > 0 ? PS3D.relaxClosed(clean, relaxPasses, 0.25) : clean;
+    // 3. Douglas-Peucker: sub-piksel aniqlik (tol px), o'tkir burchaklar saqlanadi
+    return PS3D.dpSimplifyClosed(relaxed, tol);
+}
+
+// ==================== 3. 3DS MAX GEOMETRIYA GENERATORI (SIFATLI: SETKA BO'LISH + SILLIQ NORMALLAR) ====================
+const DENSITY_MAXLEN = { low: 4.0, mid: 2.4, high: 1.4 };
+let lastBuildCtx = null;
+
+function readBuildSettings() {
+    const dsel = document.getElementById('densitySelect');
+    return {
+        mode: document.getElementById('objectModeSelect').value,
+        barrelDepth: parseFloat(document.getElementById('barrelDepthRange').value) || 78,
+        spokeThick: parseFloat(document.getElementById('spokeThickRange').value) || 16,
+        concaveDish: parseFloat(document.getElementById('concaveRange').value) || 14,
+        bevelSize: parseFloat(document.getElementById('bevelRange').value) || 3.0,
+        addLugHoles: document.getElementById('lugHolesToggle').value === 'on',
+        addTire: document.getElementById('tireToggle').value === 'on',
+        maxLen: DENSITY_MAXLEN[dsel ? dsel.value : 'mid'] || 2.4
+    };
+}
+
+function positionsOf(g) {
+    const ng = g.index ? g.toNonIndexed() : g;
+    return new Float32Array(ng.attributes.position.array);
+}
+
+// Konturlardan (field) to'liq geometriya yasaydi. coarse > 1 — DFF 65k nuqta chegarasi uchun soddaroq variant.
+function generateModelGeometry(ctx, coarse, noTire) {
+    contourEpsMul = coarse;
+    const { shapes, maxRadius } = traceContoursAndHoles(ctx.field, ctx.w, ctx.h, ctx.threshold);
+    contourEpsMul = 1;
+    if (shapes.length === 0) return null;
+    const S = ctx.settings;
+    const { spokeThick, concaveDish, bevelSize } = S;
+
+    // Asl (sinalgan) uslub: musbat bevel, offset 0. Qirra eng ingichka detalning yarmidan oshmaydi,
+    // shunda kamar (spitsa) kengayib qo'shni teshiklarga tegib, geometriya sinib ketmaydi.
+    const bevelOutline = Math.min(bevelSize * 0.75, Math.max(0, ctx.minHalfWorld * 0.45));
+    const bevelThick = Math.min(bevelSize, spokeThick * 0.4);
+    const useBevel = bevelSize > 0 && bevelOutline > 0.03;
+    const extrudeSettings = {
+        depth: spokeThick,
+        bevelEnabled: useBevel,
+        bevelThickness: bevelThick,
+        bevelSize: bevelOutline,
+        bevelOffset: 0,
+        bevelSegments: 4,
+        curveSegments: 12,
+        steps: 2
+    };
+    const maxLen = S.maxLen * coarse;
+    const parts = [];
+
+    // 1-QISM: Rasmdan olingan obyekt (Concave Dish) — avval setka bo'linadi, KEYIN egiladi (silliq sirt!)
+    shapes.forEach(shape => {
+        const g = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        g.translate(0, 0, -spokeThick * 0.5);
+        let pos = positionsOf(g);
+        g.dispose();
+        pos = PS3D.tessellate(pos, maxLen);
+        for (let i = 0; i < pos.length; i += 3) {
+            const vx = pos[i], vy = pos[i + 1];
+            let vz = pos[i + 2];
+            const normR = Math.min(1.0, Math.hypot(vx, vy) / maxRadius);
+            const dishShift = -concaveDish * Math.cos(normR * Math.PI * 0.5);
+            if (vz > 0) {
+                const wgt = Math.min(1, vz / (spokeThick * 0.5)); // uzluksiz o'tish (zinapoyasiz)
+                vz += Math.sin(normR * Math.PI) * (bevelSize * 0.8) * wgt;
+            }
+            pos[i + 2] = vz + dishShift;
+        }
+        parts.push(pos);
+    });
+
+    // Balon (tire) bilan birga bo'lganda disk obodi balon eniga sig'ishi kerak (wheel.dff o'lchamlari)
+    let barrelDepth = S.barrelDepth, barrelCapped = false, barrelOuterR = 0;
+    if (S.mode === 'wheel_rim' && S.addTire) {
+        const flangeEst = maxRadius * 1.01 * 1.015 + 1.5;
+        const kEst = flangeEst / GTA_WHEEL.rimR;
+        const cap = (GTA_WHEEL.tireW - GTA_WHEEL.rimInset - GTA_WHEEL.rimBackGap) * kEst - 6.0;
+        if (barrelDepth > cap) { barrelDepth = Math.max(6, cap); barrelCapped = true; }
+    }
+
+    // 2-QISM: Avto disk rejimi — obod, lip va stupitsa
+    if (S.mode === 'wheel_rim' && S.barrelDepth > 2) {
+        const outerR = maxRadius * 1.01;
+        const innerR = maxRadius * 0.93;
+        barrelOuterR = outerR + 1.8;
+        const frontZ = spokeThick * 0.5 + bevelSize;
+        const backZ = frontZ - barrelDepth;
+
+        const barrelShape = new THREE.Shape();
+        barrelShape.absarc(0, 0, outerR, 0, Math.PI * 2, false);
+        const barrelHole = new THREE.Path();
+        barrelHole.absarc(0, 0, innerR, 0, Math.PI * 2, true);
+        barrelShape.holes.push(barrelHole);
+        const barrelGeom = new THREE.ExtrudeGeometry(barrelShape, {
+            depth: barrelDepth, bevelEnabled: true, bevelThickness: 2.2, bevelSize: 1.8, bevelSegments: 4, curveSegments: 96
+        });
+        barrelGeom.translate(0, 0, backZ);
+        parts.push(PS3D.tessellate(positionsOf(barrelGeom), maxLen * 2.4)); barrelGeom.dispose();
+
+        const lipShape = new THREE.Shape();
+        lipShape.absarc(0, 0, outerR * 1.015, 0, Math.PI * 2, false);
+        const lipHole = new THREE.Path();
+        lipHole.absarc(0, 0, innerR * 0.96, 0, Math.PI * 2, true);
+        lipShape.holes.push(lipHole);
+        const lipGeom = new THREE.ExtrudeGeometry(lipShape, {
+            depth: 6, bevelEnabled: true, bevelThickness: 1.8, bevelSize: 1.5, bevelSegments: 3, curveSegments: 96
+        });
+        lipGeom.translate(0, 0, frontZ - 4);
+        parts.push(PS3D.tessellate(positionsOf(lipGeom), maxLen * 2.4)); lipGeom.dispose();
+
+        if (S.addLugHoles) {
+            const hubR = maxRadius * 0.28;
+            const centerBoreR = maxRadius * 0.105;
+            const hubShape = new THREE.Shape();
+            hubShape.absarc(0, 0, hubR, 0, Math.PI * 2, false);
+            const boreHole = new THREE.Path();
+            boreHole.absarc(0, 0, centerBoreR, 0, Math.PI * 2, true);
+            hubShape.holes.push(boreHole);
+            const boltCircleR = maxRadius * 0.185;
+            const boltHoleR = maxRadius * 0.032;
+            const pinHoleR = Math.max(maxRadius * 0.016, 2.2);   // bevel (1.5) dan kattaroq bo'lmasa geometriya ichiga ag'darilib 'yulduz' nuqsonini beradi
+            for (let b = 0; b < 5; b++) {
+                const ang = (b * 72) * (Math.PI / 180);
+                const bHole = new THREE.Path();
+                bHole.absarc(Math.cos(ang) * boltCircleR, Math.sin(ang) * boltCircleR, boltHoleR, 0, Math.PI * 2, true);
+                hubShape.holes.push(bHole);
+                const angPin = ((b * 72) + 36) * (Math.PI / 180);
+                const pHole = new THREE.Path();
+                pHole.absarc(Math.cos(angPin) * (boltCircleR * 0.95), Math.sin(angPin) * (boltCircleR * 0.95), pinHoleR, 0, Math.PI * 2, true);
+                hubShape.holes.push(pHole);
+            }
+            const hubDepth = spokeThick * 1.15;
+            const hubGeom = new THREE.ExtrudeGeometry(hubShape, {
+                depth: hubDepth, bevelEnabled: false, curveSegments: 64
+            });
+            hubGeom.translate(0, 0, -hubDepth * 0.65 - concaveDish);
+            parts.push(PS3D.tessellate(positionsOf(hubGeom), maxLen * 1.8)); hubGeom.dispose();
+        }
+    }
+
+    const geometry = buildUnifiedGeometry(parts);
+    let tire = null, tireInfo = null;
+    if (S.mode === 'wheel_rim') {
+        // Disk haqiqiy o'lchamini o'lchab, balonni wheel.dff dagi o'lchamga moslaymiz va modelni balon markaziga keltiramiz
+        tireInfo = computeTireInfo(measureRim(geometry), barrelOuterR);
+        geometry.translate(0, 0, -tireInfo.zc);
+        tireInfo.zFront -= tireInfo.zc; tireInfo.zBack -= tireInfo.zc; tireInfo.zc = 0;
+        geometry.computeBoundingSphere(); geometry.computeBoundingBox();
+        if (S.addTire && !noTire) tire = buildTireGeometry(tireInfo);
+    }
+    return { geometry, shapeCount: shapes.length, tire, tireInfo, maxRadius, barrelCapped, barrelDepthUsed: barrelDepth };
+}
+
+// ==================== 3b. RUBBER TIRE (BALON): foydalanuvchi wheel.dff faylidan o'lchangan HAQIQIY o'lchamlar ====================
+// wheel.dff: balon tashqi diametri 0.6826 m (R = 0.3413), eni 0.2407 m, disk (rim) radiusi ~0.2385 m.
+// O'q = DFF da X: balon yuzi x = +0.1034, orqasi x = -0.1373. Har bir yaratilgan model shu o'lchamga moslanadi.
+const GTA_WHEEL = {
+    tireR: 0.3413, tireW: 0.2407, rimR: 0.2385,
+    frontX: 0.1034, backX: -0.1373,
+    rimInset: 0.005,      // disk yuzi balon yuzidan 5 mm ichkarida (DFF dagidek)
+    rimBackGap: 0.030     // disk orqasidan balon orqasigacha minimal masofa
+};
+const TIRE_COLUMNS = 256;  // aylana bo'ylab bo'laklar (4 ga bo'linadi: protektor bloklari uchun)
+
+// Balonning ko'ndalang kesimi (u = o'q bo'ylab, r = radius): orqa bortdan old bortgacha tashqi yo'l + ichki yo'l
+function tireProfile(P) {
+    const a = P.a, Rb = P.Rb, Rt = P.Rt, h = Rt - Rb;
+    // Yon devor: bort uchi -> himoya halqasi -> yon devor bo'rtmasi -> yelka -> protektor chekkasi
+    const back = [
+        [-0.86, 0], [-0.94, 0.035], [-0.995, 0.12], [-0.985, 0.22], [-0.935, 0.27], [-0.98, 0.36],
+        [-1.0, 0.55], [-0.965, 0.75], [-0.89, 0.90], [-0.78, 0.965], [-0.64, 1 - 0.034]
+    ].map(p => new THREE.Vector2(p[0] * a, Rb + p[1] * h));
+    const sp = new THREE.SplineCurve(back).getSpacedPoints(26);
+    let minU = 0; sp.forEach(p => { if (p.x < minU) minU = p.x; });
+    const sc = a / -minU;                      // eng keng nuqta aynan balon eniga teng bo'lsin
+    sp.forEach(p => { p.x *= sc; });
+    const uT = -sp[sp.length - 1].x, crown = 0.034 * h;
+    const grooves = [[-0.30 * a, 0.07 * a, 0.058 * h], [0.30 * a, 0.07 * a, 0.058 * h]];
+    const pts = [];
+    for (let i = 0; i < sp.length - 1; i++) pts.push({ u: sp[i].x, r: sp[i].y, t: 0 });
+    const NT = 41;
+    for (let m = 0; m < NT; m++) {
+        const t = -1 + 2 * m / (NT - 1), u = t * uT;
+        let r = Rt - crown * t * t;
+        grooves.forEach(g => { const d = Math.abs(u - g[0]); if (d < g[1]) r -= g[2] * 0.5 * (1 + Math.cos(Math.PI * d / g[1])); });
+        pts.push({ u, r, t: 1, au: Math.abs(u) / a, side: u < 0 ? 0 : 1 });
+    }
+    for (let i = sp.length - 2; i >= 0; i--) pts.push({ u: -sp[i].x, r: sp[i].y, t: 0 });
+    pts.push({ u: 0, r: Rb, t: 0 });           // ichki silindr (diskka tegib turadi)
+    return pts;
+}
+
+function buildTireGeometry(P) {
+    const NR = TIRE_COLUMNS, prof = tireProfile(P), NP = prof.length, h = P.Rt - P.Rb, a = P.a;
+    const pos = new Float32Array(NR * NP * 3), uv = new Float32Array(NR * NP * 2);
+    const smooth = (x, e0, e1) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+    for (let i = 0; i < NR; i++) {
+        const ph = 2 * Math.PI * i / NR, c = Math.cos(ph), s = Math.sin(ph);
+        for (let j = 0; j < NP; j++) {
+            const p = prof[j];
+            let r = p.r;
+            if (p.t === 1 && p.au > 0.36) {      // yelka bloklari: har 4-ustunda yengil kesik (o'ng/chap shaxmat tartibida)
+                const phase = (p.side === 0 ? 0 : 2);
+                if (i % 4 === phase) r -= 0.045 * h * smooth(p.au, 0.36, 0.42);
+            }
+            const o = (i * NP + j) * 3;
+            pos[o] = r * c; pos[o + 1] = r * s; pos[o + 2] = P.zc + p.u;
+            uv[(i * NP + j) * 2] = i / NR; uv[(i * NP + j) * 2 + 1] = j / NP;
+        }
+    }
+    const idx = new Uint32Array(NR * NP * 6);
+    let q = 0;
+    for (let i = 0; i < NR; i++) {
+        const i1 = (i + 1) % NR;
+        for (let j = 0; j < NP; j++) {
+            const j1 = (j + 1) % NP;
+            const A = i * NP + j, B = i1 * NP + j, C = i1 * NP + j1, D = i * NP + j1;
+            idx[q++] = A; idx[q++] = B; idx[q++] = C;
+            idx[q++] = A; idx[q++] = C; idx[q++] = D;
+        }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    g.computeVertexNormals();
+    g.computeBoundingSphere(); g.computeBoundingBox();
+    return g;
+}
+
+// Tayyor disk geometriyasining haqiqiy o'lchamlarini o'lchab, balon parametrlarini hisoblaydi (sahifa birligida)
+function measureRim(geom) {
+    const p = geom.attributes.position.array;
+    let rMax = 0, zMax = -1e9, zMin = 1e9;
+    for (let i = 0; i < p.length; i += 3) {
+        const r = Math.hypot(p[i], p[i + 1]);
+        if (r > rMax) rMax = r;
+        if (p[i + 2] > zMax) zMax = p[i + 2];
+        if (p[i + 2] < zMin) zMin = p[i + 2];
+    }
+    return { rMax, zMax, zMin };
+}
+function computeTireInfo(rim, barrelOuterR) {
+    const k = rim.rMax / GTA_WHEEL.rimR;           // sahifa birligi / metr
+    const Rt = GTA_WHEEL.tireR * k, W = GTA_WHEEL.tireW * k;
+    const zFront = rim.zMax + GTA_WHEEL.rimInset * k;
+    const zc = zFront - W / 2;
+    const Rb = (barrelOuterR || rim.rMax * 0.985) * 0.996;
+    return { k, Rt, a: W / 2, Rb, zc, zFront, zBack: zFront - W, W, rim };
+}
+
+// Barcha qismlarni payvandlab, burchak chegarali silliq normallar bilan 1 ta indekslangan mesh qilish
+function buildUnifiedGeometry(parts) {
+    let total = 0;
+    parts.forEach(p => { total += p.length; });
+    const all = new Float32Array(total);
+    let o = 0;
+    parts.forEach(p => { all.set(p, o); o += p.length; });
+    const w = PS3D.weld(all, 38);
+    const nV = w.positions.length / 3;
+    const uvs = new Float32Array(nV * 2);
+    for (let i = 0; i < nV; i++) {
+        uvs[i * 2] = w.positions[i * 3] / 160 + 0.5;
+        uvs[i * 2 + 1] = w.positions[i * 3 + 1] / 160 + 0.5;
+    }
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(w.positions, 3));
+    geom.setAttribute('normal', new THREE.BufferAttribute(w.normals, 3));
+    geom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geom.setIndex(new THREE.BufferAttribute(nV > 65535 ? new Uint32Array(w.indices) : new Uint16Array(w.indices), 1));
+    geom.computeBoundingSphere();
+    geom.computeBoundingBox();
+    return geom;
+}
+
+// Eksport uchun model: disk + balon. DFF 16-bit indeks chegarasi (65 535 nuqta): balon nuqtalari ajratib olinib, diskka qolgani beriladi
+let currentTire = null;   // { geom, info } — hozirgi balon
+let lastTireInfo = null;
+function getExportModel(maxTotalVerts) {
+    const cur = masterModelGroup.children[0].geometry;
+    const tireV = currentTire ? currentTire.geom.attributes.position.count : 0;
+    const budget = maxTotalVerts - tireV;
+    let rim = cur;
+    if (cur.attributes.position.count > budget && lastBuildCtx) {
+        let coarse = 1.3;
+        for (let k = 0; k < 12; k++, coarse *= 1.3) {
+            const r = generateModelGeometry(lastBuildCtx, coarse, true);
+            if (r && r.geometry.attributes.position.count <= budget) {
+                rim = r.geometry;
+                setStatus(`DFF uchun disk soddalashtirildi (${(r.geometry.attributes.position.count + tireV).toLocaleString()} nuqta, chegara ${maxTotalVerts.toLocaleString()}).`);
+                break;
+            }
+        }
+    }
+    return { rim, tire: currentTire ? currentTire.geom : null, info: lastTireInfo };
+}
+
+function build3dsMaxObjectFromImage() {
+    if (!sourceImageElement) return;
+    setLoader(true, "3DS MAX VOLUMETRIC MODEL QURILMOQDA...");
+
+    setTimeout(() => {
+        try {
+            const t0 = performance.now();
+            const { field, w, h, threshold, scale } = extractBinaryFieldFromImage(sourceImageElement);
+            const settings = readBuildSettings();
+            const minHalfWorld = PS3D.estimateMinHalfWidth(field, w, h, threshold) * scale;
+            lastBuildCtx = { field, w, h, threshold, settings, minHalfWorld };
+
+            const res = generateModelGeometry(lastBuildCtx, 1);
+            if (!res) {
+                setLoader(false);
+                setStatus('⚠ Rasmda obyekt konturlari topilmadi. Threshold slayderini surib ko‘ring.');
+                return;
+            }
+            currentTire = res.tire ? { geom: res.tire, info: res.tireInfo } : null;
+            lastTireInfo = res.tireInfo || null;
+            renderUnifiedMeshToViewports(res.geometry, res.shapeCount);
+            fitViewToModel(res.tireInfo ? res.tireInfo.Rt : res.maxRadius);
+            setLoader(false);
+            const faces = Math.floor(res.geometry.index.count / 3) + (res.tire ? Math.floor(res.tire.index.count / 3) : 0);
+            let extra = '';
+            if (res.tireInfo) {
+                extra = res.tire ? ` Balon: Ø${Math.round(GTA_WHEEL.tireR * 2000)} × ${Math.round(GTA_WHEEL.tireW * 1000)} mm (wheel.dff o‘lchami).` : ` Disk radiusi ${Math.round(GTA_WHEEL.rimR * 1000)} mm.`;
+                if (res.barrelCapped) extra += ' Disk obodi balon eniga sig‘ishi uchun qisqartirildi.';
+            }
+            setStatus(`3D obyekt tayyor: ${res.shapeCount} ta kontur, ${faces.toLocaleString()} uchburchak, ${w}x${h} px aniqlik, ${Math.round(performance.now() - t0)} ms.${extra}`);
+        } catch (err) {
+            console.error(err);
+            setLoader(false);
+            setStatus('⚠ Model yasashda xato: ' + err.message);
+        }
+    }, 30);
+}
+
+// Barcha BufferGeometry qismlarini 1 ta yaxlit indekslangan Meshga birlashtirish
+function mergeGeometriesToSingleMesh(geoms) {
+    const positions = [];
+    const normals = [];
+    const uvs = [];
+    const indices = [];
+
+    geoms.forEach(g => {
+        if (!g || !g.attributes.position) return;
+        const nonIdx = g.index ? g.toNonIndexed() : g;
+        nonIdx.computeVertexNormals();
+
+        const pos = nonIdx.attributes.position;
+        const norm = nonIdx.attributes.normal;
+        const uv = nonIdx.attributes.uv;
+
+        for (let i = 0; i < pos.count; i++) {
+            const idx = positions.length / 3;
+            positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+            normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
+            uvs.push(uv ? uv.getX(i) : 0.5, uv ? uv.getY(i) : 0.5);
+            indices.push(idx);
+        }
+        if (nonIdx !== g) nonIdx.dispose();
+    });
+
+    const merged = new THREE.BufferGeometry();
+    merged.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    merged.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    merged.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    merged.setIndex(indices);
+    return merged;
+}
+
+// ==================== 4. 3DS MAX MATERIALLAR VA VIEWPORTLARGA CHIQARISH ====================
+const MATERIAL_PALETTES = {
+    max_mint:      { color: '#8ab892', metal: 0.22, rough: 0.42 }, // 115.png dagi original 3ds Max yashil rangi!
+    alloy_silver:  { color: '#e2e8f0', metal: 0.82, rough: 0.18 },
+    dark_gunmetal: { color: '#334155', metal: 0.75, rough: 0.28 },
+    gold_bbs:      { color: '#eab308', metal: 0.85, rough: 0.22 },
+    bronze_rays:   { color: '#9a5b32', metal: 0.70, rough: 0.32 },
+    clay_grey:     { color: '#9ca3af', metal: 0.08, rough: 0.65 },
+    neon_cyber:    { color: '#38bdf8', metal: 0.45, rough: 0.25 },
+    crimson_red:   { color: '#dc2626', metal: 0.65, rough: 0.28 },
+    wire_only:     { color: '#38bdf8', metal: 0.10, rough: 0.50, wire: true }
+};
+
+let tireMaterialInst = null;
+function getTireMaterial() {
+    if (!tireMaterialInst) tireMaterialInst = new THREE.MeshStandardMaterial({ color: 0x25262a, metalness: 0.02, roughness: 0.74 });
+    return tireMaterialInst;
+}
+
+// Model o'lchamiga qarab setka balandligi va kamerani moslash (balon qo'shilgach model kattaroq)
+let fittedViewR = 0;
+function fitViewToModel(R) {
+    viewportIds.forEach(id => {
+        const g = scenes[id] && scenes[id].getObjectByName('studioGrid');
+        if (g) g.position.y = -(R + 3);
+    });
+    if (!fittedViewR || R / fittedViewR > 1.2 || R / fittedViewR < 0.8) {
+        fittedViewR = R;
+        cameras['perspectiveView'].position.set(-1.58 * R, 0.48 * R, 3.2 * R);
+        controls['perspectiveView'].target.set(0, 0, 0);
+        controls['perspectiveView'].update();
+    }
+}
+
+function createActiveMaterial() {
+    const hex = document.getElementById('customColorPicker').value || '#8ab892';
+    const metalness = (parseFloat(document.getElementById('metalRange').value) || 25) / 100;
+    const roughness = (parseFloat(document.getElementById('roughRange').value) || 42) / 100;
+    const isWire = currentMaterialPreset === 'wire_only';
+
+    return new THREE.MeshStandardMaterial({
+        color: new THREE.Color(hex),
+        metalness: metalness,
+        roughness: roughness,
+        wireframe: isWire,
+        side: THREE.DoubleSide
+    });
+}
+
+function renderUnifiedMeshToViewports(geom, shapeCount = 1) {
+    // Eski meshlarni tozalash
+    while (masterModelGroup.children.length > 0) {
+        const ch = masterModelGroup.children[0];
+        masterModelGroup.remove(ch);
+        if (ch.geometry) ch.geometry.dispose();
+    }
+
+    const mat = createActiveMaterial();
+    const mainMesh = new THREE.Mesh(geom, mat);
+    mainMesh.name = '3DS_MAX_UNIFIED_OBJECT';
+    masterModelGroup.add(mainMesh);
+
+    // Qora rezina balon (diskning materialidan mustaqil, har doim qora)
+    if (currentTire) {
+        const tireMesh = new THREE.Mesh(currentTire.geom, getTireMaterial());
+        tireMesh.name = '3DS_MAX_TIRE';
+        masterModelGroup.add(tireMesh);
+    }
+
+    // Agar "Edged Faces (F4)" yoqilgan bo'lsa, ustidan nozik wireframe chiziqlarini qo'shamiz
+    if (showEdgedFaces && currentMaterialPreset !== 'wire_only') {
+        const wireMat = new THREE.MeshBasicMaterial({
+            color: 0x111827,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.25
+        });
+        const wireOverlay = new THREE.Mesh(geom, wireMat);
+        masterModelGroup.add(wireOverlay);
+    }
+
+    // Ortografik oynalarni yangilash
+    ['topView', 'frontView', 'leftView'].forEach(vpId => {
+        const cg = cloneGroups[vpId];
+        if (!cg) return;
+        while (cg.children.length > 0) cg.remove(cg.children[0]);
+        cg.add(new THREE.Mesh(geom, mat));
+        if (currentTire) cg.add(new THREE.Mesh(currentTire.geom, getTireMaterial()));
+    });
+
+    let vCount = geom.attributes.position ? geom.attributes.position.count : 0;
+    let fCount = geom.index ? Math.floor(geom.index.count / 3) : Math.floor(vCount / 3);
+    if (currentTire) {
+        vCount += currentTire.geom.attributes.position.count;
+        fCount += Math.floor(currentTire.geom.index.count / 3);
+    }
+    const tInfoEl = document.getElementById('infoTireInfo'), sInfoEl = document.getElementById('infoSizeInfo');
+    if (tInfoEl) tInfoEl.textContent = currentTire ? `Qora rezina (${TIRE_COLUMNS} × ${currentTire.geom.attributes.position.count / TIRE_COLUMNS} setka)` : 'Yo‘q';
+    if (sInfoEl) {
+        if (lastTireInfo) {
+            const fmt = v => Math.round(v * 1000);
+            sInfoEl.textContent = currentTire
+                ? `Ø ${fmt(GTA_WHEEL.tireR * 2)} × ${fmt(GTA_WHEEL.tireW)} mm (balon)`
+                : `Disk Ø ${fmt(GTA_WHEEL.rimR * 2)} mm`;
+        } else sInfoEl.textContent = '—';
+    }
+    document.getElementById('infoVerticesCount').textContent = vCount.toLocaleString();
+    document.getElementById('infoFacesCount').textContent = fCount.toLocaleString();
+    document.getElementById('infoShapesCount').textContent = shapeCount;
+}
+
+// ==================== 5. 115.PNG USLUBIDAGI DEMO DISK CHIZMASINI GENERATSIYA QILISH ====================
+function generateDefaultWheelSilhouette() {
+    const c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 512;
+    const ctx = c.getContext('2d');
+
+    // Oq fon va Qora g'ildirak (xuddi foydalanuvchi yuklagan wheel-logo-illustration-vector.png kabi!)
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.fillStyle = '#000000';
+    ctx.strokeStyle = '#000000';
+    const cx = 256, cy = 256;
+
+    // Tashqi obod halqasi
+    ctx.beginPath();
+    ctx.arc(cx, cy, 232, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 204, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    // 7 juft (14 ta) Y-Spoke sport spitsalari (115.png uslubida!)
+    const pairs = 7;
+    ctx.lineWidth = 15;
+    ctx.lineCap = 'round';
+    for (let i = 0; i < pairs; i++) {
+        const baseAng = (i * (360 / pairs)) * (Math.PI / 180);
+        const splitAng1 = baseAng - 0.17;
+        const splitAng2 = baseAng + 0.17;
+
+        const rInner = 64;
+        const rMid = 95;
+        const rOuter = 212;
+
+        const x0 = cx + Math.cos(baseAng) * rInner;
+        const y0 = cy + Math.sin(baseAng) * rInner;
+        const xm = cx + Math.cos(baseAng) * rMid;
+        const ym = cy + Math.sin(baseAng) * rMid;
+
+        const x1 = cx + Math.cos(splitAng1) * rOuter;
+        const y1 = cy + Math.sin(splitAng1) * rOuter;
+        const x2 = cx + Math.cos(splitAng2) * rOuter;
+        const y2 = cy + Math.sin(splitAng2) * rOuter;
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(xm, ym);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(xm, ym);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+
+    // Markaziy stupitsa halqasi
+    ctx.beginPath();
+    ctx.arc(cx, cy, 74, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 28, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    const img = new Image();
+    img.onload = () => {
+        sourceImageElement = img;
+        invertMaskPolarity = null;
+        build3dsMaxObjectFromImage();
+    };
+    img.src = c.toDataURL('image/png');
+}
+
+// ==================== 6. EXPORT FUNKSIYALARI (.OBJ, .DFF, .STL) ====================
+function exportAsOBJ() {
+    const mesh = masterModelGroup.children[0];
+    if (!mesh || !mesh.geometry) return;
+
+    const M = getExportModel(Infinity);
+    const s = M.info ? 1 / M.info.k : 1;          // sahifa birligi -> metr (wheel.dff bilan bir xil o'lchov)
+    let out = '# Toshov Ozodbek 3DS MAX OBJECT STUDIO - UNIFIED OBJ\n' +
+        (M.info ? '# Birlik: metr. Balon Ø' + (GTA_WHEEL.tireR * 2).toFixed(4) + ' x ' + GTA_WHEEL.tireW.toFixed(4) + ' (wheel.dff bilan bir xil)\n' : '') +
+        'o TOSHOV_OZODBEK_3DS_OBJECT\ns 1\n';
+    let base = 0;
+    const part = (g, group, mtl) => {
+        const pos = g.attributes.position, norm = g.attributes.normal, uv = g.attributes.uv, index = g.index;
+        out += `g ${group}\nusemtl ${mtl}\n`;
+        let v = '', vt = '', vn = '';
+        for (let i = 0; i < pos.count; i++) v += `v ${(pos.getX(i) * s).toFixed(5)} ${(pos.getY(i) * s).toFixed(5)} ${(pos.getZ(i) * s).toFixed(5)}\n`;
+        if (uv) for (let i = 0; i < uv.count; i++) vt += `vt ${uv.getX(i).toFixed(4)} ${uv.getY(i).toFixed(4)}\n`;
+        if (norm) for (let i = 0; i < norm.count; i++) vn += `vn ${norm.getX(i).toFixed(4)} ${norm.getY(i).toFixed(4)} ${norm.getZ(i).toFixed(4)}\n`;
+        let f = '';
+        const count = index ? index.count : pos.count;
+        for (let i = 0; i < count; i += 3) {
+            const a = (index ? index.getX(i) : i) + 1 + base;
+            const b = (index ? index.getX(i + 1) : i + 1) + 1 + base;
+            const c = (index ? index.getX(i + 2) : i + 2) + 1 + base;
+            f += `f ${a}/${a}/${a} ${b}/${b}/${b} ${c}/${c}/${c}\n`;
+        }
+        out += v + vt + vn + f;
+        base += pos.count;
+    };
+    part(M.rim, 'RIM', 'RIM_METAL');
+    if (M.tire) part(M.tire, 'TIRE', 'TIRE_RUBBER_BLACK');
+
+    downloadBlob(new Blob([out], { type: 'text/plain' }), 'TOSHOV_OZODBEK_3DS_MAX_MODEL.obj');
+    setStatus('.OBJ fayl saqlandi' + (M.tire ? ' (disk + qora balon, metr birligida, Ø683 × 241 mm)!' : '!'));
+}
+
+function exportAsSTL() {
+    const mesh = masterModelGroup.children[0];
+    if (!mesh || !mesh.geometry) return;
+    const M = getExportModel(Infinity);
+    const s = M.info ? 1000 / M.info.k : 1;       // STL: millimetr (haqiqiy o'lcham)
+
+    let stl = 'solid TOSHOV_OZODBEK_3DS_MODEL\n';
+    [M.rim, M.tire].forEach(geom => {
+        if (!geom) return;
+        const pos = geom.attributes.position, index = geom.index;
+        const count = index ? index.count : pos.count;
+        for (let i = 0; i < count; i += 3) {
+            const a = index ? index.getX(i) : i;
+            const b = index ? index.getX(i + 1) : i + 1;
+            const c = index ? index.getX(i + 2) : i + 2;
+            stl += `facet normal 0 0 0\n  outer loop\n`;
+            stl += `    vertex ${(pos.getX(a) * s).toFixed(4)} ${(pos.getY(a) * s).toFixed(4)} ${(pos.getZ(a) * s).toFixed(4)}\n`;
+            stl += `    vertex ${(pos.getX(b) * s).toFixed(4)} ${(pos.getY(b) * s).toFixed(4)} ${(pos.getZ(b) * s).toFixed(4)}\n`;
+            stl += `    vertex ${(pos.getX(c) * s).toFixed(4)} ${(pos.getY(c) * s).toFixed(4)} ${(pos.getZ(c) * s).toFixed(4)}\n`;
+            stl += `  endloop\nendfacet\n`;
+        }
+    });
+    stl += 'endsolid TOSHOV_OZODBEK_3DS_MODEL\n';
+    downloadBlob(new Blob([stl], { type: 'text/plain' }), 'TOSHOV_OZODBEK_3DS_MAX_MODEL.stl');
+    setStatus('.STL 3D printer fayli saqlandi' + (M.info ? ' (millimetrda, haqiqiy o‘lcham)!' : '!'));
+}
+
+function exportAsDFF() {
+    const mesh = masterModelGroup.children[0];
+    if (!mesh || !mesh.geometry) return;
+
+    // Disk + balon: jami 65 535 nuqtadan oshmasligi uchun disk kerak bo'lsa avtomatik soddalashtiriladi
+    const M = getExportModel(64000);
+    const info = M.info;
+    // wheel.dff bilan bir xil o'qlar: o'q = X (old yuz +X), yuqori = Z; birlik = metr. (x,y,z) -> (z,x,y) — aylana almashtirish, yo'nalish saqlanadi
+    const sc = info ? 1 / info.k : 1;
+    const cx = info ? (GTA_WHEEL.frontX + GTA_WHEEL.backX) / 2 : 0;
+    const uPos = [], uNorm = [], uUV = [], tris = [], triMat = [];
+    function addGeom(g, matId) {
+        const pa = g.attributes.position.array, na = g.attributes.normal.array, ua = g.attributes.uv.array, ia = g.index.array;
+        const base = uPos.length / 3;
+        for (let i = 0; i < pa.length; i += 3) {
+            if (info) {
+                uPos.push(pa[i + 2] * sc + cx, pa[i] * sc, pa[i + 1] * sc);
+                uNorm.push(na[i + 2], na[i], na[i + 1]);
+            } else {
+                uPos.push(pa[i], pa[i + 1], pa[i + 2]);
+                uNorm.push(na[i], na[i + 1], na[i + 2]);
+            }
+        }
+        for (let i = 0; i < ua.length; i++) uUV.push(ua[i]);
+        for (let i = 0; i < ia.length; i += 3) { tris.push(ia[i] + base, ia[i + 1] + base, ia[i + 2] + base); triMat.push(matId); }
+    }
+    addGeom(M.rim, 0);
+    if (M.tire) addGeom(M.tire, 1);
+    const nMats = M.tire ? 2 : 1;
+
+    const numVerts = uPos.length / 3;
+    const numTris = tris.length / 3;
+    const RW_VER = 0x1803FFFF;
+
+    function sec(type, bytes) {
+        const out = new Uint8Array(12 + bytes.byteLength);
+        const dv = new DataView(out.buffer);
+        dv.setUint32(0, type, true);
+        dv.setUint32(4, bytes.byteLength, true);
+        dv.setUint32(8, RW_VER, true);
+        out.set(new Uint8Array(bytes.buffer || bytes), 12);
+        return out;
+    }
+    function cat(arrs) {
+        const len = arrs.reduce((a, b) => a + b.byteLength, 0);
+        const res = new Uint8Array(len);
+        let o = 0;
+        arrs.forEach(a => { res.set(a, o); o += a.byteLength; });
+        return res;
+    }
+
+    const csBuf = new ArrayBuffer(12);
+    new DataView(csBuf).setUint32(0, 1, true);
+
+    const frBuf = new ArrayBuffer(60);
+    const frDV = new DataView(frBuf);
+    frDV.setUint32(0, 1, true);
+    frDV.setFloat32(4, 1, true); frDV.setFloat32(20, 1, true); frDV.setFloat32(36, 1, true);
+    frDV.setInt32(52, -1, true);
+    const nameExt = sec(0x0003, sec(0x0253F2FE, new TextEncoder().encode(info ? 'wheel' : 'wheel_rf_dummy')));
+    const frameList = sec(0x000E, cat([sec(0x0001, new Uint8Array(frBuf)), nameExt]));
+
+    // Materiallar: 0 = disk (tanlangan rang), 1 = balon (qora rezina)
+    const mlBuf = new ArrayBuffer(4 + 4 * nMats);
+    const mlDV = new DataView(mlBuf);
+    mlDV.setUint32(0, nMats, true);
+    for (let m = 0; m < nMats; m++) mlDV.setInt32(4 + 4 * m, -1, true);
+    const hex = document.getElementById('customColorPicker').value.replace('#', '');
+    const colors = [[parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)], [12, 12, 12]];
+    const matSecs = [];
+    for (let m = 0; m < nMats; m++) {
+        const mBuf = new ArrayBuffer(28);
+        const mDV = new DataView(mBuf);
+        mDV.setUint8(4, colors[m][0]); mDV.setUint8(5, colors[m][1]); mDV.setUint8(6, colors[m][2]); mDV.setUint8(7, 255);
+        mDV.setUint32(8, 1, true);
+        mDV.setFloat32(16, 1.0, true); mDV.setFloat32(20, m === 1 ? 0.3 : 0.8, true); mDV.setFloat32(24, 1.0, true);
+        matSecs.push(sec(0x0007, cat([sec(0x0001, new Uint8Array(mBuf)), sec(0x0003, new Uint8Array(0))])));
+    }
+    const matList = sec(0x0008, cat([sec(0x0001, new Uint8Array(mlBuf))].concat(matSecs)));
+
+    // Chegaraviy shar (bounding sphere): haqiqiy markaz va radius
+    let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+    for (let i = 0; i < uPos.length; i += 3) for (let a = 0; a < 3; a++) { if (uPos[i + a] < mn[a]) mn[a] = uPos[i + a]; if (uPos[i + a] > mx[a]) mx[a] = uPos[i + a]; }
+    const bc = [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2];
+    let br = 0;
+    for (let i = 0; i < uPos.length; i += 3) br = Math.max(br, Math.hypot(uPos[i] - bc[0], uPos[i + 1] - bc[1], uPos[i + 2] - bc[2]));
+
+    const gSize = 16 + numVerts * 8 + numTris * 8 + 24 + numVerts * 12 + numVerts * 12;
+    const gBuf = new ArrayBuffer(gSize);
+    const gDV = new DataView(gBuf);
+    let p = 0;
+    gDV.setUint32(p, 0x00010076, true); p += 4;
+    gDV.setUint32(p, numTris, true); p += 4;
+    gDV.setUint32(p, numVerts, true); p += 4;
+    gDV.setUint32(p, 1, true); p += 4;
+    for (let i = 0; i < uUV.length; i++) { gDV.setFloat32(p, uUV[i], true); p += 4; }
+    for (let i = 0; i < numTris; i++) {
+        gDV.setUint16(p, tris[i * 3 + 1], true);
+        gDV.setUint16(p + 2, tris[i * 3], true);
+        gDV.setUint16(p + 4, triMat[i], true);
+        gDV.setUint16(p + 6, tris[i * 3 + 2], true);
+        p += 8;
+    }
+    gDV.setFloat32(p, bc[0], true); gDV.setFloat32(p + 4, bc[1], true); gDV.setFloat32(p + 8, bc[2], true);
+    gDV.setFloat32(p + 12, br, true);
+    gDV.setUint32(p + 16, 1, true); gDV.setUint32(p + 20, 1, true); p += 24;
+    for (let i = 0; i < uPos.length; i++) { gDV.setFloat32(p, uPos[i], true); p += 4; }
+    for (let i = 0; i < uNorm.length; i++) { gDV.setFloat32(p, uNorm[i], true); p += 4; }
+
+    const geomSec = sec(0x000F, cat([sec(0x0001, new Uint8Array(gBuf)), matList, sec(0x0003, new Uint8Array(0))]));
+    const glBuf = new ArrayBuffer(4);
+    new DataView(glBuf).setUint32(0, 1, true);
+    const geomList = sec(0x001A, cat([sec(0x0001, new Uint8Array(glBuf)), geomSec]));
+
+    const atBuf = new ArrayBuffer(16);
+    new DataView(atBuf).setUint32(8, 5, true);
+    const atomic = sec(0x0014, cat([sec(0x0001, new Uint8Array(atBuf)), sec(0x0003, new Uint8Array(0))]));
+
+    const dff = sec(0x0010, cat([sec(0x0001, new Uint8Array(csBuf)), frameList, geomList, atomic, sec(0x0003, new Uint8Array(0))]));
+    downloadBlob(new Blob([dff], { type: 'application/octet-stream' }), 'TOSHOV_OZODBEK_3DS_WHEEL.dff');
+    setStatus(`1 ta yaxlit obyekt sifatida .DFF saqlandi (${numVerts.toLocaleString()} vertex${M.tire ? ', disk + qora balon, wheel.dff o‘lchamida' : ''})!`);
+}
+
+function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+// ==================== 7. UI HODISALARI ====================
+function scheduleRebuild() {
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(build3dsMaxObjectFromImage, 80);
+}
+
+document.getElementById('objectModeSelect').addEventListener('change', build3dsMaxObjectFromImage);
+document.getElementById('lugHolesToggle').addEventListener('change', build3dsMaxObjectFromImage);
+document.getElementById('tireToggle').addEventListener('change', build3dsMaxObjectFromImage);
+
+document.getElementById('threshRange').addEventListener('input', e => {
+    document.getElementById('threshVal').textContent = e.target.value;
+    scheduleRebuild();
+});
+document.getElementById('qualitySelect').addEventListener('change', build3dsMaxObjectFromImage);
+document.getElementById('densitySelect').addEventListener('change', build3dsMaxObjectFromImage);
+document.getElementById('detailRange').addEventListener('input', e => {
+    document.getElementById('detailVal').textContent = e.target.value;
+    scheduleRebuild();
+});
+document.getElementById('barrelDepthRange').addEventListener('input', e => {
+    document.getElementById('barrelDepthVal').textContent = e.target.value + ' mm';
+    scheduleRebuild();
+});
+document.getElementById('spokeThickRange').addEventListener('input', e => {
+    document.getElementById('spokeThickVal').textContent = e.target.value + ' mm';
+    scheduleRebuild();
+});
+document.getElementById('concaveRange').addEventListener('input', e => {
+    document.getElementById('concaveVal').textContent = e.target.value + ' mm';
+    scheduleRebuild();
+});
+document.getElementById('bevelRange').addEventListener('input', e => {
+    document.getElementById('bevelVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
+    scheduleRebuild();
+});
+
+document.getElementById('invertMaskBtn').addEventListener('click', function () {
+    invertMaskPolarity = invertMaskPolarity === null ? true : !invertMaskPolarity;
+    this.classList.toggle('active', !!invertMaskPolarity);
+    build3dsMaxObjectFromImage();
+});
+
+document.getElementById('demoWheelBtn').addEventListener('click', generateDefaultWheelSilhouette);
+
+// Material va Yorug'lik
+document.querySelectorAll('#materialGrid .m-card').forEach(card => {
+    card.addEventListener('click', () => {
+        document.querySelectorAll('#materialGrid .m-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        currentMaterialPreset = card.dataset.mat;
+        const p = MATERIAL_PALETTES[currentMaterialPreset] || MATERIAL_PALETTES.max_mint;
+        document.getElementById('customColorPicker').value = p.color;
+        document.getElementById('metalRange').value = Math.round(p.metal * 100);
+        document.getElementById('metalVal').textContent = p.metal.toFixed(2);
+        document.getElementById('roughRange').value = Math.round(p.rough * 100);
+        document.getElementById('roughVal').textContent = p.rough.toFixed(2);
+        updateMaterialOnly();
+    });
+});
+
+function updateMaterialOnly() {
+    const newMat = createActiveMaterial();
+    if (masterModelGroup.children[0]) {
+        masterModelGroup.children[0].material = newMat;
+    }
+    ['topView', 'frontView', 'leftView'].forEach(vpId => {
+        if (cloneGroups[vpId] && cloneGroups[vpId].children[0]) {
+            cloneGroups[vpId].children[0].material = newMat;
+        }
+    });
+}
+
+document.getElementById('customColorPicker').addEventListener('input', updateMaterialOnly);
+document.getElementById('metalRange').addEventListener('input', e => {
+    document.getElementById('metalVal').textContent = (e.target.value / 100).toFixed(2);
+    updateMaterialOnly();
+});
+document.getElementById('roughRange').addEventListener('input', e => {
+    document.getElementById('roughVal').textContent = (e.target.value / 100).toFixed(2);
+    updateMaterialOnly();
+});
+document.getElementById('lightIntensityRange').addEventListener('input', e => {
+    const val = e.target.value / 10;
+    document.getElementById('lightIntensityVal').textContent = val.toFixed(1) + 'x';
+    viewportIds.forEach(vpId => {
+        const kl = scenes[vpId]?.getObjectByName('keyLight');
+        if (kl) kl.intensity = val;
+    });
+});
+
+// 1 Oyna vs 4 Oyna (Quad View)
+const vpContainer = document.getElementById('viewportContainer');
+document.getElementById('viewSingleBtn').addEventListener('click', function () {
+    this.classList.add('active');
+    document.getElementById('viewAllBtn').classList.remove('active');
+    vpContainer.classList.remove('quad');
+    ['topView', 'frontView', 'leftView'].forEach(id => document.getElementById(id).classList.add('hidden-vp'));
+    resizeAllViewports();
+});
+
+document.getElementById('viewAllBtn').addEventListener('click', function () {
+    this.classList.add('active');
+    document.getElementById('viewSingleBtn').classList.remove('active');
+    vpContainer.classList.add('quad');
+    ['topView', 'frontView', 'leftView'].forEach(id => document.getElementById(id).classList.remove('hidden-vp'));
+    resizeAllViewports();
+});
+
+document.getElementById('wireOverlayToggle').addEventListener('click', function () {
+    showEdgedFaces = !showEdgedFaces;
+    this.classList.toggle('active', showEdgedFaces);
+    if (masterModelGroup.children[0]) {
+        renderUnifiedMeshToViewports(masterModelGroup.children[0].geometry, parseInt(document.getElementById('infoShapesCount').textContent, 10));
+    }
+});
+
+document.getElementById('spinToggleBtn').addEventListener('click', function () {
+    isSpinning = !isSpinning;
+    this.classList.toggle('active', isSpinning);
+});
+
+document.getElementById('resetCamBtn').addEventListener('click', () => {
+    masterModelGroup.rotation.set(0, 0, 0);
+    const R = fittedViewR || 73;
+    cameras['perspectiveView'].position.set(-1.58 * R, 0.48 * R, 3.2 * R);
+    controls['perspectiveView'].target.set(0, 0, 0);
+    controls['perspectiveView'].update();
+});
+
+document.getElementById('exportObjBtn').addEventListener('click', exportAsOBJ);
+document.getElementById('exportDffBtn').addEventListener('click', exportAsDFF);
+document.getElementById('exportStlBtn').addEventListener('click', exportAsSTL);
+
+// Rasm yuklash (Drag & Drop)
+const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+
+function handleUserImage(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            sourceImageElement = img;
+            invertMaskPolarity = null;
+            document.getElementById('invertMaskBtn').classList.remove('active');
+            document.getElementById('infoObjName').textContent = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
+            build3dsMaxObjectFromImage();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener('change', e => {
+    if (e.target.files.length) handleUserImage(e.target.files[0]);
+});
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleUserImage(e.dataTransfer.files[0]);
+});
+
+// Ishga tushirish
+initThreeViewports();
+animateLoop();
+generateDefaultWheelSilhouette();
+</script>
+<script src="site-theme.js"></script></body>
+</html>

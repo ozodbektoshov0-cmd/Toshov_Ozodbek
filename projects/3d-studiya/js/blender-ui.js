@@ -6,7 +6,7 @@
 'use strict';
 const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const lang=()=>document.documentElement.lang||'uz';
-const L=(u,e,r)=>({uz:u,en:e,ru:r}[lang()]||u);
+const L=(u,e,r)=>{const g=lang();if(g=='ar')return (window.I18N&&I18N.l(u))||e;return {uz:u,en:e,ru:r}[g]||u};
 
 /* ---------- ikonkalar ---------- */
 const P={
@@ -106,11 +106,11 @@ dragBtn(q('#gzp'),(dx,dy)=>{const k=cam.position.distanceTo(ctl.target)*.0018,r=
  o=r.multiplyScalar(-dx*k).add(u.multiplyScalar(dy*k));cam.position.add(o);ctl.target.add(o)});
 q('#gzo').onclick=()=>q('#ortho').click();
 
-const VN={front:['Old','Front','Спереди'],back:['Orqa','Back','Сзади'],right:['O’ng','Right','Справа'],left:['Chap','Left','Слева'],top:['Yuqori','Top','Сверху'],bottom:['Pastki','Bottom','Снизу'],user:['Erkin','User','Пользов.']};
+const VN={front:['Old','Front','Спереди','أمامي'],back:['Orqa','Back','Сзади','خلفي'],right:['O’ng','Right','Справа','يمين'],left:['Chap','Left','Слева','يسار'],top:['Yuqori','Top','Сверху','علوي'],bottom:['Pastki','Bottom','Снизу','سفلي'],user:['Erkin','User','Пользов.','حر']};
 const vl=q('#vlb');
 function viewLabel(){const d=new THREE.Vector3();cam.getWorldDirection(d);let k='user';
  const T=.9995;if(d.z<-T)k='front';else if(d.z>T)k='back';else if(d.x<-T)k='right';else if(d.x>T)k='left';else if(d.y<-T)k='top';else if(d.y>T)k='bottom';
- const o=q('#ortho').classList.contains('on'),n=VN[k],i={uz:0,en:1,ru:2}[lang()]??0;
+ const o=q('#ortho').classList.contains('on'),n=VN[k],i={uz:0,en:1,ru:2,ar:3}[lang()]??0;
  const tx=n[i]+' · '+(o?L('Ortografik','Orthographic','Ортографический'):L('Perspektiva','Perspective','Перспектива'));
  if(vl.textContent!=tx)vl.textContent=tx;
  q('#gzo').classList.toggle('on',o)}

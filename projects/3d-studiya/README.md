@@ -2,6 +2,71 @@
 
 Brauzerda ishlaydigan 3D ko’rish, tahrirlash va konvertatsiya sayti. Server kerak emas.
 
+## v52 — soddaroq interfeys, yangi dizayn, telefonda gorizontal
+- **Soddalashtirish:** yuqori panelda faqat Fayl · Tahrir · Qo’shish · Obyekt qoldi, qolgan 11 ta menyu (Material, Asboblar, GTA, Studiya+ …) bitta **Boshqa** menyusi ichida akkordeon bo’lib turadi — hech narsa o’chmagan. Ko’rish oynasida asosiy tugmalar ochiq, qolgani (**Ko’p tanlash, Ramka, X-ray, Magnit…**) **⋯** ortida (Edit rejimida o’zi ochiladi). Vaqt chizig’i faqat **Animatsiya** ish maydonida ko’rinadi, holat panelida 3 ta hisoblagich, Outliner’dagi ikkita bezak qator olib tashlandi.
+- **Dizayn:** bitta aksent rang (amber), yangi grafit palitra, yumaloqroq dialog va menyular, barmoq uchun kattaroq tugmalar, notch uchun xavfsiz maydonlar.
+- **Telefon gorizontal:** `manifest` → `orientation: landscape` (o’rnatilgan ilova); oddiy brauzerda birinchi bosishda to’liq ekran + `screen.orientation.lock('landscape')`; iPhone kabi qulf yo’q joyda “Telefonni yoting” oynasi (“Baribir davom etish” bilan yopiladi). Gorizontal telefonda ko’rish oynasi butun ekran, **Panel** tugmasi o’ng tomondan Outliner/Properties/ish maydonlarini ochadi.
+- Yangi fayllar: `css/simple.css`, `js/simple.js`. Service Worker `v52`.
+- Cheklov: arab tilida yangi yozuvlar (“Boshqa”, “Telefonni yoting”) hozircha o’zbekcha qoladi.
+
+## v51 — rig vaznlari
+- **Studiya+ → Vazn xaritasi:** tanlangan avto-rig qilingan mesh uchun bitta suyakning ta’sirini rangda ko’rsatadi (ko’k 0 → yashil 0.5 → qizil 1). Yana bosilsa o’chadi va asl rang/material qaytadi. **Eksportdan oldin o’chiring** (xarita vertex rangi sifatida eksportga tushib qoladi).
+- **Vaznlarni silliqlash:** har uchning suyak vaznlarini qo’shnilari bilan aralashtiradi (1–20 qadam), eng kuchli 4 ta ta’sir qoladi va yig’indi 1 ga normallanadi. Avto-rigning faqat ikki suyakli chiziqli vazni egilganda yumshoqroq bo’ladi. Undo bilan qaytariladi.
+- Cheklov: vaznni qo’lda bo’yash (cho’tka) hali yo’q; silliqlash uchlar geometrik qo’shnisiga qaraydi, suyak joylashuviga emas.
+- Ichki: `adjacency()` umumiy yordamchi (silliqlash ham shundan foydalanadi); testlar yangilandi.
+
+## v50 — teshiklarni yopish
+- **Studiya+ → Teshiklarni yopish:** tanlangan meshdagi ochiq chekka halqalarini topadi (har bir teshik alohida) va markaz nuqtaga “fan” uchburchaklar bilan yopadi. Yo’nalish qo’shni yuzalarga mos chiqadi, shuning uchun keyin **Mesh tekshiruvi** watertight deydi. UV/normal/rang atributlari saqlanadi (yangi uchlar chekka uchlaridan nusxalanadi), material guruhi bo’lsa yangi uchburchaklar birinchi materialga qo’shiladi. Bitta Undo bilan qaytariladi.
+- Cheklov: markazga fan — kichik va qavariq-simon teshiklar uchun yaxshi; katta yoki egri-bugri (konkav) teshikda uchburchaklar bir-birini kesishi mumkin va silliq “yamoq” bermaydi (keyin Silliqlash yordam beradi). Yopiq halqa bo’lmagan (shoxlangan) chekkalar o’tkazib yuboriladi.
+
+## v49 — mesh tekshiruvi
+- **Studiya+ → Mesh tekshiruvi:** tanlangan mesh uchun hisobot oynasi: uchburchak/uch/qirra soni, bog’langan qismlar, **teshiklar** (ochiq chekka qirralari), manifold bo’lmagan qirralar (3+ yuza), **teskari yuzalar** (bir xil yo’nalishda takrorlangan qirra), buzuq uchburchaklar, **watertight** (3D bosib chiqarish/STL uchun) va yopiq jism uchun genus.
+- Bir xil joydagi uchlar birlashtirilib hisoblanadi (UV choki va non-indexed meshlar to’g’ri chiqadi); silliqlash ham shu umumiy `topo()` dan foydalanadi.
+- Cheklov: faqat topologiyani **ko’rsatadi** (teshikni yopmaydi, teskari yuzani o’zi tuzatmaydi), kesishuvchi (o’zini kesadigan) yuzalarni aniqlamaydi.
+
+## v48 — silliqlash
+- **Studiya+ → Silliqlash (Taubin):** tanlangan mesh yuzasini tekislaydi (1–50 qadam), lekin oddiy Laplace kabi jismni kichraytirmaydi (λ=0.6307, μ=−0.6732). UV chokidagi bir xil joylashgan uchlar birga siljiydi (yuza yirtilmaydi), ochiq chekka uchlari joyida qoladi, normallar silliq qayta hisoblanadi. Bitta Undo bilan qaytariladi.
+- Cheklov: topologiyani o’zgartirmaydi (poligon qo’shmaydi), shuning uchun kam poligonli meshda natija “yumaloq” emas, faqat tekisroq bo’ladi — avval Subdivide qiling. Qirrali (keskin) detallar ham yumshaydi.
+- `tools/test.js` ga silliqlash testi qo’shildi (indexed va non-indexed shar, ochiq tekislik chekkasi).
+
+## v47 — tekshiruv va testlar
+- `node tools/check.js` — statik tekshiruv: hamma skript mavjudmi va sintaksisi to’g’rimi, `js/` dagi fayl `index.html` ga ulanganmi, global e’lonlar to’qnashmaydimi, `sw.js` keshi diskka aniq mosmi, README versiyasi `sw.js` bilan bir xilmi.
+- `node tools/test.js` — Studiya+ testlari (avto-rig vaznlari va egilishi, `.s3dp` saqlash → ochish). Brauzer yoki npm kerak emas, faqat Node 18+.
+- `.github/workflows/check.yml` — GitHub’ga yuklaganda ikkalasi avtomatik ishlaydi. **Yangi versiya chiqarganda** `sw.js` dagi `V` va README’ning birinchi `## vNN` sarlavhasini birga oshiring, aks holda `check.js` xato beradi.
+- Testlar Three.js r147 bilan yozilgan; yangilaganda `test.js` dagi `boneTransform` → `getVertexPosition` moslashuvi allaqachon bor.
+
+## v46 — loyiha fayli
+- **Studiya+ → Loyihani saqlash / ochish (`.s3dp`, Ctrl+S):** butun sahna (yashirin meshlar, dummylar va `userData` bilan, GLB ichida), kamera joyi va fon rangi bitta faylda. Format: `S3DP` + u32 JSON uzunligi + JSON + GLB. Ochilganda `Fayl → Ochish` yoki sudrab tashlash ham ishlaydi.
+- Cheklov: material GLB orqali o’tadi (Phong/Lambert → Standard), tahrir tarixi (Undo) saqlanmaydi, ochilgan loyiha mavjud sahnaga qo’shiladi (almashtirmaydi). Service Worker `v46`.
+
+## v45 — Studiya+ (`js/studio-plus.js`)
+Prisma3D va ZModeler ilovalarida ko’rilgan imkoniyatlarning **noldan yozilgan** variantlari (ularning kodi yoki resurslari ishlatilmagan). Menyu: **Studiya+**.
+- **Video yozish:** viewport’ni `.webm` ga yozadi (to’xtatish — yana bosing). **Turntable 360°** — model 8 soniyada aylanadi, panjara va tanlov ramkasi yashiriladi.
+- **Avto-rig:** tanlangan oddiy meshga eng uzun o’q bo’ylab 2–24 ta suyak zanjiri va chiziqli vaznlar beradi (SkinnedMesh). **Poza: egish** bilan tekshiriladi; Skelet menyusi va GLB eksporti shu skeletni ko’radi.
+- Cheklov: faqat bitta zanjir (odam skeleti emas), vaznlar balandlik bo’yicha — murakkab shakllarda qo’lda sozlash kerak bo’ladi. Meshning bolalari bo’lsa avval ajrating.
+- Service Worker `v45`.
+
+## v41 — GTA IV (WFT / WDR / WTD) qo’llab-quvvatlash
+- **Yangi fayl: `js/wft.js`.** GTA IV resurslari (RSC5: 12 bayt sarlavha + zlib) ochiladi:
+  - **`.wft`** (mashina fragmenti) va **`.wdr`** (oddiy drawable): yuqori LOD, barcha geometriyalar, normal va UV, material → tekstura nomi (shaderning diffuse parametridan).
+  - **`.wtd`** (tekstura lug’ati): DXT1/DXT3/DXT5 (va 32-bit A8R8G8B8) teksturalar dekodlanib, nom bo’yicha materiallarga avtomatik qo’llanadi.
+- Foydalanish: `Fayl → Ochish` yoki sudrab tashlang: `admiral.wft` + `admiral.wtd` (+ umumiy `vehshare.wtd` — `windows`, `vehicle_generic_*` kabi teksturalar shu yerda bo’ladi). Tartibi muhim emas.
+- Koordinatalar GTA V bilan bir xil: Z-up → Y-up, mashina old tomoni −Z.
+- Cheklovlar: skelet/fragment bo’laklari (eshiklar, g’ildiraklar harakati) hali o’qilmaydi, faqat statik model; LOD faqat eng yuqori; WTD ichidagi DXT dan boshqa siqilgan formatlar o’tkazib yuboriladi (xabarda soni chiqadi).
+- Service Worker `v41`.
+
+## v40 tuzatishlari
+- **Rasmdan 3D** butunlay qayta yozildi (`js/img3d.js`):
+  - **Logo / Siluet** endi panjara emas — **kontur izlash + Ramer–Douglas–Peucker soddalashtirish + ear-clip triangulyatsiya**.
+  - Natija: silliq, aniq chegara, juda kam poligon (odatda 200–2000 uchburchak).
+  - Otsu + morfologik tozalash saqlanib qoldi.
+  - «Kontur silliqligi» slayderi qo‘shildi (1.0–2.0 tavsiya).
+  - Relyef rejimi eski panjara usulida qoldi (heightmap uchun).
+- Service Worker `v40`.
+
+## v39 tuzatishlari
+- Rasmdan 3D dastlabki yaxshilanishlar (Otsu, morfologiya, logo aniqlash).
+
 ## Mashina funksiyalari (v38)
 `Mashina` workspace’i / Properties’dagi mashina tabi / yuqoridagi `Mashina` menyusi (`js/carfx.js`).
 - **Qismlarni topish:** “Avto-aniqlash” nomlar bo’yicha (door_lf, bonnet, boot, headlight, taillight, indicator, wiper, steering, speedo… GTA nomlari ham) topadi; chap/o’ng va old/orqa joylashuv geometriyadan olinadi. Topilmaganini qo’lda belgilang: modelda qismni tanlang → rolni tanlang → “Tanlanganni belgilash”. Old tomon avtomatik yoki qo’lda (±X/±Z).
@@ -30,7 +95,7 @@ Brauzerda ishlaydigan 3D ko’rish, tahrirlash va konvertatsiya sayti. Server ke
 - **Timeline:** ijro/pauza (Probel), kadrga qadam (← →), boshiga/oxiriga (Shift+← →), kadr, boshi/oxiri, tezlik; Animatsiya workspace’ida kalitlar (Klip menyusi) ko’rinadigan chizg’ich va sudrab o’tish.
 - **Holat paneli:** obyekt/uch/uchburchak soni, rejim, asbob, ko’rinish, magnit, bekor/qaytarish, kadr, ijro, animatsiya, tanlangan nom.
 - Yangi fayllar: `css/blender.css`, `js/blender-ui.js` (ikonkalar shu yerda, hammasi o’zimiz chizgan SVG). Mavjud funksiyalar (GTA, SKP, Z3D, Detalni moslashtirish va h.k.) o’zgarmagan.
-- Til: O’zbekcha / English / Русский (yangi matnlar lug’atga qo’shilgan). SEO: keywords, Twitter teglari, JSON-LD.
+- Til: O’zbekcha / English / Русский / العربية — arab tili to’liq (RTL, o’ngdan chapga tartib; interfeys, xabarlar, prompt oynalari). Yangi matnlar lug’atga qo’shilgan. SEO: keywords, Twitter teglari, JSON-LD.
 
 ## Detalni moslashtirish (v36)
 `Asboblar → Detalni moslashtirish (donor → maqsad)…` — bir mashinaning detalini (masalan BMW old bamperi) boshqa mashinaga (masalan Nexia 2) avtomatik moslab qo’yadi (`js/fitpart.js`).
@@ -72,8 +137,9 @@ Brauzerda ishlaydigan 3D ko’rish, tahrirlash va konvertatsiya sayti. Server ke
 - `js/blender-ui.js` — Blender uslubidagi interfeys qatlami (workspace, gizmo, outliner, timeline, holat paneli)
 - `css/blender.css` — Blender uslubidagi dizayn (style.css ustiga)
 - `js/i18n.js` — dastur tili (O’zbekcha / English / Русский): lug’at shu faylning boshida, yangi matn qo’shish oson
+- `js/i18n-ar.js` — arabcha tarjima: kalit — o’zbekcha matn, qiymat — arabcha; dinamik xabarlar (raqamli) uchun pastdagi `F` regex ro’yxati. Yangi o’zbekcha matn qo’shsangiz, shu yerga arabchasini ham qo’shing.
 - `vendor/` — Three.js (sayt internetsiz ham ishlaydi)
-- `sw.js` — oflayn kesh: kod va HTML avval tarmoqdan olinadi (yangilanish darrov ko’rinadi), internet bo’lmasa keshdan; `vendor/` keshdan. Versiya nomi `v37`
+- `sw.js` — oflayn kesh: kod va HTML avval tarmoqdan olinadi (yangilanish darrov ko’rinadi), internet bo’lmasa keshdan; `vendor/` keshdan. Versiya nomi `sw.js` boshidagi `V` da
 
 ## Ishga tushirish
 `python -m http.server 8000` va brauzerda `localhost:8000`. GitHub Pages yoki Vercel’ga shu papkani o’zini yuklash yetarli.
@@ -110,3 +176,10 @@ Brauzerda ishlaydigan 3D ko’rish, tahrirlash va konvertatsiya sayti. Server ke
 - Chamfer (yuza), Klip menyusi (keyframe yozish → GLB/GLTF eksportga qo’shiladi).
 - Kam ishlatiladigan yuklagichlar (FBX, DAE, WRL, 3MF, 3DS, LWO, MMD...) kerak bo’lganda yuklanadi — boshlang’ich yuklanish ≈0.8 MB kamaydi.
 - Telegram/SEO: `og:` meta teglar, `og.png`, ikonlar, `manifest.webmanifest` (PWA o’rnatish). Telegram eski preview'ni keshlaydi: @WebpageBot ga havolani yuborib yangilang.
+
+## O’yin rejimi (v43)
+- Yuqoridagi **O’yin** tugmasi: avval mashinani import qiling va “Mashina” panelida sozlang (eshik, chiroq, rul…), so’ng xarita tanlab haydang.
+- Xaritalar: **Shahar** (svetoforlar, trafik, piyodalar), **Cho’l yo’li**, **Poyga trassasi** (raqib mashinalar, tomoshabinlar).
+- Boshqaruv: W/S/A/D yoki strelkalar, Probel — qo’l tormozi, H — chiroq, Q/E/Z — povorotnik/avariya, 1–8 — eshik/kapot/bagaj/lyuk/oynalar, Y — artgich, C — kamera, N — tun/kun, M — ovoz, R — joyiga qaytarish, Esc — chiqish. Telefonda ekrandagi tugmalar bor.
+- Kod: `js/game.js`, `css/game.css`. Yangi xarita qo’shish: `MAPS` ro’yxatiga `build` funksiyasi qo’shiladi.
+- v44: mini-xarita, poyga aylanish vaqti (eng yaxshi aylanish), mashina soyasi, tungi ko’cha chiroqlari, to’qnashuv ovozi va kamera silkinishi, pauza (P), uzatmalar va tezlik tarozisi.
